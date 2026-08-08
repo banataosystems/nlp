@@ -49,6 +49,32 @@ for (const width of widths) {
       expect(box.y + box.height).toBeLessThanOrEqual(560 + 2);
     });
 
+    test('live transformation brief opens as a bounded mobile sheet', async ({ page }) => {
+      await page.goto('http://127.0.0.1:4173/#/discovery');
+      const trigger = page.locator('[data-brief-toggle]');
+      await expect(trigger).toBeVisible();
+      await trigger.click();
+      await expect(page.locator('body')).toHaveClass(/brief-open/);
+      const sheet = page.locator('.brief-pane');
+      await expect(sheet).toBeVisible();
+      const box = await sheet.boundingBox();
+      expect(box.x).toBeLessThanOrEqual(1);
+      expect(box.width).toBeGreaterThanOrEqual(width - 1);
+      expect(box.height).toBeLessThanOrEqual(760);
+      await page.keyboard.press('Escape');
+      await expect(page.locator('body')).not.toHaveClass(/brief-open/);
+    });
+
+    test('homepage exposes all five WorldStage solution paths without overflow', async ({ page }) => {
+      await page.goto('http://127.0.0.1:4173/#/home');
+      const paths = page.locator('.solution-path');
+      await expect(paths).toHaveCount(5);
+      const section = page.locator('.solution-paths');
+      await expect(section).toBeVisible();
+      const box = await section.boundingBox();
+      expect(box.width).toBeLessThanOrEqual(width + 1);
+    });
+
     test('critical primary controls meet 44px touch target', async ({ page }) => {
       await page.goto('http://127.0.0.1:4173/#/home');
       const targets = ['[data-menu]', '.quiet-cta'];
