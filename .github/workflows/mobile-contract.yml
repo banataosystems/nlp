@@ -12,7 +12,7 @@ permissions:
 jobs:
   mobile-contract:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -23,3 +23,12 @@ jobs:
       - run: npx http-server . -p 4173 -c-1 > /tmp/worldstage-http.log 2>&1 &
       - run: npx wait-on http://127.0.0.1:4173
       - run: npm run test:mobile
+      - run: npm run test:visual
+      - name: Upload mobile visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: worldstage-mobile-v2-evidence
+          path: artifacts/mobile-v2/*.png
+          if-no-files-found: error
+          retention-days: 14
