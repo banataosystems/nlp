@@ -1,0 +1,161 @@
+/* Phase 3 — production-shaped Discovery continuation without server-side submission. */
+.discovery-context-card {
+  margin-top: 28px;
+  padding: clamp(24px, 4vw, 44px);
+  border: 1px solid rgba(255,255,255,.12);
+  background: #0a0a0a;
+}
+.discovery-context-card__eyebrow {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: #d5a44d;
+}
+.discovery-context-card h2 {
+  margin: 14px 0 0;
+  font-family: var(--serif);
+  font-size: clamp(32px, 4vw, 52px);
+  line-height: 1.02;
+  letter-spacing: -.035em;
+  font-weight: 500;
+}
+.discovery-context-card__intro {
+  max-width: 680px;
+  margin: 16px 0 30px;
+  color: rgba(255,255,255,.52);
+  line-height: 1.65;
+}
+.discovery-context-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 20px 24px;
+}
+.discovery-field { min-width: 0; }
+.discovery-field--wide { grid-column: 1 / -1; }
+.discovery-field label,
+.discovery-consent span:first-child {
+  display: block;
+  margin-bottom: 8px;
+  font-family: var(--mono);
+  font-size: 9px;
+  line-height: 1.45;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.42);
+}
+.discovery-field input,
+.discovery-field select,
+.discovery-field textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: 50px;
+  padding: 12px 0;
+  border: 0;
+  border-bottom: 1px solid rgba(255,255,255,.18);
+  border-radius: 0;
+  outline: 0;
+  background: transparent;
+  color: #f5f3ed;
+  font-family: var(--serif);
+  font-size: 18px;
+}
+.discovery-field select { font-family: Inter, sans-serif; font-size: 15px; }
+.discovery-field select option { background: #111; color: #fff; }
+.discovery-field textarea { resize: vertical; min-height: 90px; }
+.discovery-field input:focus,
+.discovery-field select:focus,
+.discovery-field textarea:focus { border-bottom-color: #d5a44d; }
+.discovery-consent {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 24px minmax(0,1fr);
+  gap: 12px;
+  align-items: start;
+  margin-top: 4px;
+  cursor: pointer;
+}
+.discovery-consent input {
+  width: 20px;
+  height: 20px;
+  margin: 2px 0 0;
+  accent-color: #d5a44d;
+}
+.discovery-consent p {
+  margin: 0;
+  color: rgba(255,255,255,.5);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.discovery-draft-status {
+  min-height: 20px;
+  margin-top: 18px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .08em;
+  color: rgba(255,255,255,.34);
+}
+.discovery-context-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,.09);
+}
+.discovery-context-actions p {
+  max-width: 420px;
+  margin: 0;
+  color: rgba(255,255,255,.4);
+  font-size: 11px;
+  line-height: 1.55;
+}
+.discovery-handoff {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50px;
+  padding: 0 18px;
+  border: 0;
+  background: #d5a44d;
+  color: #080808;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.discovery-handoff:disabled { opacity: .38; cursor: default; }
+.discovery-route-progress {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 20px 0 0;
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.28);
+}
+.discovery-route-progress span.is-complete { color: #d5a44d; }
+
+@media (max-width: 900px) {
+  .discovery-context-card {
+    margin: 22px 0 86px;
+    padding: 24px max(20px, var(--safe-right)) calc(28px + var(--safe-bottom)) max(20px, var(--safe-left));
+    border-left: 0;
+    border-right: 0;
+  }
+  .discovery-context-grid { grid-template-columns: 1fr; gap: 18px; }
+  .discovery-field--wide { grid-column: auto; }
+  .discovery-consent { grid-column: auto; }
+  .discovery-context-actions { align-items: stretch; flex-direction: column; }
+  .discovery-handoff { width: 100%; }
+  .conversation-complete[data-phase3-hidden='true'] { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .discovery-context-card * { scroll-behavior: auto !important; }
+}
