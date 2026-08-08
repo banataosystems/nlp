@@ -28,6 +28,7 @@ jobs:
       - run: npx wait-on http://127.0.0.1:4173
       - run: npm run test:mobile
       - run: npm run test:phase3
+      - run: npm run test:phase4
       - run: npm run test:visual
       - name: Upload mobile visual evidence
         if: always()
