@@ -1,0 +1,26 @@
+name: WorldStage mobile contract
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [redesign/mobile-first-v2]
+
+permissions:
+  contents: read
+
+jobs:
+  mobile-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm install --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - run: npx http-server . -p 4173 -c-1 > /tmp/worldstage-http.log 2>&1 &
+      - run: npx wait-on http://127.0.0.1:4173
+      - run: npm run test:mobile
