@@ -7,7 +7,7 @@ on:
     branches: [redesign/mobile-first-v2]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   mobile-contract:
@@ -29,6 +29,19 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: worldstage-mobile-v2-evidence
-          path: artifacts/mobile-v2/*.png
+          path: artifacts/mobile-v2/*
           if-no-files-found: error
           retention-days: 14
+      - name: Preserve visual review PDF on branch
+        if: github.event_name == 'push' && github.ref == 'refs/heads/redesign/mobile-first-v2'
+        run: |
+          mkdir -p docs/worldstage/evidence
+          cp artifacts/mobile-v2/WORLDSTAGE_MOBILE_V2_VISUAL_EVIDENCE.pdf docs/worldstage/evidence/WORLDSTAGE_MOBILE_V2_VISUAL_EVIDENCE.pdf
+          git config user.name "worldstage-ci"
+          git config user.email "actions@users.noreply.github.com"
+          git add docs/worldstage/evidence/WORLDSTAGE_MOBILE_V2_VISUAL_EVIDENCE.pdf
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "docs: preserve mobile v2 visual evidence [skip ci]"
+          git push origin HEAD:redesign/mobile-first-v2
