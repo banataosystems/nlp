@@ -18,7 +18,7 @@ This iteration implements the first four signature WorldStage surfaces:
 - Reworked form-like discovery into a conversational experience.
 - Added a fourth canonical surface: the Client Transformation Record.
 - Added real pointer/swipe handling for the judgment queue.
-- Removed unstable React IntersectionObserver options-pattern issue by using a stable static-site observer.
+- Removed the unstable React IntersectionObserver options-pattern issue by using a stable static-site observer.
 - Removed the asynchronous `setInput`/submit race from the earlier prototype.
 - Replaced hard-coded dates with locale-formatted current dates.
 - Added reduced-motion support and basic skip-link/accessibility semantics.
@@ -38,13 +38,33 @@ Before GitHub push, the implementation was rendered in headless Chromium using P
 
 Local screenshot artifacts were created during QA but are not committed as canonical product evidence because they were generated in the execution environment, not owner-approved brand assets.
 
+## Production deployment evidence
+
+- Vercel project: `cherrypua`
+- Vercel project ID: `prj_ebP53cux8LAB18VFiKlgfP3ew2RH`
+- Production deployment: `dpl_DsM6JwHMZbmiuzSwXNswvhqwhF5s`
+- Production URL: `https://cherrypua.vercel.app`
+- Vercel deployment state: `READY`
+- Exact production alias assigned with no alias error.
+- Production root returned HTTP 200 and the expected WorldStage HTML shell.
+- Production `/src/app.js` returned HTTP 200 and the expected application runtime.
+- Production `/src/styles.css` returned HTTP 200 and the expected responsive visual system.
+- Vercel runtime-error query found no runtime errors in the post-launch verification window.
+
+See `DEPLOYMENT_MANIFEST_2026-08-08.md` for the exact deployment/source evidence and rollback identifiers.
+
 ## Current state
 
 - **Documented:** yes.
 - **Implemented:** yes, for the four prototype surfaces above.
-- **Locally tested:** yes, as described above.
-- **Deployed:** pending Vercel connection/deployment in the same workstream.
-- **Production-verified:** not yet.
+- **Locally/browser tested:** yes, as described above.
+- **Deployed:** yes, to `https://cherrypua.vercel.app`.
+- **Production endpoint verified:** yes, for availability and deployed static assets.
+- **Full production business integration verified:** no. CRM, calendar, secure database intake, participant systems, real AI, and private WorldStage data integrations are not active in this prototype.
+
+## Git ↔ Vercel state
+
+The source is durably committed in `banataosystems/nlp` and the exact committed files were deployed through the connected Vercel deployment action. The available Vercel connector does not expose a Git-repository-link mutation, and the production deployment metadata contains no Git commit/repository provenance. Therefore automatic Git-push → Vercel continuous deployment is **not yet verified/established** and must not be described as connected.
 
 ## Known boundaries
 
