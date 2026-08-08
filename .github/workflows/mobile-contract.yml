@@ -9,6 +9,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: worldstage-mobile-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
 jobs:
   mobile-contract:
     runs-on: ubuntu-latest
