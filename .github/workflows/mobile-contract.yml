@@ -30,6 +30,7 @@ jobs:
       - run: npm run test:phase3
       - run: npm run test:phase4
       - run: npm run test:phase5
+      - run: npm run test:release
       - run: npm run test:visual
       - name: Upload mobile visual evidence
         if: always()
