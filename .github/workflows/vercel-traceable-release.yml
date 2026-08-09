@@ -26,6 +26,7 @@ permissions:
 env:
   VERCEL_ORG_ID: team_IcdJUnzLi5wUN1GD8ALHyjF7
   VERCEL_PROJECT_ID: prj_ebP53cux8LAB18VFiKlgfP3ew2RH
+  VERCEL_CLI_VERSION: 58.1.0
 
 jobs:
   release:
@@ -125,14 +126,18 @@ jobs:
             exit 1
           fi
 
-      - name: Record Vercel CLI version
+      - name: Verify pinned Vercel CLI version
         id: vercel
         shell: bash
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           set -euo pipefail
-          VERSION="$(npx --yes vercel@latest --version | tail -n 1)"
+          VERSION="$(npx --yes vercel@${VERCEL_CLI_VERSION} --version | tail -n 1)"
+          if [[ "$VERSION" != *"${VERCEL_CLI_VERSION}"* ]]; then
+            echo "Unexpected Vercel CLI version: $VERSION" >&2
+            exit 1
+          fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "- Vercel CLI: \`$VERSION\`" >> "$GITHUB_STEP_SUMMARY"
 
@@ -143,7 +148,7 @@ jobs:
           TARGET: ${{ inputs.target }}
         run: |
           set -euo pipefail
-          npx --yes vercel@latest pull --yes --environment="$TARGET" --token="$VERCEL_TOKEN"
+          npx --yes vercel@${VERCEL_CLI_VERSION} pull --yes --environment="$TARGET" --token="$VERCEL_TOKEN"
 
       - name: Build exact source for Vercel
         shell: bash
@@ -153,9 +158,9 @@ jobs:
         run: |
           set -euo pipefail
           if [[ "$TARGET" == "production" ]]; then
-            npx --yes vercel@latest build --prod --token="$VERCEL_TOKEN"
+            npx --yes vercel@${VERCEL_CLI_VERSION} build --prod --token="$VERCEL_TOKEN"
           else
-            npx --yes vercel@latest build --token="$VERCEL_TOKEN"
+            npx --yes vercel@${VERCEL_CLI_VERSION} build --token="$VERCEL_TOKEN"
           fi
 
       - name: Deploy prebuilt artifact
@@ -167,9 +172,9 @@ jobs:
         run: |
           set -euo pipefail
           if [[ "$TARGET" == "production" ]]; then
-            DEPLOYMENT_URL="$(npx --yes vercel@latest deploy --prebuilt --prod --token="$VERCEL_TOKEN" | tail -n 1)"
+            DEPLOYMENT_URL="$(npx --yes vercel@${VERCEL_CLI_VERSION} deploy --prebuilt --prod --token="$VERCEL_TOKEN" | tail -n 1)"
           else
-            DEPLOYMENT_URL="$(npx --yes vercel@latest deploy --prebuilt --token="$VERCEL_TOKEN" | tail -n 1)"
+            DEPLOYMENT_URL="$(npx --yes vercel@${VERCEL_CLI_VERSION} deploy --prebuilt --token="$VERCEL_TOKEN" | tail -n 1)"
           fi
           if [[ "$DEPLOYMENT_URL" != https://* ]]; then
             echo "Vercel did not return an HTTPS deployment URL." >&2
@@ -188,8 +193,8 @@ jobs:
           DEPLOYMENT_URL: ${{ steps.deploy.outputs.url }}
         run: |
           set -euo pipefail
-          npx --yes vercel@latest curl / --deployment "$DEPLOYMENT_URL" --token="$VERCEL_TOKEN" > /tmp/worldstage-root.html
-          npx --yes vercel@latest curl /src/app.js --deployment "$DEPLOYMENT_URL" --token="$VERCEL_TOKEN" > /tmp/worldstage-app.js
+          npx --yes vercel@${VERCEL_CLI_VERSION} curl / --deployment "$DEPLOYMENT_URL" --token="$VERCEL_TOKEN" > /tmp/worldstage-root.html
+          npx --yes vercel@${VERCEL_CLI_VERSION} curl /src/app.js --deployment "$DEPLOYMENT_URL" --token="$VERCEL_TOKEN" > /tmp/worldstage-app.js
           test -s /tmp/worldstage-root.html
           test -s /tmp/worldstage-app.js
           grep -q "const ROUTES" /tmp/worldstage-app.js
@@ -202,7 +207,7 @@ jobs:
           SOURCE_TREE: ${{ steps.source.outputs.tree }}
           DEPLOYMENT_URL: ${{ steps.deploy.outputs.url }}
           TARGET: ${{ inputs.target }}
-          VERCEL_CLI_VERSION: ${{ steps.vercel.outputs.version }}
+          VERCEL_CLI_ACTUAL: ${{ steps.vercel.outputs.version }}
         run: |
           set -euo pipefail
           mkdir -p artifacts/release
@@ -215,7 +220,8 @@ jobs:
           deployment_url=$DEPLOYMENT_URL
           vercel_project_id=$VERCEL_PROJECT_ID
           vercel_org_id=$VERCEL_ORG_ID
-          vercel_cli_version=$VERCEL_CLI_VERSION
+          vercel_cli_requested=$VERCEL_CLI_VERSION
+          vercel_cli_actual=$VERCEL_CLI_ACTUAL
           workflow_run_id=$GITHUB_RUN_ID
           workflow_run_attempt=$GITHUB_RUN_ATTEMPT
           EOF
