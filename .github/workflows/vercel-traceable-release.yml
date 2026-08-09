@@ -1,0 +1,229 @@
+name: WorldStage traceable Vercel release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_ref:
+        description: Exact branch, tag, or commit SHA to test and deploy. Leave blank to use the workflow ref.
+        required: false
+        type: string
+      target:
+        description: Deployment target
+        required: true
+        default: preview
+        type: choice
+        options:
+          - preview
+          - production
+      confirm_production:
+        description: For production only, type DEPLOY_CHERRY_PRODUCTION exactly. Leave blank for preview.
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  VERCEL_ORG_ID: team_IcdJUnzLi5wUN1GD8ALHyjF7
+  VERCEL_PROJECT_ID: prj_ebP53cux8LAB18VFiKlgfP3ew2RH
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Validate release intent
+        shell: bash
+        env:
+          TARGET: ${{ inputs.target }}
+          CONFIRM_PRODUCTION: ${{ inputs.confirm_production }}
+        run: |
+          set -euo pipefail
+          if [[ "$TARGET" == "production" && "$CONFIRM_PRODUCTION" != "DEPLOY_CHERRY_PRODUCTION" ]]; then
+            echo "Production release denied: exact confirmation string was not supplied." >&2
+            exit 1
+          fi
+          if [[ "$TARGET" != "preview" && "$TARGET" != "production" ]]; then
+            echo "Unsupported deployment target: $TARGET" >&2
+            exit 1
+          fi
+
+      - name: Checkout exact requested source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_ref != '' && inputs.release_ref || github.sha }}
+          fetch-depth: 1
+
+      - name: Capture exact source identity
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE_SHA="$(git rev-parse HEAD)"
+          SOURCE_TREE="$(git rev-parse HEAD^{tree})"
+          echo "sha=$SOURCE_SHA" >> "$GITHUB_OUTPUT"
+          echo "tree=$SOURCE_TREE" >> "$GITHUB_OUTPUT"
+          {
+            echo "## WorldStage release candidate"
+            echo ""
+            echo "- Source SHA: \`$SOURCE_SHA\`"
+            echo "- Source tree: \`$SOURCE_TREE\`"
+            echo "- Requested target: \`${{ inputs.target }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install project dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Start static test server
+        run: npx http-server . -p 4173 -c-1 > /tmp/worldstage-http.log 2>&1 &
+
+      - name: Wait for test server
+        run: npx wait-on http://127.0.0.1:4173
+
+      - name: Run six-width mobile contract
+        run: npm run test:mobile
+
+      - name: Run Discovery contract
+        run: npm run test:phase3
+
+      - name: Run Cherry OS contract
+        run: npm run test:phase4
+
+      - name: Run Transformation Record contract
+        run: npm run test:phase5
+
+      - name: Run release security and privacy contract
+        run: npm run test:release
+
+      - name: Generate exact-source visual evidence
+        run: npm run test:visual
+
+      - name: Upload pre-release visual evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: worldstage-release-${{ steps.source.outputs.sha }}
+          path: artifacts/mobile-v2/*
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Verify Vercel credential is configured
+        shell: bash
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${VERCEL_TOKEN:-}" ]]; then
+            echo "Release denied: GitHub secret VERCEL_TOKEN is not configured for this repository/environment." >&2
+            exit 1
+          fi
+
+      - name: Record Vercel CLI version
+        id: vercel
+        shell: bash
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          set -euo pipefail
+          VERSION="$(npx --yes vercel@latest --version | tail -n 1)"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "- Vercel CLI: \`$VERSION\`" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Pull Vercel project configuration
+        shell: bash
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          TARGET: ${{ inputs.target }}
+        run: |
+          set -euo pipefail
+          npx --yes vercel@latest pull --yes --environment="$TARGET" --token="$VERCEL_TOKEN"
+
+      - name: Build exact source for Vercel
+        shell: bash
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          TARGET: ${{ inputs.target }}
+        run: |
+          set -euo pipefail
+          if [[ "$TARGET" == "production" ]]; then
+            npx --yes vercel@latest build --prod --token="$VERCEL_TOKEN"
+          else
+            npx --yes vercel@latest build --token="$VERCEL_TOKEN"
+          fi
+
+      - name: Deploy prebuilt artifact
+        id: deploy
+        shell: bash
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          TARGET: ${{ inputs.target }}
+        run: |
+          set -euo pipefail
+          if [[ "$TARGET" == "production" ]]; then
+            DEPLOYMENT_URL="$(npx --yes vercel@latest deploy --prebuilt --prod --token="$VERCEL_TOKEN" | tail -n 1)"
+          else
+            DEPLOYMENT_URL="$(npx --yes vercel@latest deploy --prebuilt --token="$VERCEL_TOKEN" | tail -n 1)"
+          fi
+          if [[ "$DEPLOYMENT_URL" != https://* ]]; then
+            echo "Vercel did not return an HTTPS deployment URL." >&2
+            exit 1
+          fi
+          echo "url=$DEPLOYMENT_URL" >> "$GITHUB_OUTPUT"
+          {
+            echo "- Deployment URL: $DEPLOYMENT_URL"
+            echo "- Deployment target: \`$TARGET\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Smoke deployed application
+        shell: bash
+        env:
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          set -euo pipefail
+          curl --fail --show-error --silent --location "$DEPLOYMENT_URL/" > /tmp/worldstage-root.html
+          curl --fail --show-error --silent --location "$DEPLOYMENT_URL/src/app.js" > /tmp/worldstage-app.js
+          test -s /tmp/worldstage-root.html
+          test -s /tmp/worldstage-app.js
+          grep -q "const ROUTES" /tmp/worldstage-app.js
+          echo "- Deployment smoke: PASS" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Write release provenance record
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ steps.source.outputs.sha }}
+          SOURCE_TREE: ${{ steps.source.outputs.tree }}
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.url }}
+          TARGET: ${{ inputs.target }}
+          VERCEL_CLI_VERSION: ${{ steps.vercel.outputs.version }}
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/release
+          cat > artifacts/release/release-provenance.txt <<EOF
+          project=worldstage-cherry
+          repository=banataosystems/nlp
+          source_sha=$SOURCE_SHA
+          source_tree=$SOURCE_TREE
+          target=$TARGET
+          deployment_url=$DEPLOYMENT_URL
+          vercel_project_id=$VERCEL_PROJECT_ID
+          vercel_org_id=$VERCEL_ORG_ID
+          vercel_cli_version=$VERCEL_CLI_VERSION
+          workflow_run_id=$GITHUB_RUN_ID
+          workflow_run_attempt=$GITHUB_RUN_ATTEMPT
+          EOF
+          cat artifacts/release/release-provenance.txt >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload release provenance
+        uses: actions/upload-artifact@v4
+        with:
+          name: worldstage-release-provenance-${{ steps.source.outputs.sha }}
+          path: artifacts/release/release-provenance.txt
+          if-no-files-found: error
+          retention-days: 90
