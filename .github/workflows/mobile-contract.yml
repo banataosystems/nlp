@@ -16,14 +16,14 @@ concurrency:
 jobs:
   mobile-contract:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 22
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
       - run: npm install --no-audit --no-fund
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install --with-deps chromium webkit
       - run: npx http-server . -p 4173 -c-1 > /tmp/worldstage-http.log 2>&1 &
       - run: npx wait-on http://127.0.0.1:4173
       - run: npm run test:mobile
