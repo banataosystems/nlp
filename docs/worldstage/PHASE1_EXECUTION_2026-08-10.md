@@ -38,13 +38,16 @@ The Discovery experience has a fail-closed prototype privacy boundary before nar
 
 ## Phase 1 — Business truth and workflow validation
 
-**State:** public truth mapped; owner validation still required.
+**State:** public truth mapped; operating model drafted; owner validation still required.
 
-Public research is now captured in:
+Current Phase 1 evidence and design drafts:
 
-`docs/worldstage/PUBLIC_BUSINESS_TRUTH_MAP_2026-08-10.md`
+- `docs/worldstage/PUBLIC_BUSINESS_TRUTH_MAP_2026-08-10.md`
+- `docs/worldstage/OPERATING_DATA_MODEL_DRAFT_2026-08-10.md`
+- `docs/worldstage/DECISION_AUTHORITY_DRAFT_2026-08-10.md`
+- `docs/worldstage/CHERRY_OWNER_VALIDATION_PACKET.md`
 
-This reduces the owner-validation burden but does not replace owner confirmation.
+These reduce the owner-validation burden but do not replace owner confirmation.
 
 ### Public process now supported by current WorldStage evidence
 
@@ -102,16 +105,24 @@ Record which person, file, message thread, calendar, spreadsheet, deck, form, or
 
 ### P1.3 — Cherry judgment boundary
 
-Separate decisions that require Cherry from decisions that should be delegated or automated, including:
+The first conservative draft now exists in:
 
-- relationship-sensitive follow-up;
-- creative/intervention judgment;
-- commercial exceptions;
-- program risk;
+`docs/worldstage/DECISION_AUTHORITY_DRAFT_2026-08-10.md`
+
+It separates likely judgment-sensitive decisions from candidate routine operations and fails closed when authority/source/privacy/rights/commercial context is unknown.
+
+Owner validation must confirm:
+
+- decisions truly requiring Cherry personally;
+- delegated roles and limits;
+- relationship ownership;
+- commercial exception authority;
+- participant/sponsor visibility decisions;
 - public/client claim approval;
-- keynote/media commitments.
+- what the system may do without interruption;
+- what must always require explicit human confirmation.
 
-**Proof:** decision-authority matrix.
+**Proof:** owner-approved decision-authority matrix.
 
 ### P1.4 — Data sensitivity and retention
 
@@ -124,6 +135,8 @@ Validate at least:
 5. highly sensitive/restricted.
 
 Define what must never enter public repositories, analytics, screenshots, semantic memory, or unauthorized AI contexts.
+
+The operating-data-model draft already requires every private object to be evaluated for organization isolation, team role, sponsor/participant visibility, Cherry-only visibility, AI eligibility, analytics eligibility, retention/deletion class and public-release permission.
 
 **Proof:** data-classification/retention matrix.
 
@@ -159,11 +172,47 @@ Default recommendation pending owner validation:
 
 Why it remains the default: current public evidence shows that WorldStage explicitly starts with understanding current state and ambition before designing an intervention. However, this remains a recommendation—not an owner-approved production decision.
 
+### P1.7 — Validate the operating data model
+
+A conservative schema hypothesis now exists in:
+
+`docs/worldstage/OPERATING_DATA_MODEL_DRAFT_2026-08-10.md`
+
+Primary design rule:
+
+**The principal business object is a client transformation, not an event, workshop booking, ticket order or generic CRM deal.**
+
+Candidate aggregate:
+
+`Organization → Transformation → Discovery → Insights → Solution Design → Proposal/Commercial Engagement → Intervention → Evidence → Debrief → Sustainment → Renewal/Expansion`
+
+Cross-cutting objects include:
+
+- Person / relationship contact;
+- Commitment / promise;
+- Source reference;
+- Decision / approval.
+
+The draft explicitly separates client-supplied statements from WorldStage interpretation and requires source provenance for consequential insights.
+
+Owner validation must answer the model-changing questions, especially:
+
+- what the team actually thinks of as “the client job”;
+- when a transformation formally begins;
+- how proposals relate to transformations;
+- actual participant/sponsor privacy boundaries;
+- canonical systems for contacts, proposals, schedules, payments and follow-ups;
+- Cherry-only decisions;
+- what evidence qualifies as “worked.”
+
+**Proof:** owner-approved logical data model before production database schema activation.
+
 ## Phase 2 entry gate
 
 Do not activate secure real-data intake until all are true:
 
 - owner-approved vocabulary and end-to-end workflow;
+- owner-approved logical data model or documented corrections;
 - roles/authority boundaries confirmed;
 - data sensitivity and retention confirmed;
 - systems of record inventoried;
@@ -176,6 +225,8 @@ Do not activate secure real-data intake until all are true:
 ## Current blockers
 
 - Owner workflow truth has not yet been validated.
+- Owner approval of the logical data model is open.
+- Owner approval of the decision-authority matrix is open.
 - Physical-device owner visual approval remains open.
 - Authentic Cherry media/content approval remains open.
 - Secure server-side Discovery intake is not implemented.
@@ -189,6 +240,9 @@ Do not activate secure real-data intake until all are true:
 - iPhone/WebKit device-class browser verification.
 - Pixel/Chromium device-class browser verification.
 - Git → Vercel preview source binding and exact-SHA preview provenance.
+- Public-business vocabulary/process research sufficient for a correction-based owner interview.
+- Conservative operating data model draft.
+- Conservative decision-authority draft.
 
 ## Required proof discipline
 
@@ -196,4 +250,4 @@ Keep these states separate:
 
 **documented → implemented → tested → preview-deployed → production-deployed → production-verified**
 
-Browser/device emulation is not physical-device approval. A READY preview is not production. Public-source process evidence is not owner validation. No confidential/private workflow becomes production truth until the owner and authorized team confirm it.
+Browser/device emulation is not physical-device approval. A READY preview is not production. Public-source process evidence is not owner validation. A draft data model is not a production schema. A draft authority matrix is not an authorization policy. No confidential/private workflow becomes production truth until the owner and authorized team confirm it.
