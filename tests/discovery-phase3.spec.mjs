@@ -10,8 +10,16 @@ const answers = [
 
 test.use({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
 
+async function acknowledgePrototype(page) {
+  const gate = page.locator('[data-prototype-safety-gate]');
+  await expect(gate).toBeVisible();
+  await gate.getByRole('button', { name: /continue with non-confidential Discovery/i }).click();
+  await expect(gate).toHaveCount(0);
+}
+
 async function completeConceptDiscovery(page) {
   await page.goto('http://127.0.0.1:4173/#/discovery');
+  await acknowledgePrototype(page);
   for (const answer of answers) {
     const input = page.locator('[data-discovery-input]');
     await expect(input).toBeVisible();
