@@ -1,12 +1,108 @@
 import { test, expect } from '@playwright/test';
-const widths=[320,360,375,390,412,430];const routes=['home','discovery','cockpit','client'];
-for(const width of widths){test.describe(`mobile contract ${width}px`,()=>{test.use({viewport:{width,height:844},isMobile:true,hasTouch:true});
-for(const route of routes){test(`${route}: no unexpected document overflow`,async({page})=>{await page.goto(`http://127.0.0.1:4173/#/${route}`);await page.waitForLoadState('networkidle');const sizes=await page.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,clientWidth:document.documentElement.clientWidth}));expect(sizes.scrollWidth).toBeLessThanOrEqual(sizes.clientWidth+1);});}
-test('mobile menu fully occludes underlying content and locks page',async({page})=>{await page.goto('http://127.0.0.1:4173/#/home');const toggle=page.locator('[data-menu]');await expect(toggle).toBeVisible();await toggle.click();await expect(page.locator('.mobile-nav')).toBeVisible();await expect(page.locator('body')).toHaveClass(/menu-open/);const box=await page.locator('.mobile-nav').boundingBox();expect(box.x).toBeLessThanOrEqual(1);expect(box.width).toBeGreaterThanOrEqual(width-1);expect(box.height).toBeGreaterThanOrEqual(800);});
-test('menu closes with Escape',async({page})=>{await page.goto('http://127.0.0.1:4173/#/home');await page.locator('[data-menu]').click();await page.keyboard.press('Escape');await expect(page.locator('.mobile-nav')).toHaveCount(0);});
-test('discovery composer remains visible after viewport contraction',async({page})=>{await page.goto('http://127.0.0.1:4173/#/discovery');await page.setViewportSize({width,height:560});const composer=page.locator('.conversation-input');await expect(composer).toBeVisible();const box=await composer.boundingBox();expect(box.y+box.height).toBeLessThanOrEqual(562);});
-test('live transformation brief opens as a bounded mobile sheet',async({page})=>{await page.goto('http://127.0.0.1:4173/#/discovery');const trigger=page.locator('[data-brief-toggle]');await expect(trigger).toBeVisible();await trigger.click();await expect(page.locator('body')).toHaveClass(/brief-open/);const box=await page.locator('.brief-pane').boundingBox();expect(box.width).toBeGreaterThanOrEqual(width-1);expect(box.height).toBeLessThanOrEqual(760);await page.keyboard.press('Escape');});
-test('authority homepage has five work paths and signature chapters',async({page})=>{await page.goto('http://127.0.0.1:4173/#/home');await expect(page.locator('.cherry-authority')).toBeVisible();await expect(page.locator('.ca-work__list button')).toHaveCount(5);await expect(page.locator('.ca-hero')).toBeVisible();await expect(page.locator('.ca-origin')).toBeVisible();await expect(page.locator('.ca-final')).toBeVisible();});
-test('authority primary action reaches Discovery',async({page})=>{await page.goto('http://127.0.0.1:4173/#/home');const cta=page.locator('.ca-hero [data-ca-discovery]');await expect(cta).toBeVisible();const box=await cta.boundingBox();expect(box.height).toBeGreaterThanOrEqual(44);await cta.click();await expect(page).toHaveURL(/#\/discovery/);});
-test('critical menu control meets touch target',async({page})=>{await page.goto('http://127.0.0.1:4173/#/home');const box=await page.locator('[data-menu]').boundingBox();expect(box.height).toBeGreaterThanOrEqual(44);});
-});}
+
+const widths = [320, 360, 375, 390, 412, 430];
+const routes = ['home', 'discovery', 'cockpit', 'client'];
+
+async function acknowledgePrototype(page) {
+  const gate = page.locator('[data-prototype-safety-gate]');
+  await expect(gate).toBeVisible();
+  await gate.getByRole('button', { name: /continue with non-confidential Discovery/i }).click();
+  await expect(gate).toHaveCount(0);
+}
+
+for (const width of widths) {
+  test.describe(`mobile contract ${width}px`, () => {
+    test.use({ viewport: { width, height: 844 }, isMobile: true, hasTouch: true });
+
+    for (const route of routes) {
+      test(`${route}: no unexpected document overflow`, async ({ page }) => {
+        await page.goto(`http://127.0.0.1:4173/#/${route}`);
+        await page.waitForLoadState('networkidle');
+        const sizes = await page.evaluate(() => ({
+          scrollWidth: document.documentElement.scrollWidth,
+          clientWidth: document.documentElement.clientWidth,
+        }));
+        expect(sizes.scrollWidth).toBeLessThanOrEqual(sizes.clientWidth + 1);
+      });
+    }
+
+    test('mobile menu fully occludes underlying content and locks page', async ({ page }) => {
+      await page.goto('http://127.0.0.1:4173/#/home');
+      const toggle = page.locator('[data-menu]');
+      await expect(toggle).toBeVisible();
+      await toggle.click();
+      await expect(page.locator('.mobile-nav')).toBeVisible();
+      await expect(page.locator('body')).toHaveClass(/menu-open/);
+      const box = await page.locator('.mobile-nav').boundingBox();
+      expect(box.x).toBeLessThanOrEqual(1);
+      expect(box.width).toBeGreaterThanOrEqual(width - 1);
+      expect(box.height).toBeGreaterThanOrEqual(800);
+    });
+
+    test('menu closes with Escape', async ({ page }) => {
+      await page.goto('http://127.0.0.1:4173/#/home');
+      await page.locator('[data-menu]').click();
+      await page.keyboard.press('Escape');
+      await expect(page.locator('.mobile-nav')).toHaveCount(0);
+    });
+
+    test('discovery privacy boundary fits the viewport before interaction', async ({ page }) => {
+      await page.goto('http://127.0.0.1:4173/#/discovery');
+      const gate = page.locator('[data-prototype-safety-gate]');
+      await expect(gate).toBeVisible();
+      const box = await gate.locator('.prototype-safety-gate__card').boundingBox();
+      expect(box.x).toBeGreaterThanOrEqual(0);
+      expect(box.x + box.width).toBeLessThanOrEqual(width + 1);
+      expect(box.height).toBeLessThanOrEqual(804);
+    });
+
+    test('discovery composer remains visible after viewport contraction', async ({ page }) => {
+      await page.goto('http://127.0.0.1:4173/#/discovery');
+      await acknowledgePrototype(page);
+      await page.setViewportSize({ width, height: 560 });
+      const composer = page.locator('.conversation-input');
+      await expect(composer).toBeVisible();
+      const box = await composer.boundingBox();
+      expect(box.y + box.height).toBeLessThanOrEqual(562);
+    });
+
+    test('live transformation brief opens as a bounded mobile sheet', async ({ page }) => {
+      await page.goto('http://127.0.0.1:4173/#/discovery');
+      await acknowledgePrototype(page);
+      const trigger = page.locator('[data-brief-toggle]');
+      await expect(trigger).toBeVisible();
+      await trigger.click();
+      await expect(page.locator('body')).toHaveClass(/brief-open/);
+      const box = await page.locator('.brief-pane').boundingBox();
+      expect(box.width).toBeGreaterThanOrEqual(width - 1);
+      expect(box.height).toBeLessThanOrEqual(760);
+      await page.keyboard.press('Escape');
+    });
+
+    test('authority homepage has five work paths and signature chapters', async ({ page }) => {
+      await page.goto('http://127.0.0.1:4173/#/home');
+      await expect(page.locator('.cherry-authority')).toBeVisible();
+      await expect(page.locator('.ca-work__list button')).toHaveCount(5);
+      await expect(page.locator('.ca-hero')).toBeVisible();
+      await expect(page.locator('.ca-origin')).toBeVisible();
+      await expect(page.locator('.ca-final')).toBeVisible();
+    });
+
+    test('authority primary action reaches Discovery', async ({ page }) => {
+      await page.goto('http://127.0.0.1:4173/#/home');
+      const cta = page.locator('.ca-hero [data-ca-discovery]');
+      await expect(cta).toBeVisible();
+      const box = await cta.boundingBox();
+      expect(box.height).toBeGreaterThanOrEqual(44);
+      await cta.click();
+      await expect(page).toHaveURL(/#\/discovery/);
+      await expect(page.locator('[data-prototype-safety-gate]')).toBeVisible();
+    });
+
+    test('critical menu control meets touch target', async ({ page }) => {
+      await page.goto('http://127.0.0.1:4173/#/home');
+      const box = await page.locator('[data-menu]').boundingBox();
+      expect(box.height).toBeGreaterThanOrEqual(44);
+    });
+  });
+}
