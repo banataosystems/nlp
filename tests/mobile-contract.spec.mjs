@@ -79,6 +79,26 @@ for (const width of widths) {
       await page.keyboard.press('Escape');
     });
 
+    test('Cherry judgment cards remain one full deck width', async ({ page }) => {
+      await page.goto('http://127.0.0.1:4173/#/cockpit');
+      const deck = page.locator('.judgment-deck');
+      const deckBox = await deck.boundingBox();
+      const cards = page.locator('.judgment-card');
+      expect(await cards.count()).toBe(3);
+
+      for (let index = 0; index < 3; index += 1) {
+        const cardBox = await cards.nth(index).boundingBox();
+        expect(cardBox.width).toBeGreaterThanOrEqual(deckBox.width - 2);
+      }
+
+      const activeBox = await page.locator('.judgment-card.is-active').boundingBox();
+      expect(activeBox.x).toBeGreaterThanOrEqual(deckBox.x - 1);
+      expect(activeBox.x + activeBox.width).toBeLessThanOrEqual(deckBox.x + deckBox.width + 1);
+
+      const headlineBox = await page.locator('.judgment-card.is-active h3').boundingBox();
+      expect(headlineBox.width).toBeGreaterThanOrEqual(deckBox.width * 0.72);
+    });
+
     test('authority homepage has five work paths and signature chapters', async ({ page }) => {
       await page.goto('http://127.0.0.1:4173/#/home');
       await expect(page.locator('.cherry-authority')).toBeVisible();
