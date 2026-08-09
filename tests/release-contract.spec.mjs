@@ -28,11 +28,12 @@ test('HTML loads application scripts only from this origin', () => {
   const scripts = [...html.matchAll(/<script[^>]+src="([^"]+)"/g)].map((match) => match[1]);
   expect(scripts.length).toBeGreaterThan(0);
   expect(scripts.every((src) => src.startsWith('/'))).toBe(true);
+  expect(html.indexOf('/src/prototype-safety.js')).toBeGreaterThan(html.indexOf('/src/app.js'));
 });
 
 test('branch source contains no obvious production secret material', () => {
   const sourceFiles = [
-    'index.html', 'src/app.js', 'src/mobile-v2.js', 'src/phase2-mobile.js',
+    'index.html', 'src/app.js', 'src/prototype-safety.js', 'src/mobile-v2.js', 'src/phase2-mobile.js',
     'src/phase3-discovery.js', 'src/phase4-cockpit.js', 'src/phase5-record.js',
   ];
   const source = sourceFiles.map(read).join('\n');
@@ -48,18 +49,26 @@ test('branch source contains no obvious production secret material', () => {
 
 test('restricted surfaces do not load analytics or session replay scripts', () => {
   const html = read('index.html');
-  const source = [html, read('src/app.js'), read('src/phase3-discovery.js')].join('\n').toLowerCase();
+  const source = [html, read('src/app.js'), read('src/prototype-safety.js'), read('src/phase3-discovery.js')].join('\n').toLowerCase();
   expect(source).not.toContain('posthog.init');
   expect(source).not.toContain('hotjar');
   expect(source).not.toContain('fullstory');
   expect(source).not.toContain('clarity(');
 });
 
+test('prototype safety guard introduces no network submission path', () => {
+  const source = read('src/prototype-safety.js');
+  expect(source).not.toMatch(/\bfetch\s*\(/);
+  expect(source).not.toContain('XMLHttpRequest');
+  expect(source).not.toMatch(/supabase|posthog|analytics/i);
+  expect(source).toContain('nothing is sent automatically');
+});
+
 test('static experience remains inside a conservative source-size budget', () => {
   const files = [
-    'index.html', 'src/styles.css', 'src/app.js', 'src/mobile-v2.css', 'src/mobile-v2.js',
-    'src/phase2-mobile.css', 'src/phase2-mobile.js', 'src/phase3-discovery.css',
-    'src/phase3-discovery.js', 'src/phase4-cockpit.css', 'src/phase4-cockpit.js',
+    'index.html', 'src/styles.css', 'src/app.js', 'src/prototype-safety.css', 'src/prototype-safety.js',
+    'src/mobile-v2.css', 'src/mobile-v2.js', 'src/phase2-mobile.css', 'src/phase2-mobile.js',
+    'src/phase3-discovery.css', 'src/phase3-discovery.js', 'src/phase4-cockpit.css', 'src/phase4-cockpit.js',
     'src/phase5-record.css', 'src/phase5-record.js',
   ];
   const bytes = files.reduce((sum, file) => sum + fs.statSync(path.join(root, file)).size, 0);
@@ -73,4 +82,22 @@ test('public entry surface exposes skip navigation and no private-client languag
   const text = (await page.locator('#main').innerText()).toLowerCase();
   expect(text).not.toContain('pulse metrics show');
   expect(text).not.toContain('last meaningful conversation:');
+});
+
+test('Discovery fails closed until the non-confidential boundary is acknowledged', async ({ page }) => {
+  await page.goto('http://127.0.0.1:4173/#/discovery');
+
+  const gate = page.locator('[data-prototype-safety-gate]');
+  const conversation = page.locator('.conversation-pane');
+
+  await expect(gate).toBeVisible();
+  await expect(gate).toContainText('Keep confidential client and participant information out of Discovery for now.');
+  await expect(conversation).toHaveAttribute('inert', '');
+
+  await gate.getByRole('button', { name: /continue with non-confidential Discovery/i }).click();
+
+  await expect(gate).toHaveCount(0);
+  await expect(conversation).not.toHaveAttribute('inert', '');
+  await expect(page.locator('[data-prototype-safety-banner]')).toBeVisible();
+  await expect(page.locator('[data-discovery-input]')).toHaveAttribute('placeholder', 'Describe the situation without confidential client or participant details.');
 });
