@@ -2,6 +2,7 @@
 -- DO NOT APPLY. This file is intentionally outside any migration directory.
 -- PostgreSQL / Supabase-compatible design hypothesis only.
 -- Owner/security validation required before executable migration work.
+-- Primary business object: client transformation, not an event or generic CRM deal.
 
 create extension if not exists pgcrypto;
 
