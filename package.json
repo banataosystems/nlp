@@ -6,6 +6,7 @@
     "serve": "npx http-server . -p 4173 -c-1",
     "test:mobile": "playwright test tests/mobile-contract.spec.mjs",
     "test:devices": "playwright test tests/device-iphone-webkit.spec.mjs tests/device-pixel-chromium.spec.mjs",
+    "test:phase2sql": "playwright test tests/phase2-sql-draft.spec.mjs",
     "test:phase3": "playwright test tests/discovery-phase3.spec.mjs",
     "test:phase4": "playwright test tests/cockpit-phase4.spec.mjs",
     "test:phase5": "playwright test tests/record-phase5.spec.mjs",
