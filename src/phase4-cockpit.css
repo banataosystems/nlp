@@ -126,6 +126,23 @@ body.cockpit-modal-open { overflow: hidden; overscroll-behavior: none; }
   .room-brief-header { grid-template-columns: 1fr; }
   .room-brief-stat { border-bottom: 1px solid rgba(255,255,255,.08); }
   .room-brief-stat:last-child { border-bottom: 0; }
+
+  /* Mobile deck contract: one judgment occupies one viewport-width deck page. */
+  .judgment-card {
+    flex: 0 0 100%;
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+  }
+  .judgment-card__content {
+    width: 100%;
+    max-width: none;
+  }
+  .judgment-card h3 {
+    overflow-wrap: normal;
+    word-break: normal;
+    hyphens: none;
+  }
   .judgment-card__actions button { min-height: 46px; }
 }
 
