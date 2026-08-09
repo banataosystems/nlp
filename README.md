@@ -8,7 +8,17 @@ Business-adaptive digital experience and operating-system prototype for WorldSta
 
 Vercel project: `cherrypua`  
 Project ID: `prj_ebP53cux8LAB18VFiKlgfP3ew2RH`  
-Verified production deployment: `dpl_DsM6JwHMZbmiuzSwXNswvhqwhF5s`
+Current verified production deployment: `dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1`  
+Production event: redeploy of original deployment `dpl_DsM6JwHMZbmiuzSwXNswvhqwhF5s` on 2026-08-10 03:16:32 Asia/Manila.
+
+The current production deployment is a Vercel **redeploy of the original baseline artifact**. It is not evidence that `redesign/mobile-first-v2` or PR #1 has been released. Automatic Git → Vercel source binding remains unproven.
+
+## Active implementation line
+
+- Branch: `redesign/mobile-first-v2`
+- PR: #1 — WorldStage mobile-first recovery v2
+- Latest exact-source tested head recorded before this documentation update: `be41775eb6bae9c7e1d569ee6b2fa58d382d77d1`
+- Production promotion: **not performed**
 
 ## Signature surfaces
 
@@ -28,20 +38,25 @@ The product is intentionally built around WorldStage's discovery → design → 
 | Gate | State |
 |---|---|
 | Documented | Verified |
-| Implemented | Verified for the four prototype surfaces |
-| Local/browser tested | Verified |
-| Deployed | Verified |
-| Production endpoint/assets | Verified |
+| Baseline prototype implemented | Verified for the four prototype surfaces |
+| Mobile-v2 implementation | Implemented on draft PR #1 |
+| Mobile-v2 automated/browser tested | Verified on exact source head `be41775...` before this documentation-only update |
+| Current production availability | Verified after redeploy |
+| Current production source | Redeployed original baseline artifact |
+| Mobile-v2 deployed | No |
 | Full business integrations | Not yet implemented |
-| Automatic Git → Vercel continuous deployment | Not yet verified/established |
-| Pandora Memory synchronization | Blocked by current developer-MCP runtime permission |
+| Automatic Git → Vercel continuous deployment | Not verified/established |
+| Pandora Memory synchronization | Blocked/unavailable in current connector state |
 
 ## Evidence
 
 - [`docs/worldstage/WORLDSTAGE_MASTER_BLUEPRINT.md`](docs/worldstage/WORLDSTAGE_MASTER_BLUEPRINT.md) — research and system blueprint.
-- [`docs/worldstage/IMPLEMENTATION_STATUS_2026-08-08.md`](docs/worldstage/IMPLEMENTATION_STATUS_2026-08-08.md) — implementation and QA status.
-- [`docs/worldstage/DEPLOYMENT_MANIFEST_2026-08-08.md`](docs/worldstage/DEPLOYMENT_MANIFEST_2026-08-08.md) — exact source/deployment identifiers and production verification.
+- [`docs/worldstage/IMPLEMENTATION_STATUS_2026-08-08.md`](docs/worldstage/IMPLEMENTATION_STATUS_2026-08-08.md) — implementation and QA status for the original baseline.
+- [`docs/worldstage/DEPLOYMENT_MANIFEST_2026-08-08.md`](docs/worldstage/DEPLOYMENT_MANIFEST_2026-08-08.md) — original exact source/deployment identifiers.
+- [`docs/worldstage/PRODUCTION_REDEPLOY_EVIDENCE_2026-08-10.md`](docs/worldstage/PRODUCTION_REDEPLOY_EVIDENCE_2026-08-10.md) — current production redeploy provenance and verification.
+- [`docs/worldstage/PHASE1_EXECUTION_2026-08-10.md`](docs/worldstage/PHASE1_EXECUTION_2026-08-10.md) — reconciled Phase 1 business-truth gate and next dependency order.
+- [`docs/worldstage/CHERRY_OWNER_VALIDATION_PACKET.md`](docs/worldstage/CHERRY_OWNER_VALIDATION_PACKET.md) — owner workflow validation packet.
 
 ## Important boundaries
 
-This deployment is a high-fidelity functional prototype, not the finished WorldStage business operating system. It contains no private client data. Cherry OS intelligence is explicitly demo-only. Discovery currently hands off through a user-controlled email action rather than a secure server-side intake database. CRM, calendar, participant, payment and AI production integrations remain future gated work.
+Current production is still the high-fidelity baseline prototype, not the finished WorldStage business operating system and not the tested mobile-v2 branch. It contains no verified private-client source integration. Cherry OS intelligence remains demo-only. Secure server-side Discovery intake, real authentication/authorization, CRM, calendar, participant, payment and production AI integrations remain gated future work.
