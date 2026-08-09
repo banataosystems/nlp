@@ -228,7 +228,6 @@ jobs:
           workflow_run_id=$GITHUB_RUN_ID
           workflow_run_attempt=$GITHUB_RUN_ATTEMPT
           EOF
-          cat artifacts/release/revenance.txt 2>/dev/null || true
           cat artifacts/release/release-provenance.txt >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload release provenance
