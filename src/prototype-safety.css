@@ -1,0 +1,90 @@
+.prototype-safety-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 260;
+  display: grid;
+  place-items: center;
+  padding: max(20px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
+  background: rgba(6, 6, 6, .92);
+  backdrop-filter: blur(16px);
+}
+
+.prototype-safety-gate__card {
+  width: min(680px, 100%);
+  max-height: min(720px, calc(100dvh - 40px));
+  overflow: auto;
+  padding: clamp(24px, 5vw, 42px);
+  border: 1px solid rgba(213, 164, 77, .46);
+  background: #0b0b0b;
+  box-shadow: 0 24px 90px rgba(0, 0, 0, .48);
+}
+
+.prototype-safety-gate__eyebrow,
+.prototype-safety-banner strong {
+  display: block;
+  margin-bottom: 8px;
+  font-family: var(--mono, "DM Mono", monospace);
+  font-size: 10px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+.prototype-safety-gate h2 {
+  margin: 0 0 14px;
+  font-family: var(--serif, "Playfair Display", Georgia, serif);
+  font-size: clamp(30px, 7vw, 54px);
+  font-weight: 500;
+  line-height: 1.02;
+}
+
+.prototype-safety-gate p,
+.prototype-safety-banner span {
+  color: rgba(245, 243, 237, .72);
+  line-height: 1.65;
+}
+
+.prototype-safety-gate__detail {
+  margin-top: 14px;
+  font-size: 13px;
+}
+
+.prototype-safety-gate button {
+  width: 100%;
+  min-height: 52px;
+  margin-top: 20px;
+  padding: 13px 18px;
+  border: 1px solid rgba(245, 243, 237, .28);
+  background: #f1eee6;
+  color: #060606;
+  cursor: pointer;
+}
+
+.prototype-safety-gate button:focus-visible {
+  outline: 2px solid #d5a44d;
+  outline-offset: 3px;
+}
+
+.prototype-safety-banner {
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  border-left: 2px solid rgba(213, 164, 77, .75);
+  background: rgba(213, 164, 77, .06);
+}
+
+.prototype-safety-banner strong {
+  margin-bottom: 4px;
+}
+
+.prototype-safety-banner span {
+  display: block;
+  font-size: 12px;
+}
+
+.conversation-pane[data-prototype-locked="true"] {
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prototype-safety-gate { backdrop-filter: none; }
+}
