@@ -1,8 +1,8 @@
 import { test, expect, devices } from '@playwright/test';
 
 const profiles = [
-  ['iPhone 14', devices['iPhone 14']],
-  ['Pixel 7', devices['Pixel 7']],
+  ['iPhone 14 / WebKit', { ...devices['iPhone 14'], browserName: 'webkit' }],
+  ['Pixel 7 / Chromium', { ...devices['Pixel 7'], browserName: 'chromium' }],
 ];
 
 const routes = ['home', 'discovery', 'cockpit', 'client'];
@@ -55,7 +55,6 @@ for (const [name, descriptor] of profiles) {
     test('Cherry OS keeps exactly one judgment page active and readable', async ({ page }) => {
       await page.goto('http://127.0.0.1:4173/#/cockpit');
 
-      const deck = page.locator('.judgment-deck');
       const cards = page.locator('.judgment-card');
       const active = page.locator('.judgment-card.is-active');
       await expect(cards).toHaveCount(3);
