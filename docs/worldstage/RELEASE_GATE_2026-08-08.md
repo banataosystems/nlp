@@ -5,7 +5,8 @@
 **Latest verified product-code head:** `be41775eb6bae9c7e1d569ee6b2fa58d382d77d1`  
 **Verification workflow:** `31330426696` (run #113)  
 **Result:** PASS  
-**Current production:** baseline redeploy `dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1` — **not mobile-v2**
+**Current production:** baseline redeploy `dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1` — **not mobile-v2**  
+**Git → Vercel preview binding:** **PROVEN**
 
 ## Passed automated gates on product-code head `be41775...`
 
@@ -39,6 +40,46 @@ The 390px Cherry OS evidence was manually inspected after automated verification
 
 This is browser-evidence review, not owner approval and not physical Android/iOS device approval.
 
+## Git → Vercel preview provenance — SATISFIED
+
+Exact verified preview example:
+
+- Vercel deployment: `dpl_2VtuQnr9JV7hZuioNALtpXg3esBX`
+- deployment state: `READY`
+- source: `git`
+- GitHub org/repo: `banataosystems/nlp`
+- branch: `redesign/mobile-first-v2`
+- PR: `1`
+- exact commit: `80d0e1e28de421c0c52586b830ba205e599c9785`
+- branch alias: `cherrypua-git-redesign-mobile-first-v2-mbanatao-dc676069.vercel.app`
+
+Vercel build logs explicitly record:
+
+`Cloning github.com/banataosystems/nlp (Branch: redesign/mobile-first-v2, Commit: 80d0e1e)`
+
+followed by Vercel CLI `58.1.0`, successful build, and successful deployment.
+
+Multiple consecutive branch pushes produced READY previews with exact Git SHA metadata, so this is repeatable binding rather than a one-off deployment.
+
+The preview is protected by Vercel Authentication. Protection remains enabled.
+
+See `docs/worldstage/GIT_VERCEL_BINDING_EVIDENCE_2026-08-10.md`.
+
+## Manual traceable release path — IMPLEMENTED, NOT RUN
+
+`.github/workflows/vercel-traceable-release.yml` now provides a manual release path that:
+
+1. checks out an exact requested ref;
+2. records source commit/tree;
+3. reruns all release/mobile/privacy/visual tests;
+4. fails if `VERCEL_TOKEN` is absent;
+5. requires the exact literal `DEPLOY_CHERRY_PRODUCTION` for production;
+6. builds and deploys prebuilt Vercel output;
+7. uses authenticated `vercel curl` to smoke protected previews;
+8. writes a release provenance artifact.
+
+This workflow has not been dispatched during this work session.
+
 ## Current production provenance
 
 At 2026-08-10 03:16:32 Asia/Manila, Vercel created production deployment:
@@ -57,7 +98,7 @@ See `docs/worldstage/PRODUCTION_REDEPLOY_EVIDENCE_2026-08-10.md`.
 
 ## Branch/base reconciliation
 
-GitHub currently reports this branch as ahead of `main` and one historical commit behind. The only missing-main-history commit added `PROJECT_CUSTOM_INSTRUCTION.md`. The file's Git blob SHA is identical on both branches:
+GitHub reports this branch as ahead of `main` and one historical commit behind. The only missing-main-history commit added `PROJECT_CUSTOM_INSTRUCTION.md`. The file's Git blob SHA is identical on both branches:
 
 `542df042d12344e48cd43c1b05f0cc645e125a38`
 
@@ -66,28 +107,29 @@ Therefore there is no missing instruction content. Do not create a synthetic mer
 ## Not yet satisfied
 
 - Cherry/WorldStage owner validation of real business terminology, workflow, roles and judgment boundaries;
-- real-device visual acceptance of v2;
+- real-device visual acceptance of an exact mobile-v2 preview;
 - Android/iOS keyboard and on-device walkthrough;
 - owner-approved Cherry media;
 - owner-approved canonical public content and client rights/evidence;
 - secure server-side Discovery intake for confidential material;
 - real authentication / authorization / source connectors for Cherry OS and Transformation Record;
 - Pandora Memory synchronization or explicit temporary governance exception;
-- proven automatic Git → Vercel connection or another exact source-to-deployment release mechanism;
-- traceable v2 preview/production deployment;
-- v2 production smoke, rollback exercise, and real-phone post-deploy verification.
+- mobile-v2 production promotion;
+- exact production deployment proof for mobile-v2;
+- mobile-v2 production smoke, rollback exercise, and real-phone post-deploy verification.
 
 ## Promotion rule
 
-Do **not** merge or replace `https://cherrypua.vercel.app` solely because CI is green. Promotion requires:
+Do **not** merge or replace `https://cherrypua.vercel.app` solely because CI or preview deployment is green. Promotion requires:
 
 1. owner/business-truth gate where required;
 2. exact candidate source identified;
-3. real-device walkthrough of that exact source;
+3. real-device walkthrough of the exact protected preview;
 4. content/privacy/security gates satisfied;
-5. traceable source → deployment provenance;
-6. recorded rollback target and procedure;
-7. post-deploy production + real-phone verification.
+5. explicit production authorization;
+6. traceable source → production deployment provenance;
+7. recorded rollback target and procedure;
+8. post-deploy production + real-phone verification.
 
 ## Rollback
 
