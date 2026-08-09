@@ -18,7 +18,8 @@ The current production deployment is a Vercel **redeploy of the original baselin
 - Branch: `redesign/mobile-first-v2`
 - PR: #1 — WorldStage mobile-first recovery v2
 - Exact device-tested source: `045f79b4ce6bbe291475c52ec0c1611d7329b5b5`
-- Exact Git-linked preview for that source: `dpl_7VU6eskkiBT96ubukHoqckAHysAW`
+- Exact Git-linked preview for that tested source: `dpl_7VU6eskkiBT96ubukHoqckAHysAW`
+- Subsequent branch commits are documentation-only evidence updates unless a newer test record says otherwise.
 - Production promotion: **not performed**
 
 ## Signature surfaces
