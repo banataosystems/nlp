@@ -31,7 +31,7 @@ env:
 jobs:
   release:
     runs-on: ubuntu-latest
-    timeout-minutes: 28
+    timeout-minutes: 30
     steps:
       - name: Validate release intent
         shell: bash
@@ -80,8 +80,8 @@ jobs:
       - name: Install project dependencies
         run: npm install --no-audit --no-fund
 
-      - name: Install Playwright Chromium
-        run: npx playwright install --with-deps chromium
+      - name: Install Playwright Chromium and WebKit
+        run: npx playwright install --with-deps chromium webkit
 
       - name: Start static test server
         run: npx http-server . -p 4173 -c-1 > /tmp/worldstage-http.log 2>&1 &
@@ -92,7 +92,7 @@ jobs:
       - name: Run six-width mobile contract
         run: npm run test:mobile
 
-      - name: Run iPhone and Pixel device-class contracts
+      - name: Run iPhone WebKit and Pixel Chromium device-class contracts
         run: npm run test:devices
 
       - name: Run Discovery contract
@@ -228,6 +228,7 @@ jobs:
           workflow_run_id=$GITHUB_RUN_ID
           workflow_run_attempt=$GITHUB_RUN_ATTEMPT
           EOF
+          cat artifacts/release/revenance.txt 2>/dev/null || true
           cat artifacts/release/release-provenance.txt >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload release provenance
