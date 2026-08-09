@@ -46,6 +46,8 @@ Current Phase 1 evidence and design drafts:
 - `docs/worldstage/OPERATING_DATA_MODEL_DRAFT_2026-08-10.md`
 - `docs/worldstage/DECISION_AUTHORITY_DRAFT_2026-08-10.md`
 - `docs/worldstage/CHERRY_OWNER_VALIDATION_PACKET.md`
+- `docs/worldstage/OWNER_VALIDATION_CAPTURE_2026-08-10.md`
+- `docs/worldstage/PHASE1_OWNER_READY_PACKAGE_2026-08-10.md`
 
 These reduce the owner-validation burden but do not replace owner confirmation.
 
@@ -79,17 +81,7 @@ These discrepancies must remain unresolved until owner confirmation; none should
 
 ### P1.1 — Vocabulary validation
 
-Use the public truth map as the starting draft and ask Cherry/WorldStage to confirm, rename or reject candidate terms including:
-
-- Discovery Session / FGD / goal-setting / pre-training alignment;
-- current state / pain points;
-- ambition / desired future state;
-- intervention / boot camp / workshop / keynote / rally;
-- Energineer / Facilitator / Trainer / Speaker;
-- Fire University;
-- FIRE / Shock & Awe / Fire Impact Learning Technology;
-- analytics / enduring data / evidence;
-- post-training alignment / sustainment.
+Use the public truth map as the starting draft and ask Cherry/WorldStage to confirm, rename or reject candidate terms including Discovery Session / FGD / goal-setting / pre-training alignment, current state / pain points, ambition / desired future state, intervention / boot camp / workshop / keynote / rally, Energineer / Facilitator / Trainer / Speaker, Fire University, FIRE / Shock & Awe / Fire Impact Learning Technology, analytics / enduring data / evidence, and post-training alignment / sustainment.
 
 **Proof:** owner-approved vocabulary map.
 
@@ -105,22 +97,9 @@ Record which person, file, message thread, calendar, spreadsheet, deck, form, or
 
 ### P1.3 — Cherry judgment boundary
 
-The first conservative draft now exists in:
+The first conservative draft exists in `docs/worldstage/DECISION_AUTHORITY_DRAFT_2026-08-10.md`. It separates likely judgment-sensitive decisions from candidate routine operations and fails closed when authority/source/privacy/rights/commercial context is unknown.
 
-`docs/worldstage/DECISION_AUTHORITY_DRAFT_2026-08-10.md`
-
-It separates likely judgment-sensitive decisions from candidate routine operations and fails closed when authority/source/privacy/rights/commercial context is unknown.
-
-Owner validation must confirm:
-
-- decisions truly requiring Cherry personally;
-- delegated roles and limits;
-- relationship ownership;
-- commercial exception authority;
-- participant/sponsor visibility decisions;
-- public/client claim approval;
-- what the system may do without interruption;
-- what must always require explicit human confirmation.
+Owner validation must confirm decisions truly requiring Cherry personally, delegated roles and limits, relationship ownership, commercial exception authority, participant/sponsor visibility decisions, public/client claim approval, what the system may do without interruption, and what must always require explicit human confirmation.
 
 **Proof:** owner-approved decision-authority matrix.
 
@@ -144,21 +123,7 @@ The operating-data-model draft already requires every private object to be evalu
 
 Public evidence proves that website discovery/contact and event registration/order surfaces exist, but it does **not** prove they are authoritative systems of record.
 
-Owner validation must identify the real systems for:
-
-- email;
-- calendar;
-- Drive/docs/sheets;
-- CRM/contact history;
-- proposals/contracts;
-- accounting/invoicing;
-- ticketing/event registration;
-- payment/reconciliation;
-- messaging;
-- participant forms/surveys;
-- LMS / Fire University;
-- website CMS;
-- analytics.
+Owner validation must identify the real systems for email, calendar, Drive/docs/sheets, CRM/contact history, proposals/contracts, accounting/invoicing, ticketing/event registration, payment/reconciliation, messaging, participant forms/surveys, LMS / Fire University, website CMS, and analytics.
 
 For each, decide **keep / wrap / replace / no integration** based on actual workflow.
 
@@ -174,9 +139,7 @@ Why it remains the default: current public evidence shows that WorldStage explic
 
 ### P1.7 — Validate the operating data model
 
-A conservative schema hypothesis now exists in:
-
-`docs/worldstage/OPERATING_DATA_MODEL_DRAFT_2026-08-10.md`
+A conservative schema hypothesis exists in `docs/worldstage/OPERATING_DATA_MODEL_DRAFT_2026-08-10.md`.
 
 Primary design rule:
 
@@ -186,26 +149,40 @@ Candidate aggregate:
 
 `Organization → Transformation → Discovery → Insights → Solution Design → Proposal/Commercial Engagement → Intervention → Evidence → Debrief → Sustainment → Renewal/Expansion`
 
-Cross-cutting objects include:
-
-- Person / relationship contact;
-- Commitment / promise;
-- Source reference;
-- Decision / approval.
+Cross-cutting objects include Person / relationship contact, Commitment / promise, Source reference, and Decision / approval.
 
 The draft explicitly separates client-supplied statements from WorldStage interpretation and requires source provenance for consequential insights.
 
-Owner validation must answer the model-changing questions, especially:
-
-- what the team actually thinks of as “the client job”;
-- when a transformation formally begins;
-- how proposals relate to transformations;
-- actual participant/sponsor privacy boundaries;
-- canonical systems for contacts, proposals, schedules, payments and follow-ups;
-- Cherry-only decisions;
-- what evidence qualifies as “worked.”
+Owner validation must answer the model-changing questions, especially what the team actually thinks of as “the client job,” when a transformation formally begins, how proposals relate to transformations, actual participant/sponsor privacy boundaries, canonical systems for contacts/proposals/schedules/payments/follow-ups, Cherry-only decisions, and what evidence qualifies as “worked.”
 
 **Proof:** owner-approved logical data model before production database schema activation.
+
+## Phase 2 — Secure intake/security planning
+
+**State:** architecture documented; not implemented; not owner/security approved.
+
+The following non-deployed drafts now exist:
+
+- `docs/worldstage/PHASE2_SECURE_INTAKE_SECURITY_BLUEPRINT_2026-08-10.md`
+- `docs/worldstage/PHASE2_RLS_RBAC_VERIFICATION_MATRIX_2026-08-10.md`
+- `docs/worldstage/PHASE2_SECURITY_RELEASE_CHECKLIST_2026-08-10.md`
+
+They define a conservative target for secure intake, authentication, transformation-scoped memberships, server-side authorization, RLS, audit events, participant/sponsor separation, AI/analytics boundaries, retention/deletion placeholders, incident response, backup/restore, rollback and release provenance.
+
+These documents are **planning artifacts only**. No database, auth provider, secrets, RLS policies, production routes or confidential intake endpoints have been created by this Phase 2 drafting work.
+
+### Phase 2 fail-closed rules
+
+Until owner/security validation:
+
+- unknown permission = deny;
+- unknown retention duration = do not invent one;
+- sponsor access does not imply participant-private access;
+- security-admin capability does not imply business-content access or Cherry decision authority;
+- AI/system suggestions cannot approve, publish, send relationship-sensitive communications, change permissions, delete restricted data, or authorize releases;
+- privileged service credentials never reach the browser;
+- public website cannot directly write privileged business tables;
+- confidential intake cannot be called production-ready from RLS tests alone.
 
 ## Phase 2 entry gate
 
@@ -218,8 +195,10 @@ Do not activate secure real-data intake until all are true:
 - systems of record inventoried;
 - first production workflow selected;
 - target data environment verified;
-- authentication, RLS/RBAC and audit requirements defined;
-- rollback/test plan defined;
+- authentication, RLS/RBAC and audit requirements approved;
+- rollback/test/incident plan approved;
+- backup/restore strategy verified;
+- physical-device validation completed;
 - Pandora Memory canonical synchronization restored or an explicit governance exception is recorded.
 
 ## Current blockers
@@ -227,6 +206,9 @@ Do not activate secure real-data intake until all are true:
 - Owner workflow truth has not yet been validated.
 - Owner approval of the logical data model is open.
 - Owner approval of the decision-authority matrix is open.
+- Data-retention/deletion rules are not owner/legal/security approved.
+- Actual internal roles and delegated authority are not approved.
+- Actual systems of record are not confirmed.
 - Physical-device owner visual approval remains open.
 - Authentic Cherry media/content approval remains open.
 - Secure server-side Discovery intake is not implemented.
@@ -243,6 +225,10 @@ Do not activate secure real-data intake until all are true:
 - Public-business vocabulary/process research sufficient for a correction-based owner interview.
 - Conservative operating data model draft.
 - Conservative decision-authority draft.
+- Owner-ready validation capture package.
+- Phase 2 secure-intake/security architecture draft.
+- Phase 2 RLS/RBAC verification matrix draft.
+- Phase 2 security/release/incident checklist draft.
 
 ## Required proof discipline
 
@@ -250,4 +236,4 @@ Keep these states separate:
 
 **documented → implemented → tested → preview-deployed → production-deployed → production-verified**
 
-Browser/device emulation is not physical-device approval. A READY preview is not production. Public-source process evidence is not owner validation. A draft data model is not a production schema. A draft authority matrix is not an authorization policy. No confidential/private workflow becomes production truth until the owner and authorized team confirm it.
+Browser/device emulation is not physical-device approval. A READY preview is not production. Public-source process evidence is not owner validation. A draft data model is not a production schema. A draft authority matrix is not an authorization policy. A security blueprint is not security implementation. RLS policies without negative tests are not verified. No confidential/private workflow becomes production truth until the owner and authorized team confirm it.
