@@ -10,7 +10,7 @@
     "test:phase3": "playwright test tests/discovery-phase3.spec.mjs",
     "test:phase4": "playwright test tests/cockpit-phase4.spec.mjs",
     "test:phase5": "playwright test tests/record-phase5.spec.mjs",
-    "test:release": "playwright test tests/release-contract.spec.mjs",
+    "test:release": "playwright test tests/release-contract.spec.mjs tests/phase2-sql-draft.spec.mjs",
     "test:visual": "playwright test tests/mobile-visual-evidence.spec.mjs"
   },
   "devDependencies": {
