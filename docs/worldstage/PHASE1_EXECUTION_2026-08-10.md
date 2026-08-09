@@ -7,47 +7,86 @@
 **PR:** #1 — WorldStage mobile-first recovery v2  
 **Production surface:** `https://cherrypua.vercel.app`
 
-## Reconciliation decision
-
-The mobile-first recovery branch is the active implementation line because it contains materially newer verified work than `main`: phone-first interaction design, production-shaped Discovery, Cherry OS provenance, Transformation Record evidence governance, security/privacy hardening, automated mobile contracts, and visual-evidence generation.
-
-The earlier `main` production deployment remains the preserved production baseline and rollback reference. It must not be confused with the mobile-v2 branch: Vercel metadata does not prove that the mobile-v2 PR head is deployed.
-
-A separate Phase 0→1 draft PR (#3) was created from `main` before this newer branch evidence was reconciled. Its useful governance content is being migrated here; PR #3 should be treated as superseded after migration is verified.
-
 ## Current lifecycle truth
 
-### Preserved production baseline
+The mobile-first recovery branch is the active implementation line. It contains the phone-first interaction design, production-shaped non-confidential Discovery prototype, Cherry OS provenance surfaces, Transformation Record evidence governance, security/privacy hardening, six-width mobile contracts, iPhone/WebKit and Pixel/Chromium device-class contracts, visual evidence, and traceable Git-linked Vercel previews.
 
-- Existing production deployment: previously recorded as `dpl_DsM6JwHMZbmiuzSwXNswvhqwhF5s`.
-- Production availability was rechecked on 2026-08-10 before this reconciliation.
-- Production is not evidence that mobile-v2 is released.
+Current production remains the preserved baseline artifact and must not be confused with mobile-v2. Mobile-v2 has **not** been promoted to production.
 
-### Mobile-v2 implementation branch
+## Verified technical state
 
-Before the 2026-08-10 privacy-boundary change, PR #1 recorded an exact-head automated PASS at commit `09816a5ddd6c9bd374e028e635def1ba622c9d6e`, workflow run `31265239647` (#87), including six-width mobile contracts, Discovery, Cherry OS, Transformation Record, release security/privacy, and visual evidence.
+- Six-width mobile contract: verified.
+- iPhone 14-class / WebKit device contract: verified by browser emulation.
+- Pixel 7-class / Chromium device contract: verified by browser emulation.
+- Discovery Phase 3 contract: verified.
+- Cherry OS Phase 4 contract: verified.
+- Transformation Record Phase 5 contract: verified.
+- Security/privacy release contract: verified.
+- Git → Vercel preview binding: proven with exact repository/branch/SHA metadata.
+- Physical-device owner approval: not yet verified.
+- Mobile-v2 production deployment: not performed.
 
-The branch has since been advanced with an explicit fail-closed non-confidential Discovery boundary. The new head must receive fresh exact-head CI proof before this addition can be called tested.
+## Discovery safety boundary
 
-## 2026-08-10 safety hardening
+The Discovery experience has a fail-closed prototype privacy boundary before narrative capture:
 
-The Discovery experience now has a prototype privacy boundary before narrative capture:
-
-- Discovery interaction is locked until the visitor acknowledges the non-confidential boundary.
-- Visitors are instructed to keep organization context generalized and not enter confidential client/participant material, credentials, payment data, health information, legal-privileged material, or other sensitive information.
-- The later contact handoff may accept the visitor's own business contact details locally on-device, consistent with the existing user-controlled handoff design.
-- Nothing in the new safety layer adds network submission, analytics, AI, CRM, or database behavior.
-- The existing secure-server-side-intake gate remains unchanged: real confidential intake is not implemented.
+- interaction is locked until the visitor acknowledges the non-confidential boundary;
+- visitors are instructed not to enter confidential client/participant material, credentials, payment data, health information, legal-privileged material, or other sensitive information;
+- contact handoff may accept the visitor's own business contact details locally on-device;
+- no automatic network submission, analytics, AI, CRM, or database behavior is introduced;
+- secure server-side confidential intake remains unimplemented.
 
 ## Phase 1 — Business truth and workflow validation
 
-**State:** prepared, not owner-validated.
+**State:** public truth mapped; owner validation still required.
 
-The mobile-v2 implementation must not be mistaken for proof of WorldStage's actual internal workflow. The next business phase is to validate the operating truth with Cherry/WorldStage before activating secure real-data integrations.
+Public research is now captured in:
+
+`docs/worldstage/PUBLIC_BUSINESS_TRUTH_MAP_2026-08-10.md`
+
+This reduces the owner-validation burden but does not replace owner confirmation.
+
+### Public process now supported by current WorldStage evidence
+
+Current public material supports this operating rhythm:
+
+`Current state / pain points → Discovery / FGD / goal-setting alignment → Intervention / boot camp → Post-intervention analytics → Next steps / sustainment`
+
+Public WorldStage pages also consistently support:
+
+- company-specific, non-cookie-cutter interventions;
+- Team Building & Culture Development;
+- Learning & Development / Fire University;
+- Keynotes & Motivation;
+- FIRE / Shock & Awe / Fire Impact Learning Technology vocabulary;
+- evidence/analytics and post-intervention follow-through;
+- safe learning environments;
+- head, heart and gut engagement.
+
+These are **public candidate truths**, not proof of the private internal sales/operations workflow.
+
+### Public discrepancies requiring owner correction
+
+1. Main homepage says WorldStage has been passing its fire since **2012**.
+2. Current team page says since **2014**.
+3. Current and legacy team pages use overlapping but different role titles/personnel language.
+4. Historical event pages contain inconsistent event date/product records.
+
+These discrepancies must remain unresolved until owner confirmation; none should be hard-coded as canonical truth.
 
 ### P1.1 — Vocabulary validation
 
-Confirm Cherry/WorldStage's own terms for prospect/relationship/client, discovery/FGD/twinkle conversation, transformation objective, design/proposal/intervention, engagement families, facilitator/Energineer/program lead, evidence/outcome/sustainment/renewal.
+Use the public truth map as the starting draft and ask Cherry/WorldStage to confirm, rename or reject candidate terms including:
+
+- Discovery Session / FGD / goal-setting / pre-training alignment;
+- current state / pain points;
+- ambition / desired future state;
+- intervention / boot camp / workshop / keynote / rally;
+- Energineer / Facilitator / Trainer / Speaker;
+- Fire University;
+- FIRE / Shock & Awe / Fire Impact Learning Technology;
+- analytics / enduring data / evidence;
+- post-training alignment / sustainment.
 
 **Proof:** owner-approved vocabulary map.
 
@@ -55,7 +94,7 @@ Confirm Cherry/WorldStage's own terms for prospect/relationship/client, discover
 
 Trace one owner-approved representative engagement through:
 
-`First contact → discovery → design → commercial approval → preparation → delivery → evidence → client debrief → follow-up → renewal/expansion`
+`First contact → discovery/alignment → design → commercial approval → preparation → delivery → evidence/analytics → client debrief → follow-up → renewal/expansion`
 
 Record which person, file, message thread, calendar, spreadsheet, deck, form, or system owns each step.
 
@@ -63,13 +102,20 @@ Record which person, file, message thread, calendar, spreadsheet, deck, form, or
 
 ### P1.3 — Cherry judgment boundary
 
-Separate decisions that require Cherry from decisions that should be delegated or automated, including relationship-sensitive follow-up, creative/intervention judgment, commercial exceptions, program risk, public/client claim approval, and keynote/media commitments.
+Separate decisions that require Cherry from decisions that should be delegated or automated, including:
+
+- relationship-sensitive follow-up;
+- creative/intervention judgment;
+- commercial exceptions;
+- program risk;
+- public/client claim approval;
+- keynote/media commitments.
 
 **Proof:** decision-authority matrix.
 
 ### P1.4 — Data sensitivity and retention
 
-Validate at least these classes:
+Validate at least:
 
 1. public;
 2. internal business;
@@ -83,7 +129,25 @@ Define what must never enter public repositories, analytics, screenshots, semant
 
 ### P1.5 — Systems-of-record inventory
 
-Identify current email, calendar, Drive/docs/sheets, CRM, accounting/invoicing, ticketing, payment/reconciliation, messaging, participant forms/surveys, LMS, website CMS, and analytics systems. For each, decide keep / wrap / replace / no integration based on actual workflow.
+Public evidence proves that website discovery/contact and event registration/order surfaces exist, but it does **not** prove they are authoritative systems of record.
+
+Owner validation must identify the real systems for:
+
+- email;
+- calendar;
+- Drive/docs/sheets;
+- CRM/contact history;
+- proposals/contracts;
+- accounting/invoicing;
+- ticketing/event registration;
+- payment/reconciliation;
+- messaging;
+- participant forms/surveys;
+- LMS / Fire University;
+- website CMS;
+- analytics.
+
+For each, decide **keep / wrap / replace / no integration** based on actual workflow.
 
 **Proof:** owner-confirmed provider inventory.
 
@@ -93,7 +157,7 @@ Default recommendation pending owner validation:
 
 **Secure Discovery Intake → Human Review → Cherry Judgment Queue**
 
-This is not yet an owner-approved production decision.
+Why it remains the default: current public evidence shows that WorldStage explicitly starts with understanding current state and ambition before designing an intervention. However, this remains a recommendation—not an owner-approved production decision.
 
 ## Phase 2 entry gate
 
@@ -112,18 +176,24 @@ Do not activate secure real-data intake until all are true:
 ## Current blockers
 
 - Owner workflow truth has not yet been validated.
+- Physical-device owner visual approval remains open.
 - Authentic Cherry media/content approval remains open.
 - Secure server-side Discovery intake is not implemented.
 - Real authentication/authorization/source connectors are not active.
-- Automatic Git → Vercel source binding remains unproven.
 - Mobile-v2 has not been promoted to production.
-- Real-device owner visual approval remains open.
-- Pandora Memory canonical synchronization is unavailable in the current conversation; the previously observed MCP path was blocked by Vercel protection.
+- Pandora Memory canonical synchronization is unavailable in the current conversation/tool state.
+
+## Gates no longer blocked
+
+- Six-width mobile browser verification.
+- iPhone/WebKit device-class browser verification.
+- Pixel/Chromium device-class browser verification.
+- Git → Vercel preview source binding and exact-SHA preview provenance.
 
 ## Required proof discipline
 
 Keep these states separate:
 
-**documented → implemented → tested → deployed → production-verified**
+**documented → implemented → tested → preview-deployed → production-deployed → production-verified**
 
-A green CI run is automated proof for the tested source head, not owner visual approval, deployment proof, business-workflow validation, or production verification.
+Browser/device emulation is not physical-device approval. A READY preview is not production. Public-source process evidence is not owner validation. No confidential/private workflow becomes production truth until the owner and authorized team confirm it.
