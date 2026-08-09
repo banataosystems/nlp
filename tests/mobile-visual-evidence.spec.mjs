@@ -22,6 +22,15 @@ test('capture exact-branch mobile visual evidence and PDF review sheet', async (
     await expect(page.locator('#main')).toBeVisible();
 
     if (route === 'discovery') {
+      const gate = page.locator('[data-prototype-safety-gate]');
+      await expect(gate).toBeVisible();
+      const boundaryFile = path.join(outDir, 'discovery-privacy-boundary-390x844.png');
+      await page.screenshot({ path: boundaryFile, fullPage: true, animations: 'disabled' });
+      captures.push({ title: 'Discovery privacy boundary', file: boundaryFile });
+
+      await gate.getByRole('button', { name: /continue with non-confidential Discovery/i }).click();
+      await expect(gate).toHaveCount(0);
+      await expect(page.locator('[data-prototype-safety-banner]')).toBeVisible();
       await expect(page.locator('[data-brief-toggle]')).toBeVisible();
     }
 
