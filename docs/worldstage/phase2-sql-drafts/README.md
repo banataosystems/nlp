@@ -17,6 +17,20 @@ They intentionally live under `docs/worldstage/phase2-sql-drafts/`, not under `s
 1. `001_minimum_schema.sql` — minimum logical slice: organizations, people, transformations, memberships, intakes, intake answers, discovery, sources, decisions, source links, audit events.
 2. `002_rls_policy_skeleton.sql` — Supabase-compatible policy helpers and default-deny RLS skeletons. Candidate role names are placeholders.
 3. `003_negative_authorization_fixtures.sql` — non-executable test-case catalog expressed as SQL comments/queries for later staging conversion.
+4. `004_runtime_alignment_constraints.sql` — design correction aligning the future database with the tested runtime: opaque text receipts and actor-scoped idempotency instead of globally unique client keys.
+
+## Runtime-alignment rule
+
+If these drafts are ever converted into executable staging migrations, the final effective schema must preserve the runtime security contract rather than blindly copying the earliest draft definition.
+
+In particular:
+
+- public receipt codes are server-generated opaque text values;
+- idempotency keys are unique only within a server-derived authenticated/bound actor scope;
+- the browser cannot choose the actor scope;
+- same key + same actor + same body is idempotent;
+- same key + same actor + different body is a conflict;
+- the same client-generated key used by a different actor must not expose the first actor's receipt or record.
 
 ## Minimum live-flow hypothesis
 
