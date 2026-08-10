@@ -1,6 +1,6 @@
 /* WorldStage / Cherry — read-only recap for the completed 3-minute synthetic owner review.
    This module reads only allowlisted browser-local demo values and performs navigation only.
-   It does not persist recap/session-delta state, write to providers, infer urgency/value, or grant authority. */
+   It does not persist recap/session-delta/recheck state, write to providers, infer urgency/value, or grant authority. */
 
 const CHERRY_REVIEW_RECAP_DAILY_KEY = 'worldstage.cherry.daily.demo.v1';
 const CHERRY_REVIEW_RECAP_RATIONALE_KEY = 'worldstage.cherry.daily.rationale.demo.v1';
@@ -21,6 +21,7 @@ const CHERRY_REVIEW_RECAP_RATIONALE_LABELS = Object.freeze({
 });
 
 let cherryReviewRecapSessionStart = null;
+let cherryReviewRecapRecheck = { ids: [], index: -1 };
 
 function cherryReviewRecapSafeJson(key) {
   try {
@@ -57,6 +58,7 @@ function cherryReviewRecapCaptureSessionStart() {
     decisionState: row.decisionState,
     rationaleValue: row.rationaleValue,
   }));
+  cherryReviewRecapRecheck = { ids: [], index: -1 };
 }
 
 function cherryReviewRecapSessionDelta(rows) {
@@ -78,6 +80,18 @@ function cherryReviewRecapSessionDelta(rows) {
       label: changed ? 'Changed this review' : 'Stayed the same',
     };
   });
+}
+
+function cherryReviewRecapCounts(delta) {
+  const safeDelta = Array.isArray(delta) ? delta : [];
+  const changedIds = CHERRY_REVIEW_RECAP_IDS.filter((id) => safeDelta.some((row) => row.id === id && row.status === 'changed'));
+  const sameIds = CHERRY_REVIEW_RECAP_IDS.filter((id) => safeDelta.some((row) => row.id === id && row.status === 'same'));
+  return {
+    changedIds,
+    changed: changedIds.length,
+    same: sameIds.length,
+    unavailable: CHERRY_REVIEW_RECAP_IDS.length - changedIds.length - sameIds.length,
+  };
 }
 
 function cherryReviewRecapFlowState() {
@@ -132,11 +146,19 @@ function cherryReviewRecapSignature(rows, next, delta) {
 
 function cherryReviewRecapMarkup(rows, next, delta, signature) {
   const deltaById = Object.fromEntries((delta || []).map((row) => [row.id, row]));
+  const counts = cherryReviewRecapCounts(delta);
+  const countLabel = counts.unavailable > 0
+    ? `Changed: ${counts.changed} · Same: ${counts.same} · Comparison unavailable: ${counts.unavailable}`
+    : `Changed: ${counts.changed} · Same: ${counts.same}`;
+  const recheckButton = counts.changed > 0
+    ? `<button type="button" data-cherry-owner-review-recap-recheck>Recheck changed (${counts.changed}) →</button>`
+    : '';
   return `<section class="cherry-owner-summary__next cherry-owner-review-recap" data-cherry-owner-review-recap data-cherry-owner-review-recap-signature="${signature}" aria-label="Completed synthetic owner review recap">
     <div>
       <span>OWNER REVIEW RECAP · READ ONLY · SYNTHETIC</span>
       <strong>Three final local-demo judgments, plus what changed this review.</strong>
       <p>This recap only reflects the three allowlisted browser-local demo states at this moment. Change means only that the fixed state or fixed reason differs from this review session's in-memory starting snapshot. The snapshot is discarded on restart or navigation.</p>
+      <p data-cherry-owner-review-recap-counts>${countLabel}</p>
       <div class="cherry-owner-review-recap__list" role="list">
         ${rows.map((row) => {
           const change = deltaById[row.id] || { status: 'unavailable', label: 'Session comparison unavailable' };
@@ -148,9 +170,13 @@ function cherryReviewRecapMarkup(rows, next, delta, signature) {
         </article>`;
         }).join('')}
       </div>
+      <p data-cherry-owner-review-recap-recheck-status aria-live="polite">${counts.changed > 0 ? 'Changed-item recheck is navigation only and does not alter the completed review.' : 'No changed items to recheck in this review.'}</p>
       <p data-cherry-owner-review-recap-next>${next.hint}</p>
     </div>
-    <button type="button" data-cherry-owner-review-recap-route="${next.route}">${next.label}</button>
+    <div class="cherry-owner-review-recap__actions">
+      ${recheckButton}
+      <button type="button" data-cherry-owner-review-recap-route="${next.route}">${next.label}</button>
+    </div>
   </section>`;
 }
 
@@ -183,21 +209,73 @@ function bindCherryReviewRecapRoute(recap) {
   });
 }
 
+function cherryReviewRecapFocusChanged(id) {
+  if (!CHERRY_REVIEW_RECAP_IDS.includes(id)) return false;
+  const rows = cherryReviewRecapSnapshot();
+  const row = rows.find((candidate) => candidate.id === id);
+  if (!row) return false;
+
+  const controls = document.querySelector(`[data-cherry-decision-state="${id}"]`);
+  const card = controls?.closest('.judgment-card');
+  const button = controls?.querySelector(`[data-cherry-daily-set="${row.decisionState}"]`)
+    || controls?.querySelector('[data-cherry-daily-set]');
+  if (!(card instanceof HTMLElement) || !(button instanceof HTMLButtonElement)) return false;
+
+  document.querySelectorAll('[data-cherry-owner-review-recheck-target]')
+    .forEach((node) => node.removeAttribute('data-cherry-owner-review-recheck-target'));
+  card.dataset.cherryOwnerReviewRecheckTarget = id;
+  card.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  requestAnimationFrame(() => button.focus({ preventScroll: true }));
+  window.setTimeout(() => {
+    if (card.dataset.cherryOwnerReviewRecheckTarget === id) card.removeAttribute('data-cherry-owner-review-recheck-target');
+  }, 1600);
+  return true;
+}
+
+function bindCherryReviewRecapRecheck(recap, changedIds) {
+  const button = recap.querySelector('[data-cherry-owner-review-recap-recheck]');
+  const status = recap.querySelector('[data-cherry-owner-review-recap-recheck-status]');
+  if (!(button instanceof HTMLButtonElement) || !(status instanceof HTMLElement) || changedIds.length === 0) return;
+
+  button.addEventListener('click', () => {
+    if (cherryReviewRecapRecheck.ids.join('|') !== changedIds.join('|')) {
+      cherryReviewRecapRecheck = { ids: [...changedIds], index: -1 };
+    }
+    cherryReviewRecapRecheck.index = (cherryReviewRecapRecheck.index + 1) % cherryReviewRecapRecheck.ids.length;
+    const id = cherryReviewRecapRecheck.ids[cherryReviewRecapRecheck.index];
+    if (!cherryReviewRecapFocusChanged(id)) {
+      status.textContent = 'Changed-item recheck unavailable on this view.';
+      return;
+    }
+    const position = cherryReviewRecapRecheck.index + 1;
+    status.textContent = `Rechecking ${position} of ${cherryReviewRecapRecheck.ids.length} · Item ${id}. Navigation only; the completed review is unchanged.`;
+    button.textContent = position >= cherryReviewRecapRecheck.ids.length
+      ? 'Recheck from first changed →'
+      : 'Next changed item →';
+  });
+}
+
 function enhanceCherryOwnerReviewRecap() {
   const existing = document.querySelector('[data-cherry-owner-review-recap]');
   if (cherryReviewRecapRoute() !== 'cockpit' || !cherryReviewRecapIsComplete()) {
     existing?.remove();
+    cherryReviewRecapRecheck = { ids: [], index: -1 };
     return;
   }
 
   const session = document.querySelector('[data-cherry-review-session]');
   if (!session) {
     existing?.remove();
+    cherryReviewRecapRecheck = { ids: [], index: -1 };
     return;
   }
 
   const rows = cherryReviewRecapSnapshot();
   const delta = cherryReviewRecapSessionDelta(rows);
+  const counts = cherryReviewRecapCounts(delta);
+  if (cherryReviewRecapRecheck.ids.join('|') !== counts.changedIds.join('|')) {
+    cherryReviewRecapRecheck = { ids: [...counts.changedIds], index: -1 };
+  }
   const next = cherryReviewRecapNextStep();
   const signature = cherryReviewRecapSignature(rows, next, delta);
   if (existing?.dataset.cherryOwnerReviewRecapSignature === signature) return;
@@ -208,6 +286,7 @@ function enhanceCherryOwnerReviewRecap() {
   if (!(recap instanceof HTMLElement)) return;
 
   bindCherryReviewRecapRoute(recap);
+  bindCherryReviewRecapRecheck(recap, counts.changedIds);
   if (existing) existing.replaceWith(recap);
   else session.insertAdjacentElement('afterend', recap);
 }
@@ -235,7 +314,10 @@ document.addEventListener('click', (event) => {
   if (target) scheduleCherryReviewRecapRefresh();
 });
 window.addEventListener('hashchange', () => {
-  if (cherryReviewRecapRoute() !== 'cockpit') cherryReviewRecapSessionStart = null;
+  if (cherryReviewRecapRoute() !== 'cockpit') {
+    cherryReviewRecapSessionStart = null;
+    cherryReviewRecapRecheck = { ids: [], index: -1 };
+  }
   scheduleCherryReviewRecapRefresh();
 });
 window.addEventListener('storage', scheduleCherryReviewRecapRefresh);
