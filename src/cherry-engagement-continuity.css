@@ -36,6 +36,31 @@
   line-height: 1.45;
 }
 
+.cherry-engagement-continuity__handoff {
+  display: grid;
+  gap: 3px;
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+
+.cherry-engagement-continuity__handoff > span {
+  display: block;
+  font: 500 9px/1.3 'DM Mono', monospace;
+  letter-spacing: .09em;
+  color: rgba(255,255,255,.42);
+}
+
+.cherry-engagement-continuity__handoff > p {
+  margin: 0;
+  color: rgba(255,255,255,.72);
+  font: 500 11px/1.4 'Inter', sans-serif;
+}
+
+.cherry-engagement-continuity__handoff > p + p {
+  color: #e3cb83;
+}
+
 .cherry-engagement-continuity__steps {
   display: grid;
   grid-template-columns: repeat(3, minmax(82px, 1fr));
