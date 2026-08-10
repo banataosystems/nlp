@@ -12,45 +12,44 @@
 
 The highest-value autonomous line remains Cherry-facing operating value using synthetic/local demo state while real provider/data boundaries stay fail-closed.
 
-## Latest completed product milestone — owner-review restart boundary
+## Latest completed product milestone — synthetic engagement continuity strip
 
-Cherry's completed 3-minute synthetic owner review now makes the post-recheck choice explicit without creating a new workflow or persistence layer.
+Cherry's owner summary now includes a compact phone-first continuity strip that answers one operating question: **where is the current synthetic engagement and where does Cherry resume it?**
 
-After the last changed item is revisited, the boundary:
-- recognizes only the existing fixed-format recheck progress for item IDs `01`, `02`, `03`;
-- requires both the existing local review-restart control and an allowlisted existing synthetic next-step route before the boundary is created;
-- marks the completed recap as a restart boundary without changing its completed review state;
-- relabels the existing local restart action to `Start a new 3-minute review →`;
-- keeps the existing next-step action as `Continue to existing synthetic next step →`;
-- preserves the allowlisted local-demo judgments and rationales until restart is deliberately tapped;
-- starts a fresh in-memory `0 of 3` review only after the existing restart control is deliberately tapped;
-- accepts only existing allowlisted routes `discovery`, `cockpit`, or `client` and fails closed on an unexpected route;
-- fails closed if the existing local restart control is unavailable;
-- creates no browser-storage key, backend/audit record, free-text field, task, message, score or inferred significance;
-- performs no CRM, email, calendar, messaging, database, provider, staging or production write.
+The strip:
+- derives only from the existing allowlisted `worldstage.synthetic.engagement.flow.v1` version-1 local demo state;
+- exposes exactly three fixed stages: `Discovery`, `Cherry review`, and `Transformation Record`;
+- enforces sequential state sanitization so `ownerReviewed` cannot be true before Discovery and `recordPrepared` cannot be true before Cherry review;
+- shows only fixed stage/status copy and never reads arbitrary stored fields into the UI;
+- provides one navigation-only `Resume` action into the already-existing route/action;
+- on the Cherry-review stage, keeps Cherry on the cockpit and focuses the existing synthetic `owner-review` action instead of creating a second workflow;
+- fails closed to `Discovery` for malformed or wrong-version flow state;
+- adds no browser-storage key, free-text field, score, task, message, private-source lookup, provider binding, external write, staging action or production authority.
 
 Implementation/test surfaces:
-- `src/cherry-owner-review-close.js`;
-- `tests/cherry-owner-review-close.spec.mjs`;
-- existing mandatory Phase 4 test gate.
+- `src/cherry-engagement-continuity.js`;
+- `src/cherry-engagement-continuity.css`;
+- `index.html`;
+- `tests/cherry-engagement-continuity.spec.mjs`;
+- `package.json` mandatory Phase 4 test gate.
 
 ## Proof-state separation
 
 ### Documented
 
-**Yes.** This roadmap and PR evidence record the owner-review restart boundary separately from the prior recheck-close milestone. The prior verified milestone remains preserved at exact source `ba4a5ccb01535d54780191ecdf9ebccbd2f1dfb2`, run #668 and its associated artifacts/deployments.
+**Yes.** This roadmap and PR evidence record the continuity-strip milestone separately from the prior owner-review restart-boundary milestone. The prior verified milestone remains preserved at exact source `a56033af692c3c9439334b6bddf352122c7767fc`, run #672 and its associated artifacts/deployments.
 
 ### Implemented
 
-**Yes for exact product/test source `a56033af692c3c9439334b6bddf352122c7767fc`.**
+**Yes for exact product/test source `659a193c21e8a9e6176ce3e7c80fe2f69958f60b`.**
 
-The enhancement reuses existing local restart and next-step controls rather than creating a new authority-bearing action. It does not widen persistence, data, provider or authority boundaries.
+The feature is additive to the existing owner summary and reuses the established synthetic engagement-flow state and routes. It does not widen persistence, data, provider or authority boundaries.
 
 ### Tested
 
-**Yes for exact source `a56033af692c3c9439334b6bddf352122c7767fc`.** GitHub Actions run `31433369614` / **#672 completed SUCCESS** across the complete mandatory chain.
+**Yes for exact source `659a193c21e8a9e6176ce3e7c80fe2f69958f60b`.** GitHub Actions run `31435848783` / **#674 completed SUCCESS** across the complete mandatory chain.
 
-Run #672 passed:
+Run #674 passed:
 - owner/security decision-evidence enforcement;
 - fail-closed secure-intake runtime;
 - fail-closed staging preflight;
@@ -58,38 +57,37 @@ Run #672 passed:
 - iPhone/WebKit and Pixel/Chromium device-class checks;
 - Phase 2 SQL/staging;
 - Discovery Phase 3;
-- Cherry OS Phase 4 including the restart-boundary tests;
+- Cherry OS Phase 4 including the new engagement-continuity tests;
 - Transformation Record Phase 5;
 - release/security/privacy checks;
 - visual evidence;
 - exact-head staging-readiness regeneration and evidence uploads.
 
-Focused Phase 4 coverage proves:
-- a three-changed review rechecks `01 → 02 → 03`, then exposes the explicit restart-or-continue boundary;
-- the completed review remains visible and its allowlisted local values remain unchanged while Cherry has not chosen either action;
-- deliberate restart removes the completed recap, starts a fresh `0 of 3` in-memory review, and preserves the allowlisted demo judgment/rationale values;
-- the existing synthetic next-step control remains navigation-only;
-- an injected unexpected `production` route prevents the close/restart boundary from being created;
-- removal of the existing local restart control also prevents the boundary from being created;
-- injected private-looking demo fields do not become boundary content;
+Focused continuity coverage proves:
+- default/safe state shows `Discovery` and resumes the existing Discovery route;
+- sanitized sequential state shows `Cherry review` only after Discovery and focuses the existing `owner-review` action on the cockpit;
+- owner-reviewed state shows `Transformation Record` and resumes the existing client route;
+- an impossible stored combination (`recordPrepared=true` while owner review is false) is sanitized rather than trusted;
+- wrong-version/private/authority-looking injected fields are ignored and do not become UI content;
+- exactly three fixed stage items are rendered;
 - zero POST/PUT/PATCH/DELETE requests occur;
 - the 390px phone surface remains within horizontal bounds.
 
-Run #672 artifacts:
-- staging-readiness artifact `9080096643`, digest `sha256:47e2d38b1ced873e74a6062d043f4415d3f7d8d867e6a4620a518956114df354`;
-- mobile visual artifact `9080097506`, digest `sha256:578659846eefd46d5ba6b4aa4b7e518b56881ff04777ebe4a5afec1d525d8e2c`.
+Run #674 artifacts:
+- staging-readiness artifact `9081005519`, digest `sha256:6f6600d44ab05c063990e4d1d0915218686bbded012bf5032726798c01e0683d`;
+- mobile visual artifact `9081006256`, digest `sha256:17f030bb00b06d48bef3ef17d7a70de41c43c8517d8c17d0156cc8dfa776233a`.
 
-The exact staging-readiness artifact was downloaded and inspected directly. Its internal `source_sha` exactly matches `a56033af692c3c9439334b6bddf352122c7767fc`; `readiness = BLOCKED`; confidential intake is disabled; anonymous intake denied; file uploads/private AI/private analytics disabled; production release blocked; persistence remains unselected; adapter binding false; no staging or production project IDs are bound; and D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 remain OPEN.
+The exact staging-readiness artifact was downloaded and inspected directly. Its internal `source_sha` exactly matches `659a193c21e8a9e6176ce3e7c80fe2f69958f60b`; `readiness = BLOCKED`; confidential intake is disabled; anonymous intake denied; file uploads/private AI/private analytics disabled; production release blocked; persistence remains unselected; adapter binding false; no staging or production project IDs are bound; and D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 remain OPEN.
 
 ### Preview deployed
 
-**Yes for exact tested source `a56033af692c3c9439334b6bddf352122c7767fc`.** Vercel preview `dpl_AfJ3C2SUXG6DREkakAHXKDN4a3rK` is READY, Git-sourced from exact SHA `a56033af...`, and non-production (`target: null`).
+**Yes for exact tested source `659a193c21e8a9e6176ce3e7c80fe2f69958f60b`.** Vercel preview `dpl_CFEmz7zjsNMEZmeMiNCnKmtvLLR5` is READY, Git-sourced from the exact source SHA and non-production (`target: null`).
 
 Preview READY is deployability/provenance evidence only. It is not live-staging or production proof.
 
 ### Live staging
 
-**No.** No real WorldStage staging PostgreSQL/Supabase, authentication, signed-user RLS, provider backup/restore or live kill-switch environment is bound or proven. The exact #672 staging-readiness evidence intentionally remains fail-closed.
+**No.** No real WorldStage staging PostgreSQL/Supabase, authentication, signed-user RLS, provider backup/restore or live kill-switch environment is bound or proven. The exact #674 staging-readiness evidence intentionally remains fail-closed.
 
 ### Production verified / released for this line
 
@@ -97,13 +95,13 @@ Preview READY is deployability/provenance evidence only. It is not live-staging 
 
 ## Done
 
-The **owner-review restart boundary** is now **documented → implemented → tested → preview-deployed** for exact source `a56033af692c3c9439334b6bddf352122c7767fc`, run #672 and preview `dpl_AfJ3C2SUXG6DREkakAHXKDN4a3rK`.
+The **synthetic engagement continuity strip** is now **documented → implemented → tested → preview-deployed** for exact source `659a193c21e8a9e6176ce3e7c80fe2f69958f60b`, run #674 and preview `dpl_CFEmz7zjsNMEZmeMiNCnKmtvLLR5`.
 
-Cherry can now finish the synthetic owner review, revisit changed items, reach an explicit close state, then deliberately choose either a fresh in-memory 3-minute review or the already-existing synthetic next step without creating a durable business action.
+Cherry can now see the synthetic engagement's current fixed stage from the owner summary and resume the already-existing step with one phone-first action, without creating a parallel workflow or durable business action.
 
 ## In progress
 
-This roadmap reconciliation is documentation-only and uses `[skip ci]`; it may therefore create a newer repository/Vercel documentation head after exact tested source `a56033af...`. Test proof remains attributed to exact tested product/test source `a56033af...` rather than being falsely transferred to a documentation-only child.
+This roadmap reconciliation is documentation-only and uses `[skip ci]`; it may therefore create a newer repository/Vercel documentation head after exact tested source `659a193c...`. Test proof remains attributed to exact tested product/test source `659a193c...` rather than being falsely transferred to a documentation-only child.
 
 ## Hard blockers / gates intentionally not crossed
 
@@ -119,15 +117,14 @@ This roadmap reconciliation is documentation-only and uses `[skip ci]`; it may t
 ## Risks
 
 - A polished synthetic owner workflow can look operational even though it is not connected to real WorldStage records; all product-facing demo state therefore remains explicitly synthetic/local-only.
-- `Changed` means only that an allowlisted demo state/reason differs from the sanitized in-memory session start. It does not mean the item is more important, urgent, risky, approved, legally significant or commercially significant.
-- `Recheck complete` means only that all changed synthetic items were revisited in this ephemeral browser session; it is not approval, audit evidence, task completion, client communication or business acceptance.
-- `Start a new 3-minute review` starts a fresh in-memory review pass over the same allowlisted local-demo states; it does not reset or modify external systems.
+- The continuity stage means only where the local synthetic walkthrough can resume; it is not a real client engagement status, SLA, commitment, approval, evidence record or operational task state.
+- The strip intentionally ignores non-allowlisted stored fields, so it must not be repurposed as a general client-data viewer without a new privacy/security design and explicit authorization.
 - Provider-neutral/synthetic tests cannot substitute for live authorization, security, recovery, operational proof or Cherry's physical-device acceptance.
 - Preview READY does not imply live staging or production suitability.
 
 ## Next autonomous action
 
-Move from review-loop mechanics into a more useful owner operating view: add a compact **synthetic engagement continuity strip** to Cherry's owner summary showing the current fixed stage (`Discovery`, `Cherry review`, or `Transformation Record`) and one navigation-only `Resume` action into the already-existing synthetic step. Reuse only the existing allowlisted local engagement-flow state; add no free text, new persistence, external task/message creation, private-source lookup, scoring, provider binding, spending or production authority.
+Add a compact **synthetic engagement handoff cue** to the continuity strip: one fixed sentence for the current stage answering `What is already prepared?` and `What remains Cherry's next local-demo action?`, derived only from the same three sanitized flow booleans. Keep it read-only/navigation-only; add no free text, new persistence, scoring, private-source access, task/message creation, provider binding, spending or production authority.
 
 ## Explicit non-claims
 
@@ -136,7 +133,7 @@ Move from review-loop mechanics into a more useful owner operating view: add a c
 - No confidential intake is active.
 - No public receipt-status endpoint exists.
 - No real provider backup/restore or live kill-switch proof is claimed.
-- No real client decision rationale or Transformation Record outcome is claimed.
+- No real client engagement stage or Transformation Record outcome is claimed.
 - No owner/security approval is inferred from code/tests.
 - No physical-device owner approval is inferred from automation.
 - No Pandora Memory synchronization is claimed while the connector path is unavailable.
