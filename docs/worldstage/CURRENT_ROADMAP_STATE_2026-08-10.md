@@ -12,43 +12,43 @@
 
 The highest-value autonomous line remains Cherry-facing operating value using synthetic/local demo state while real provider/data boundaries stay fail-closed.
 
-## Latest completed product milestone — changed-item recheck
+## Latest completed product milestone — ephemeral recheck close state
 
-Cherry's completed 3-minute synthetic owner review now includes a compact changed-item recheck in the read-only recap.
+Cherry's completed 3-minute synthetic owner review now closes the changed-item recheck explicitly after the final changed item.
 
 It:
-- shows deterministic `Changed` and `Same` counts from the existing in-memory review-session delta;
-- derives the changed queue only from fixed item IDs `01`, `02`, `03` and the allowlisted `changed` delta status;
-- provides one navigation-only control that cycles only changed items in fixed item order;
-- focuses the item's current allowlisted decision-state control on the same cockpit screen;
-- shows progress such as `Rechecking 1 of 3 · Item 01` without changing the completed review;
-- resets its queue/index on review restart, recap removal or cockpit-route exit;
-- creates no browser-storage key, backend/audit record, free-text field, score or inferred significance;
+- detects only the existing fixed-format recheck progress for item IDs `01`, `02`, `03`;
+- shows `Recheck complete` only after the last changed item has actually been revisited;
+- hides the repeat-recheck control after completion;
+- leaves exactly one safe navigation-only control to the existing synthetic next step;
+- accepts only existing allowlisted routes `discovery`, `cockpit`, or `client` and fails closed on an unexpected route;
+- keeps the completed owner-review state unchanged;
+- creates no browser-storage key, backend/audit record, free-text field, task, message, score or inferred significance;
 - performs no CRM, email, calendar, messaging, database, provider, staging or production write.
 
 Implementation/test surfaces:
-- `src/cherry-owner-review-recap.js`;
-- `src/cherry-owner-review-recap.css`;
-- `tests/cherry-owner-review-session.spec.mjs`;
-- existing mandatory Phase 4 test gate.
+- `src/cherry-owner-review-close.js`;
+- `index.html`;
+- `tests/cherry-owner-review-close.spec.mjs`;
+- `package.json` mandatory Phase 4 test gate.
 
 ## Proof-state separation
 
 ### Documented
 
-**Yes.** This roadmap and PR evidence record the changed-item recheck separately from prior milestones. The previous verified session-delta milestone remains preserved at exact source `9311da9e0c9851bebd3362c6021a90775357b67d`, run #660, and its associated artifacts/deployments; it is not rewritten as if it never existed.
+**Yes.** This roadmap and PR evidence record the recheck-close milestone separately from the prior changed-item recheck. The prior verified milestone remains preserved at exact source `a86789a5b140864024969adbebab24a932685057`, run #666 and its associated artifacts/deployments.
 
 ### Implemented
 
-**Yes for exact product/test source `a86789a5b140864024969adbebab24a932685057`.**
+**Yes for exact product/test source `ba4a5ccb01535d54780191ecdf9ebccbd2f1dfb2`.**
 
-The feature is implemented entirely in the existing local/synthetic owner-review surfaces. The recheck is navigation-only and does not alter the completed session state or widen persistence/authority boundaries.
+The enhancement is additive and local to the existing synthetic recap surface. It does not widen persistence, data, provider or authority boundaries.
 
 ### Tested
 
-**Yes for exact source `a86789a5b140864024969adbebab24a932685057`.** GitHub Actions run `31426278437` / **#666 completed SUCCESS** across the full mandatory chain.
+**Yes for exact source `ba4a5ccb01535d54780191ecdf9ebccbd2f1dfb2`.** GitHub Actions run `31431288687` / **#668 completed SUCCESS** across the complete mandatory chain.
 
-Run #666 passed:
+Run #668 passed:
 - owner/security decision-evidence enforcement;
 - fail-closed secure-intake runtime;
 - fail-closed staging preflight;
@@ -56,36 +56,36 @@ Run #666 passed:
 - iPhone/WebKit and Pixel/Chromium device-class checks;
 - Phase 2 SQL/staging;
 - Discovery Phase 3;
-- Cherry OS Phase 4 including changed-item counts/recheck coverage;
+- Cherry OS Phase 4 including the new recheck-close tests;
 - Transformation Record Phase 5;
 - release/security/privacy checks;
 - visual evidence;
 - exact-head staging-readiness regeneration and evidence uploads.
 
 Focused Phase 4 coverage proves:
-- a three-changed review reports `Changed: 3 · Same: 0` and rechecks items `01 → 02 → 03` in fixed order;
-- a mixed review reports `Changed: 1 · Same: 2` and rechecks only item `02`;
-- recheck focuses the existing current allowlisted decision-state control on the same cockpit route;
-- malformed/injected private/authority-looking fields do not become recap/recheck content;
-- restart removes the completed recap and resets the in-memory comparison/recheck state;
+- a three-changed review rechecks `01 → 02 → 03`, then enters `Recheck complete`;
+- the recheck control becomes hidden only after the final changed item;
+- one existing synthetic next-step button remains and its route behavior is preserved;
+- an injected unexpected `production` route prevents the close state from being created;
+- injected private-looking demo fields do not become close-state content;
 - zero POST/PUT/PATCH/DELETE requests occur;
 - the 390px phone surface remains within horizontal bounds.
 
-Run #666 artifacts:
-- staging-readiness artifact `9077389198`, digest `sha256:2153af207da87bfbf6b608c63ccdc4b02ece21bdeb1ea283c79cf95fc18a868b`;
-- mobile visual artifact `9077390114`, digest `sha256:041307770567ccd977cc02955c9653d88bdd7e96b302fcb8520f61123faaf9b7`.
+Run #668 artifacts:
+- staging-readiness artifact `9079283590`, digest `sha256:5a771f5d4dc65a2461005053b13c187cebf899df0eb83adec46c1303f01f4258`;
+- mobile visual artifact `9079284641`, digest `sha256:89fc0003cf2cdf71b9ed5e2cfc861fa75ee95f4955f3d7a73b52393d237a57f0`.
 
-The exact staging-readiness artifact was downloaded and inspected directly. Its internal `source_sha` exactly matches `a86789a5b140864024969adbebab24a932685057`; `readiness = BLOCKED`; confidential intake is disabled; anonymous intake denied; file uploads/private AI/private analytics disabled; production release blocked; persistence remains unselected; adapter binding false; no staging or production project IDs are bound; and D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 remain OPEN.
+The exact staging-readiness artifact was downloaded and inspected directly. Its internal `source_sha` exactly matches `ba4a5ccb01535d54780191ecdf9ebccbd2f1dfb2`; `readiness = BLOCKED`; confidential intake is disabled; anonymous intake denied; file uploads/private AI/private analytics disabled; production release blocked; persistence remains unselected; adapter binding false; no staging or production project IDs are bound; and D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 remain OPEN.
 
 ### Preview deployed
 
-**Yes for exact tested source `a86789a5b140864024969adbebab24a932685057`.** Vercel preview `dpl_471gKXz2Xv6cydKfyo8Sio7mSZhG` is READY, Git-sourced from exact SHA `a86789a5...`, and non-production (`target: null`).
+**Yes for exact tested source `ba4a5ccb01535d54780191ecdf9ebccbd2f1dfb2`.** Vercel preview `dpl_8axciNkU9ojGgiTXN45SEktojU9A` is READY, Git-sourced from exact SHA `ba4a5ccb...`, and non-production (`target: null`).
 
 Preview READY is deployability/provenance evidence only. It is not live-staging or production proof.
 
 ### Live staging
 
-**No.** No real WorldStage staging PostgreSQL/Supabase, authentication, signed-user RLS, provider backup/restore or live kill-switch environment is bound or proven. The exact #666 staging-readiness evidence intentionally remains fail-closed.
+**No.** No real WorldStage staging PostgreSQL/Supabase, authentication, signed-user RLS, provider backup/restore or live kill-switch environment is bound or proven. The exact #668 staging-readiness evidence intentionally remains fail-closed.
 
 ### Production verified / released for this line
 
@@ -93,13 +93,13 @@ Preview READY is deployability/provenance evidence only. It is not live-staging 
 
 ## Done
 
-The **changed-item recheck** is now **documented → implemented → tested → preview-deployed** for exact source `a86789a5b140864024969adbebab24a932685057`, run #666 and preview `dpl_471gKXz2Xv6cydKfyo8Sio7mSZhG`.
+The **ephemeral recheck close state** is now **documented → implemented → tested → preview-deployed** for exact source `ba4a5ccb01535d54780191ecdf9ebccbd2f1dfb2`, run #668 and preview `dpl_8axciNkU9ojGgiTXN45SEktojU9A`.
 
-Cherry can now finish the synthetic 3-minute review, see how many fixed judgments changed, and re-focus only those changed items in deterministic item order without creating a durable record or external action.
+Cherry can now finish the synthetic owner review, revisit only changed items, receive an explicit close state after the final changed item, and continue through one existing synthetic next step without creating a durable record or external action.
 
 ## In progress
 
-This roadmap reconciliation is documentation-only and uses `[skip ci]`; it may therefore create a newer repository/Vercel documentation head after exact tested source `a86789a5...`. Test proof remains attributed to exact tested product/test source `a86789a5...` rather than being falsely transferred to a documentation-only child.
+This roadmap reconciliation is documentation-only and uses `[skip ci]`; it may therefore create a newer repository/Vercel documentation head after exact tested source `ba4a5ccb...`. Test proof remains attributed to exact tested product/test source `ba4a5ccb...` rather than being falsely transferred to a documentation-only child.
 
 ## Hard blockers / gates intentionally not crossed
 
@@ -116,13 +116,13 @@ This roadmap reconciliation is documentation-only and uses `[skip ci]`; it may t
 
 - A polished synthetic owner workflow can look operational even though it is not connected to real WorldStage records; all product-facing demo state therefore remains explicitly synthetic/local-only.
 - `Changed` means only that an allowlisted demo state/reason differs from the sanitized in-memory session start. It does not mean the item is more important, urgent, risky, approved, legally significant or commercially significant.
-- The recheck is a same-page focus/navigation aid, not a task queue, audit trail, recommendation engine or business decision record.
+- `Recheck complete` means only that all changed synthetic items were revisited in this ephemeral browser session; it is not approval, audit evidence, task completion, client communication or business acceptance.
 - Provider-neutral/synthetic tests cannot substitute for live authorization, security, recovery, operational proof or Cherry's physical-device acceptance.
 - Preview READY does not imply live staging or production suitability.
 
 ## Next autonomous action
 
-Add a compact **review-close summary** that appears after Cherry reaches the last changed item in the recheck: show `Recheck complete` and one safe navigation-only choice back to the existing synthetic next step. Keep it ephemeral, same-screen and fixed-vocabulary; do not create persistence, tasks, messages, scoring, private-source access, provider binding, spending or production authority.
+Add a compact **owner-review restart boundary** that makes the difference between `Start a new 3-minute review` and `Continue to the existing synthetic next step` explicit after close. Keep both actions local/navigation-only, preserve the current review until restart is deliberately tapped, and add no persistence, private-source access, external task/message creation, provider binding, spending or production authority.
 
 ## Explicit non-claims
 
