@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "project_key": "worldstage-cherry",
+  "lifecycle_gate": "live_staging_creation",
+  "authoritative_ledger": "docs/worldstage/PHASE2_DECISION_EVIDENCE_LEDGER_2026-08-10.md",
+  "authoritative_issue": 4,
+  "minimum_decisions": [
+    "D1", "D2", "D3", "D5", "D6", "D7", "D8", "D9", "D10", "D15", "D16", "D17", "D18"
+  ],
+  "required_environment_facts": [
+    "staging_provider_selected",
+    "staging_creation_authority_named",
+    "incident_owner_named",
+    "kill_switch_authority_named",
+    "staging_project_distinct_from_production",
+    "synthetic_data_only",
+    "exact_source_sha_recorded"
+  ],
+  "fail_closed_defaults": {
+    "live_staging_creation": "blocked",
+    "confidential_intake": "disabled",
+    "anonymous_intake": "denied",
+    "file_uploads": "disabled",
+    "private_ai": "disabled",
+    "private_analytics": "disabled",
+    "production_release": "blocked"
+  },
+  "forbidden_without_resolved_gate": [
+    "create_live_staging_database",
+    "create_live_auth_tenant",
+    "apply_phase2_migrations_to_remote_database",
+    "enable_confidential_intake",
+    "copy_production_secrets_to_staging",
+    "use_real_client_or_participant_data",
+    "promote_mobile_v2_to_production"
+  ]
+}
