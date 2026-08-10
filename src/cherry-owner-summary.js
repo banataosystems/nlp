@@ -47,7 +47,7 @@ function readOwnerSummaryDaily() {
     else if (item === 'parked') counts.parked += 1;
     else counts.needsCherry += 1;
   });
-  return counts;
+  return { ...counts, items: state };
 }
 
 function readOwnerSummaryRationale() {
@@ -61,6 +61,34 @@ function readOwnerSummaryRationale() {
 
 function ownerSummaryRationaleLabel(value) {
   return OWNER_SUMMARY_RATIONALE_LABELS[value] || OWNER_SUMMARY_RATIONALE_LABELS['needs-context'];
+}
+
+function ownerSummaryDailyLabel(value) {
+  if (value === 'prepared') return 'Prepared';
+  if (value === 'parked') return 'Parked';
+  return 'Needs Cherry';
+}
+
+function ownerSummaryPriority(daily, rationale) {
+  const itemIds = ['01', '02', '03'];
+  const stateOrder = ['needs-cherry', 'prepared', 'parked'];
+  let id = '01';
+  for (const state of stateOrder) {
+    const match = itemIds.find((candidate) => daily.items?.[candidate] === state);
+    if (match) {
+      id = match;
+      break;
+    }
+  }
+  const decisionState = OWNER_SUMMARY_DAILY_ALLOWED.has(daily.items?.[id]) ? daily.items[id] : 'needs-cherry';
+  const rationaleValue = OWNER_SUMMARY_RATIONALE_ALLOWED.has(rationale?.[id]) ? rationale[id] : 'needs-context';
+  return {
+    id,
+    decisionState,
+    decisionLabel: ownerSummaryDailyLabel(decisionState),
+    rationaleValue,
+    rationaleLabel: ownerSummaryRationaleLabel(rationaleValue),
+  };
 }
 
 function readOwnerSummarySustainment(flow) {
@@ -170,9 +198,10 @@ function ownerSummaryState() {
   const flow = readOwnerSummaryFlow();
   const daily = readOwnerSummaryDaily();
   const rationale = readOwnerSummaryRationale();
+  const priority = ownerSummaryPriority(daily, rationale);
   const sustainment = readOwnerSummarySustainment(flow);
   const next = ownerSummaryNext(flow, sustainment);
-  return { flow, daily, rationale, sustainment, next };
+  return { flow, daily, rationale, priority, sustainment, next };
 }
 
 function ownerSummaryCheckpoint(label, prepared, available) {
@@ -183,7 +212,7 @@ function ownerSummaryCheckpoint(label, prepared, available) {
 }
 
 function ownerSummaryMarkup(state, signature) {
-  const { flow, daily, sustainment, next } = state;
+  const { flow, daily, priority, sustainment, next } = state;
   const handoff = ownerSummaryHandoff(state);
   const rationaleLabel = ownerSummaryRationaleLabel(state.rationale['01']);
   const day7Available = flow.recordPrepared;
@@ -202,6 +231,15 @@ function ownerSummaryMarkup(state, signature) {
     <div class="cherry-owner-summary__next">
       <div><span>NEXT OWNER ACTION</span><strong data-owner-summary-next>${next.action}</strong><p>${next.detail}</p><p data-owner-summary-rationale>Why surfaced: ${rationaleLabel} · fixed rationale for demo item 01.</p></div>
       <button type="button" data-owner-summary-nav="${next.route}">Open next step →</button>
+    </div>
+
+    <div class="cherry-owner-summary__next" data-owner-summary-priority>
+      <div>
+        <span>PRIORITY JUDGMENT · SYNTHETIC</span>
+        <strong data-owner-summary-priority-item>Item ${priority.id}</strong>
+        <p data-owner-summary-priority-state>${priority.decisionLabel} · ${priority.rationaleLabel}</p>
+        <p>Priority uses only the fixed local demo states: Needs Cherry first, then Prepared, then Parked; ties use the lowest item number. No scoring model or private data is used.</p>
+      </div>
     </div>
 
     <div class="cherry-owner-summary__next" data-owner-summary-brief>
