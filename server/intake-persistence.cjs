@@ -8,19 +8,26 @@ function publicReceipt() {
   return `WS-${crypto.randomBytes(12).toString('base64url')}`;
 }
 
-async function persistValidatedIntake({ adapter, idempotencyKey, body, actor = null, correlationId }) {
+function actorScope(actor) {
+  if (!actor || typeof actor.id !== 'string' || !actor.id) throw new Error('actor_identity_required');
+  const type = typeof actor.type === 'string' && actor.type ? actor.type : 'actor';
+  return `${type}:${actor.id}`;
+}
+
+async function persistValidatedIntake({ adapter, idempotencyKey, body, actor, correlationId }) {
   if (!adapter || typeof adapter.begin !== 'function') throw new Error('persistence_adapter_invalid');
   if (!idempotencyKey) throw new Error('idempotency_key_required');
   if (!correlationId) throw new Error('correlation_id_required');
 
   const bodyHash = hashBody(body);
+  const scope = actorScope(actor);
   const tx = await adapter.begin();
   let committed = false;
 
   try {
-    const existing = await tx.findIdempotency(idempotencyKey);
+    const existing = await tx.findIdempotency(idempotencyKey, scope);
     if (existing) {
-      if (existing.body_hash !== bodyHash) {
+      if (existing.body_hash !== bodyHash || existing.actor_scope !== scope) {
         const error = new Error('idempotency_conflict');
         error.code = 'idempotency_conflict';
         throw error;
@@ -46,6 +53,7 @@ async function persistValidatedIntake({ adapter, idempotencyKey, body, actor = n
 
     await tx.insertIdempotency({
       idempotency_key: idempotencyKey,
+      actor_scope: scope,
       body_hash: bodyHash,
       receipt_code: receiptCode,
       intake_id: intake.id,
@@ -56,8 +64,8 @@ async function persistValidatedIntake({ adapter, idempotencyKey, body, actor = n
       outcome: 'accepted_for_human_review',
       resource_type: 'intake',
       resource_id: intake.id,
-      actor_type: actor ? 'authenticated_submitter' : 'bound_invitation',
-      actor_id: actor?.id || null,
+      actor_type: actor.type || 'authenticated_submitter',
+      actor_id: actor.id,
       correlation_id: correlationId,
       change_summary: {
         state: 'pending_human_review',
@@ -83,6 +91,7 @@ async function persistValidatedIntake({ adapter, idempotencyKey, body, actor = n
 }
 
 module.exports = {
+  actorScope,
   hashBody,
   persistValidatedIntake,
 };
