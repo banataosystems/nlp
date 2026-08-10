@@ -49,9 +49,66 @@ async function allowSyntheticSubmission({ identity }) {
   return { allowed: identity.synthetic === true };
 }
 
+async function allowAbuse(context) {
+  return { allowed: true, provider: 'synthetic-limiter', decision_id: `allow-${context.correlation_id}` };
+}
+
+function baseOptions(adapter) {
+  return {
+    request: request(), env, adapter, checkAbuse: allowAbuse, authenticate,
+    authorizeSubmission: allowSyntheticSubmission, expectedSourceSha: sourceSha,
+  };
+}
+
+test('pipeline remains unavailable without abuse controls', async () => {
+  const adapter = createSyntheticStagingAdapter({ sourceSha });
+  const result = await processSecureIntake({ request: request(), env, adapter, authenticate, authorizeSubmission: allowSyntheticSubmission, expectedSourceSha: sourceSha });
+  assert.equal(result.status, 503);
+  assert.equal(result.body.error, 'abuse_controls_not_configured');
+  assert.equal(adapter.snapshot().intakes.length, 0);
+});
+
+test('invalid abuse decision fails closed and does not persist', async () => {
+  const adapter = createSyntheticStagingAdapter({ sourceSha });
+  const result = await processSecureIntake({ ...baseOptions(adapter), checkAbuse: async () => ({ allowed: true }) });
+  assert.equal(result.status, 503);
+  assert.equal(result.body.error, 'abuse_controls_unavailable');
+  assert.equal(adapter.snapshot().intakes.length, 0);
+});
+
+test('explicit abuse denial returns low-information 429 and does not persist', async () => {
+  const adapter = createSyntheticStagingAdapter({ sourceSha });
+  const result = await processSecureIntake({
+    ...baseOptions(adapter),
+    checkAbuse: async () => ({ allowed: false, provider: 'synthetic-limiter', decision_id: 'deny-1', reason_code: 'burst' }),
+  });
+  assert.equal(result.status, 429);
+  assert.deepEqual(result.body, { error: 'request_not_accepted', message: 'Please try again later.' });
+  assert.equal(adapter.snapshot().intakes.length, 0);
+});
+
+test('abuse controls receive only coarse metadata, not body, contact data or bearer token', async () => {
+  const adapter = createSyntheticStagingAdapter({ sourceSha });
+  let seen;
+  const result = await processSecureIntake({
+    ...baseOptions(adapter),
+    checkAbuse: async (context) => {
+      seen = context;
+      return { allowed: true, provider: 'synthetic-limiter', decision_id: 'allow-private-1' };
+    },
+  });
+  assert.equal(result.status, 202);
+  const encoded = JSON.stringify(seen);
+  assert.equal(encoded.includes('synthetic@example.org'), false);
+  assert.equal(encoded.includes('Synthetic Organization'), false);
+  assert.equal(encoded.includes(token), false);
+  assert.equal(typeof seen.body_bytes, 'number');
+  assert.match(seen.idempotency_fingerprint, /^[a-f0-9]{24}$/);
+});
+
 test('pipeline remains unavailable without an authentication adapter', async () => {
   const adapter = createSyntheticStagingAdapter({ sourceSha });
-  const result = await processSecureIntake({ request: request(), env, adapter, authorizeSubmission: allowSyntheticSubmission, expectedSourceSha: sourceSha });
+  const result = await processSecureIntake({ request: request(), env, adapter, checkAbuse: allowAbuse, authorizeSubmission: allowSyntheticSubmission, expectedSourceSha: sourceSha });
   assert.equal(result.status, 503);
   assert.equal(result.body.error, 'authentication_not_configured');
   assert.equal(adapter.snapshot().intakes.length, 0);
@@ -59,7 +116,7 @@ test('pipeline remains unavailable without an authentication adapter', async () 
 
 test('pipeline remains unavailable without a submission policy', async () => {
   const adapter = createSyntheticStagingAdapter({ sourceSha });
-  const result = await processSecureIntake({ request: request(), env, adapter, authenticate, expectedSourceSha: sourceSha });
+  const result = await processSecureIntake({ request: request(), env, adapter, checkAbuse: allowAbuse, authenticate, expectedSourceSha: sourceSha });
   assert.equal(result.status, 503);
   assert.equal(result.body.error, 'submission_policy_not_configured');
   assert.equal(adapter.snapshot().intakes.length, 0);
@@ -68,25 +125,21 @@ test('pipeline remains unavailable without a submission policy', async () => {
 test('invalid or missing identity fails before persistence', async () => {
   const adapter = createSyntheticStagingAdapter({ sourceSha });
   const bad = request({ headers: { authorization: 'Bearer broken-token' } });
-  const result = await processSecureIntake({ request: bad, env, adapter, authenticate, authorizeSubmission: allowSyntheticSubmission, expectedSourceSha: sourceSha });
+  const result = await processSecureIntake({ ...baseOptions(adapter), request: bad });
   assert.equal(result.status, 401);
   assert.equal(adapter.snapshot().intakes.length, 0);
 });
 
 test('explicit submission denial fails before persistence', async () => {
   const adapter = createSyntheticStagingAdapter({ sourceSha });
-  const result = await processSecureIntake({
-    request: request(), env, adapter, authenticate,
-    authorizeSubmission: async () => ({ allowed: false }),
-    expectedSourceSha: sourceSha,
-  });
+  const result = await processSecureIntake({ ...baseOptions(adapter), authorizeSubmission: async () => ({ allowed: false }) });
   assert.equal(result.status, 403);
   assert.equal(adapter.snapshot().intakes.length, 0);
 });
 
 test('adapter source mismatch fails closed before persistence', async () => {
   const adapter = createSyntheticStagingAdapter({ sourceSha: 'wrong-sha' });
-  const result = await processSecureIntake({ request: request(), env, adapter, authenticate, authorizeSubmission: allowSyntheticSubmission, expectedSourceSha: sourceSha });
+  const result = await processSecureIntake({ ...baseOptions(adapter), adapter });
   assert.equal(result.status, 503);
   assert.equal(result.body.error, 'staging_adapter_invalid');
   assert.equal(adapter.snapshot().intakes.length, 0);
@@ -94,10 +147,7 @@ test('adapter source mismatch fails closed before persistence', async () => {
 
 test('authorized synthetic request persists atomically and returns only a public receipt', async () => {
   const adapter = createSyntheticStagingAdapter({ sourceSha });
-  const result = await processSecureIntake({
-    request: request(), env, adapter, authenticate, authorizeSubmission: allowSyntheticSubmission,
-    expectedSourceSha: sourceSha, correlationId: 'synthetic-correlation-1',
-  });
+  const result = await processSecureIntake({ ...baseOptions(adapter), correlationId: 'synthetic-correlation-1' });
   assert.equal(result.status, 202);
   assert.equal(result.body.status, 'received');
   assert.match(result.body.receipt_code, /^WS-/);
@@ -115,8 +165,8 @@ test('authorized synthetic request persists atomically and returns only a public
 
 test('same idempotency key and same body returns same public receipt without duplicate rows', async () => {
   const adapter = createSyntheticStagingAdapter({ sourceSha });
-  const first = await processSecureIntake({ request: request(), env, adapter, authenticate, authorizeSubmission: allowSyntheticSubmission, expectedSourceSha: sourceSha, correlationId: 'c-1' });
-  const second = await processSecureIntake({ request: request(), env, adapter, authenticate, authorizeSubmission: allowSyntheticSubmission, expectedSourceSha: sourceSha, correlationId: 'c-2' });
+  const first = await processSecureIntake({ ...baseOptions(adapter), correlationId: 'c-1' });
+  const second = await processSecureIntake({ ...baseOptions(adapter), correlationId: 'c-2' });
   assert.equal(first.status, 202);
   assert.equal(second.status, 202);
   assert.equal(second.body.receipt_code, first.body.receipt_code);
@@ -128,13 +178,12 @@ test('same idempotency key and same body returns same public receipt without dup
 
 test('same idempotency key with materially different body returns 409 and preserves first state', async () => {
   const adapter = createSyntheticStagingAdapter({ sourceSha });
-  const first = await processSecureIntake({ request: request(), env, adapter, authenticate, authorizeSubmission: allowSyntheticSubmission, expectedSourceSha: sourceSha, correlationId: 'c-1' });
+  const first = await processSecureIntake({ ...baseOptions(adapter), correlationId: 'c-1' });
   assert.equal(first.status, 202);
 
   const changedBody = { ...body, questionnaire_version: 'synthetic-q2' };
   const conflict = await processSecureIntake({
-    request: request({ parsedBody: changedBody }), env, adapter, authenticate,
-    authorizeSubmission: allowSyntheticSubmission, expectedSourceSha: sourceSha, correlationId: 'c-2',
+    ...baseOptions(adapter), request: request({ parsedBody: changedBody }), correlationId: 'c-2',
   });
   assert.equal(conflict.status, 409);
   assert.equal(conflict.body.error, 'idempotency_conflict');
@@ -146,8 +195,7 @@ test('same idempotency key with materially different body returns 409 and preser
 test('outer kill switch still prevents the composed pipeline even when all adapters are present', async () => {
   const adapter = createSyntheticStagingAdapter({ sourceSha });
   const result = await processSecureIntake({
-    request: request(), env: { ...env, WORLDSTAGE_SECURE_INTAKE_ENABLED: 'false' }, adapter, authenticate,
-    authorizeSubmission: allowSyntheticSubmission, expectedSourceSha: sourceSha,
+    ...baseOptions(adapter), env: { ...env, WORLDSTAGE_SECURE_INTAKE_ENABLED: 'false' },
   });
   assert.equal(result.status, 503);
   assert.equal(result.body.error, 'intake_disabled');
