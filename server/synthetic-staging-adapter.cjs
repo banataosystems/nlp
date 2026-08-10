@@ -2,6 +2,13 @@ function clone(value) {
   return structuredClone(value);
 }
 
+function actorMatches(recordActor, actor) {
+  if (!recordActor || !actor) return false;
+  const recordType = recordActor.type || 'user';
+  const actorType = actor.type || 'user';
+  return recordType === actorType && recordActor.id === actor.id;
+}
+
 function createSyntheticStagingAdapter({ sourceSha = 'synthetic-source-sha' } = {}) {
   let state = {
     nextIntake: 1,
@@ -21,6 +28,13 @@ function createSyntheticStagingAdapter({ sourceSha = 'synthetic-source-sha' } = 
 
     snapshot() {
       return clone(state);
+    },
+
+    async findReceiptForActor({ receiptCode, actor }) {
+      const record = state.intakes.find((item) =>
+        item.receipt_code === receiptCode && actorMatches(item.actor, actor)
+      );
+      return record ? clone(record) : null;
     },
 
     async begin() {
