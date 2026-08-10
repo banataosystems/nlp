@@ -1,5 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
 const {
   buildRollbackCapsule,
   verifyRollbackCapsule,
@@ -65,4 +67,15 @@ test('production restore remains behind explicit release and evidence gates', ()
     assert.equal(gates.has(gate), true, `missing gate ${gate}`);
   }
   assert.equal(capsule.ordered_steps.includes('restore_only_under_separate_release_authority'), true);
+});
+
+test('preserved exact-source rollback evidence is valid and remains non-executable', () => {
+  const fixturePath = path.join(__dirname, '..', 'evidence', 'worldstage', 'rollback-c7107f995bb0.json');
+  const capsule = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
+  const result = verifyRollbackCapsule(capsule);
+  assert.deepEqual(result, { valid: true, errors: [] });
+  assert.equal(capsule.source_sha, 'c7107f995bb0e86dd26056fbfe4a155221790965');
+  assert.equal(capsule.preview_deployment_id, 'dpl_HbqEN7KerzBFpSrMfNFPK7o4nM2u');
+  assert.equal(capsule.restore_baseline.deployment_id, 'dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1');
+  assert.equal(capsule.execution.authorized, false);
 });
