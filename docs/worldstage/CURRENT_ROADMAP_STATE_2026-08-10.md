@@ -8,7 +8,7 @@
 
 ## Current phase
 
-**Non-live redesign verification plus provider-neutral secure-intake, recovery, environment-binding, signed-user proof, live-staging evidence aggregation and reference-only evidence-manifest preparation, before live staging.**
+**Non-live redesign verification plus provider-neutral secure-intake, recovery, environment-binding, signed-user proof, live-staging evidence aggregation, reference-only evidence manifests and immutable evidence-checkpoint continuity, before live staging.**
 
 The active line remains limited to reversible non-live work before billable environment creation, real-provider binding, confidential-data activation, credential use, real migrations and production release.
 
@@ -23,7 +23,8 @@ Current Phase 2 contracts include:
 - environment-binding verification;
 - signed-user live-test proof;
 - live-staging evidence aggregation;
-- `PHASE2_STAGING_EVIDENCE_CAPTURE_MANIFEST_2026-08-10.md` for nonsecret content-addressed proof references.
+- `PHASE2_STAGING_EVIDENCE_CAPTURE_MANIFEST_2026-08-10.md` for nonsecret content-addressed proof references;
+- `PHASE2_STAGING_EVIDENCE_CHECKPOINT_CHAIN_2026-08-10.md` for deterministic parent/manifest/reference continuity.
 
 ### Implemented on the active branch
 
@@ -56,27 +57,30 @@ Recovery and staging preparation:
 - environment-binding verifier requiring exact staging provenance and future signed-user, backup/restore and kill-switch proof digests while always returning `activation_allowed: false`;
 - signed-user live-test proof contract covering positive/negative authz cases with synthetic ephemeral identities, cleanup proof and no activation authority;
 - live-staging evidence aggregator requiring one exact-source, one-environment package with `environment_binding`, `signed_user_policy`, `backup_restore` and `kill_switch` proof classes;
-- new staging evidence capture/manifest contract that serializes only content-addressed proof references and explicitly forbids inline/raw evidence, credential-shaped fields, direct sensitive/free-form material, evidence URLs/URIs/paths, production access, confidential data, enabled intake, activation requests and production-release authority.
+- staging evidence capture/manifest contract that serializes only content-addressed proof references and explicitly forbids inline/raw evidence, credential-shaped fields, direct sensitive/free-form material, evidence URLs/URIs/paths, production access, confidential data, enabled intake, activation requests and production-release authority;
+- staging evidence checkpoint contract that links a genesis/child chain by checkpoint digest and parent manifest digest while requiring exact continuity of source, preview, production baseline, provider, environment, manifest plan, manifest digest and every individual proof-reference digest.
 
-The new manifest contract is integrated into mandatory `test:intake-runtime` through `tests/staging-evidence-manifest-contract.test.cjs`. A structurally complete reference package may report `evidence_capture_complete: true` for the manifest itself, but always returns `activation_allowed: false` and `production_release_authorized: false`.
+The checkpoint chain is immutable by design: proof-reference replacement, manifest replacement, environment/provider drift, forged parent links, sequence gaps, extra durable fields, sensitive material and authority escalation all fail closed. A proof rerun or genuinely different manifest must start a separately governed lineage rather than rewriting the existing chain.
+
+The manifest and checkpoint contracts are integrated into mandatory `test:intake-runtime` through `tests/staging-evidence-manifest-contract.test.cjs` and `tests/staging-evidence-checkpoint-contract.test.cjs`. Structural completeness or checkpoint continuity never authorizes intake activation or production release.
 
 ### Tested
 
-The last exact verified baseline before the new manifest layer is recorded in PR #1:
-- source head `e5afde631aeb04c7b5dd8e1a0f16147ca217becd`;
-- GitHub Actions run `31372553355` (#475), **PASS**;
-- staging-readiness artifact `9056700661`, digest `sha256:50fc91d4cc95643b55de65bb1a586a63308643bb3807bf8f10632953dc6596c4`;
-- mobile artifact `9056700999`, digest `sha256:976fae24ef6a5caf01a7510e6faed39c0581da2e1775abe81eef7c69be4f01c1`.
+The last exact verified baseline before the checkpoint layer is:
+- source head `7eaa30e1dd37d24a178b8c8e5e1ef758415981eb`;
+- GitHub Actions run `31376831347` (#485), **PASS**;
+- staging-readiness artifact `9058309607`, digest `sha256:b492fefaef39d8a91cc8ec96a352043e1099439a7a4a70852e4bb82de6ed75d2`;
+- mobile artifact `9058309927`, digest `sha256:9e73a35c2bceadc683ebb34ad2bbd7265d068b2d5048516a623420823edefd03`.
 
-That staging-readiness artifact was inspected directly and records exact source `e5afde631aeb04c7b5dd8e1a0f16147ca217becd`, `readiness = BLOCKED`, confidential intake disabled, persistence/provider binding absent, no staging/production project IDs and unresolved D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18.
+That staging-readiness artifact was inspected directly and records exact source `7eaa30e1dd37d24a178b8c8e5e1ef758415981eb`, `readiness = BLOCKED`, confidential intake disabled, persistence/provider binding absent, no staging/production project IDs and unresolved D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18.
 
-The new evidence-manifest layer is **implemented** and placed in the mandatory CI gate. Project-level **tested** status for it requires an exact-current-head CI pass. Exact-head run/artifact IDs are maintained in PR #1 because editing this roadmap itself changes the source head; this document therefore does not self-certify a later CI run by assumption.
+The new checkpoint layer is **implemented** and placed in the mandatory CI gate. Project-level **tested** status for it requires an exact-current-head CI pass. Exact-head run/artifact IDs are maintained in PR #1 because editing this roadmap itself changes the source head; this document therefore does not self-certify a later CI run by assumption.
 
 ### Preview deployed
 
-The last exact verified baseline preview is `dpl_A7N7UvkKyfUosHezbJVMLdmwv5Mk`, READY, Git-sourced, `target: null`, tied to source `e5afde631aeb04c7b5dd8e1a0f16147ca217becd`.
+The last exact verified baseline preview is `dpl_DTdw6mPYZhp6MgYS2LLiCQkggh3G`, READY, Git-sourced, `target: null`, tied to source `7eaa30e1dd37d24a178b8c8e5e1ef758415981eb`.
 
-A newer manifest implementation preview must be verified against its exact source SHA before it can be called preview-deployed at that proof level. Preview READY is deployability/provenance evidence only.
+A newer checkpoint implementation preview must be verified against its exact source SHA before it can be called preview-deployed at that proof level. Preview READY is deployability/provenance evidence only.
 
 ### Live staging
 
@@ -100,15 +104,16 @@ The preserved production baseline remains `dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1`, RE
 ## Risks
 
 - Provider-neutral/synthetic proof reduces implementation risk but cannot substitute for live database-policy, security, recovery or operational proof.
-- Reference-only evidence manifests can preserve provenance without secrets, but they do not prove the referenced provider evidence was valid unless the separate live-staging aggregator verifies it.
-- A structurally complete manifest or aggregated evidence package is not activation authority and is not production-release evidence.
+- Reference-only evidence manifests preserve provenance without secrets, but they do not prove the referenced provider evidence was valid unless the separate live-staging aggregator verifies it.
+- Checkpoint continuity proves that reference digests were not silently replaced inside one lineage; it does not prove the underlying evidence itself and must not be treated as activation authority.
+- A structurally complete manifest, aggregated package or valid checkpoint chain is not production-release evidence.
 - Preview READY proves deployability/provenance only, not production suitability.
 - The preserved production baseline must remain isolated until explicit production-release authority and all required live proof gates exist.
 - Pandora unavailability prevents canonical memory reconciliation until access is restored or a separately authorized governance exception exists.
 
 ## Current safe next autonomous actions
 
-1. Obtain exact-current-head CI proof with the staging evidence manifest inside the mandatory runtime gate and reconcile run/artifact evidence in PR #1.
+1. Obtain exact-current-head CI proof with the evidence checkpoint contract inside the mandatory runtime gate and reconcile run/artifact evidence in PR #1.
 2. Verify exact-current-head non-production Vercel provenance while preserving the production baseline.
 3. Continue provider-neutral rollback/recovery and security-evidence hardening without binding a real provider.
 4. Keep public receipt lookup absent and confidential intake fail-closed until owner/security/auth/privacy gates are resolved.
