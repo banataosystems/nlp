@@ -42,3 +42,33 @@ test('Phase 4 modal preserves a minimum close touch target', async ({ page }) =>
   expect(box.width).toBeGreaterThanOrEqual(44);
   expect(box.height).toBeGreaterThanOrEqual(44);
 });
+
+test('Cherry Daily turns the demo judgment queue into a local-only owner workflow', async ({ page }) => {
+  await page.goto('http://127.0.0.1:4173/#/cockpit');
+  const daily = page.locator('[data-cherry-daily]');
+  await expect(daily).toBeVisible();
+  await expect(daily).toContainText('CHERRY DAILY');
+  await expect(daily).toContainText('Nothing is sent to a client, CRM, email, calendar, or production system.');
+  await expect(page.locator('[data-cherry-daily-count="needs-cherry"]')).toHaveText('3');
+  await expect(page.locator('[data-cherry-daily-count="prepared"]')).toHaveText('0');
+
+  await page.locator('[data-cherry-decision-state="01"] [data-cherry-daily-set="prepared"]').click();
+  await expect(page.locator('[data-cherry-daily-count="needs-cherry"]')).toHaveText('2');
+  await expect(page.locator('[data-cherry-daily-count="prepared"]')).toHaveText('1');
+  await expect(page.locator('[data-cherry-decision-state="01"] [data-cherry-decision-label]')).toHaveText('Prepared');
+
+  const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('worldstage.cherry.daily.demo.v1')));
+  expect(stored).toEqual({ '01': 'prepared', '02': 'needs-cherry', '03': 'needs-cherry' });
+
+  await page.reload();
+  await expect(page.locator('[data-cherry-daily-count="prepared"]')).toHaveText('1');
+  await expect(page.locator('[data-cherry-decision-state="01"] [data-cherry-decision-label]')).toHaveText('Prepared');
+
+  await page.locator('[data-cherry-daily-reset]').click();
+  await expect(page.locator('[data-cherry-daily-count="needs-cherry"]')).toHaveText('3');
+  await expect(page.locator('[data-cherry-daily-count="prepared"]')).toHaveText('0');
+  await expect(page.locator('[data-cherry-daily-status]')).toContainText('No external system was changed');
+
+  const sizes = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth }));
+  expect(sizes.sw).toBeLessThanOrEqual(sizes.cw + 1);
+});
