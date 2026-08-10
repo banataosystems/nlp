@@ -93,6 +93,9 @@ test('synthetic engagement loop connects Discovery, Cherry judgment, and Transfo
   await safetyGate.getByRole('button', { name: /continue with non-confidential Discovery/i }).click();
   await expect(safetyGate).toHaveCount(0);
 
+  const confidentialSentinel = 'CONFIDENTIAL-SENTINEL-SHOULD-NOT-COPY';
+  await page.locator('[data-discovery-input]').fill(confidentialSentinel);
+
   const discoveryFlow = page.locator('[data-synthetic-engagement-flow]');
   await expect(discoveryFlow).toBeVisible();
   await expect(discoveryFlow).toContainText('SYNTHETIC ENGAGEMENT LOOP');
@@ -102,6 +105,7 @@ test('synthetic engagement loop connects Discovery, Cherry judgment, and Transfo
 
   let stored = await page.evaluate(() => JSON.parse(localStorage.getItem('worldstage.synthetic.engagement.flow.v1')));
   expect(stored).toEqual({ version: 1, discoveryPrepared: true, ownerReviewed: false, recordPrepared: false });
+  expect(JSON.stringify(stored)).not.toContain(confidentialSentinel);
 
   await page.locator('[data-synthetic-flow-nav="cockpit"]').click();
   await expect(page).toHaveURL(/#\/cockpit$/);
@@ -134,4 +138,25 @@ test('synthetic engagement loop connects Discovery, Cherry judgment, and Transfo
     daily: localStorage.getItem('worldstage.cherry.daily.demo.v1'),
   }));
   expect(afterReset).toEqual({ flow: null, daily: null });
+});
+
+test('synthetic engagement loop fails closed when stored state skips prerequisites', async ({ page }) => {
+  await page.goto('http://127.0.0.1:4173/#/client');
+  await page.evaluate(() => {
+    localStorage.setItem('worldstage.synthetic.engagement.flow.v1', JSON.stringify({
+      version: 1,
+      discoveryPrepared: false,
+      ownerReviewed: true,
+      recordPrepared: true,
+      injectedNote: 'must not survive sanitization',
+    }));
+  });
+  await page.reload();
+
+  const panel = page.locator('[data-synthetic-engagement-flow]');
+  await expect(panel).toBeVisible();
+  await expect(panel).toContainText('Ready to begin');
+  await expect(panel).not.toContainText('Loop complete');
+  await expect(page.locator('[data-synthetic-flow-nav="cockpit"]')).toBeVisible();
+  await expect(page.locator('[data-synthetic-flow-action="prepare-record"]')).toHaveCount(0);
 });
