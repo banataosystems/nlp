@@ -4,99 +4,110 @@
 **Project:** WorldStage International / Cherry Africa business-adaptive operating system  
 **Repository:** `banataosystems/nlp`  
 **Active line:** `redesign/mobile-first-v2` / PR #1  
-**Purpose:** current-state reconciliation. Historical detail remains preserved in Git commits, prior roadmap versions, CI runs, Vercel deployment records, artifacts, and the dated WorldStage evidence documents. This file does not relax owner/security, live-staging, confidential-data, spending, credential, legal/public-commitment, destructive-data, or production-release gates.
+**Purpose:** current-state reconciliation. Historical detail remains preserved in Git commits, CI runs, Vercel deployment records, artifacts, and dated WorldStage evidence documents. This file does not relax owner/security, live-staging, confidential-data, spending, credential, legal/public-commitment, destructive-data, or production-release gates.
 
 ## Current phase
 
 **Owner-operable mobile prototype hardening plus provider-neutral secure-intake/recovery preparation before live staging.**
 
-The priority is Cherry-facing operating value using synthetic/local demo state while the real-provider boundary remains fail-closed.
+The product priority remains Cherry-facing operating value using synthetic/local demo state while the real-provider boundary stays fail-closed.
 
 ## Proof-state separation
 
 ### Documented
 
-Yes. Durable records cover the mobile-first redesign, Discovery, Cherry OS, Transformation Record, Cherry Daily, synthetic engagement loop, 7 / 30 / 90 sustainment workflow, Owner Summary, Owner Handoff, secure-intake contracts, authorization, staging/recovery evidence, fixed-vocabulary decision rationale, read-only rationale projection, and the deterministic priority-judgment slice.
+Yes. Durable records cover the mobile-first redesign, Discovery, Cherry OS, Transformation Record, Cherry Daily, synthetic engagement loop, 7 / 30 / 90 sustainment workflow, Owner Summary, Owner Handoff, fixed-vocabulary decision rationale, deterministic priority judgment, secure-intake/recovery contracts, and the new compact Review now owner focus.
 
-Newest product records:
-- `docs/worldstage/PHASE4_CHERRY_OWNER_RATIONALE_HANDOFF_2026-08-10.md`
-- `docs/worldstage/PHASE4_CHERRY_PRIORITY_JUDGMENT_2026-08-10.md`
+Newest product record:
+- `docs/worldstage/PHASE4_CHERRY_REVIEW_NOW_2026-08-10.md`
 
-### Implemented on the active branch
+### Implemented
 
-#### Product-facing Cherry prototype
+Yes for the Review now implementation baseline `454d6b2171ae6c615ba6554eb7c76bc6e6068cb4`.
 
-- phone-first responsive/safe-area foundation;
-- public WorldStage transformation narrative with public/demo labeling;
-- conversational Discovery and explicit provenance boundaries;
-- Cherry OS judgment queue with demo source map and The Room briefing pattern;
-- Cherry Daily local owner states: `Needs Cherry`, `Prepared`, `Parked`;
-- synthetic Discovery → Cherry judgment → Transformation Record loop;
-- sequential synthetic 7 / 30 / 90 sustainment checkpoints;
-- read-only Cherry Owner Summary;
-- focused phone-first Cherry Owner Handoff;
-- fixed-vocabulary Cherry decision-rationale lens: `Ready`, `Needs context`, or `Can wait`, with no free-text rationale;
-- read-only rationale projection beside the next owner action and inside the Owner Handoff;
-- **deterministic priority judgment:** the Owner Summary identifies one synthetic item using only fixed local states. `Needs Cherry` outranks `Prepared`, which outranks `Parked`; ties use the lowest fixed item number. The priority card also shows only that item's allowlisted fixed rationale. No score, AI ranking, private source, commercial-value estimate, or urgency inference exists.
+The phone-first owner experience now includes:
+- local Cherry Daily states: `Needs Cherry`, `Prepared`, `Parked`;
+- fixed local rationale: `Ready`, `Needs context`, `Can wait`;
+- deterministic priority selection: Needs Cherry → Prepared → Parked, ties by lowest fixed item number;
+- one compact **Review now** owner card immediately after the existing priority judgment;
+- same-surface review behavior that scrolls to the already-existing priority judgment card and focuses its current local-demo state control;
+- automatic same-session priority refresh when an earlier item changes state;
+- invalid rationale fallback to `Needs context`;
+- no free-text rationale, ranking model, private-source lookup, client-value estimate, urgency inference, external write, or release action.
 
-The priority slice is wired through:
-- `src/cherry-owner-summary.js`;
-- `tests/cherry-owner-summary.spec.mjs`;
-- `docs/worldstage/PHASE4_CHERRY_PRIORITY_JUDGMENT_2026-08-10.md`.
-
-#### Secure-intake / recovery boundary
-
-Existing provider-neutral controls remain unchanged: public intake stays inert; anonymous intake is denied; strict allowlists, synthetic authorization/RLS matrices, atomic persistence/audit contracts, actor-bound receipt behavior, kill-switch controls, rollback, backup/restore simulation, deployment isolation, environment binding, signed-user live-test contracts, evidence aggregation/manifests/checkpoints, and portability capsules remain non-activating.
-
-No structural/test result can authorize confidential intake or production release.
+Durable implementation/test surfaces:
+- `src/cherry-review-now.js`;
+- `tests/cherry-review-now.spec.mjs`;
+- `index.html`;
+- `package.json` Phase 4 mandatory gate.
 
 ### Tested
 
-**Yes for the deterministic priority implementation baseline.** Exact implementation/roadmap head `3445720caa4d1850190603e7ae242a89768167ab` passed GitHub Actions run `31407114015` / #616 across the complete mandatory mobile/security/Phase 2–5/release/visual chain.
+**Yes for implementation baseline `454d6b2171ae6c615ba6554eb7c76bc6e6068cb4`.** GitHub Actions run `31408654191` / #628 completed successfully across the full mandatory chain.
 
-The exact run successfully executed owner/security decision-evidence enforcement, fail-closed secure-intake runtime, staging preflight, six-width mobile tests, iPhone/WebKit and Pixel/Chromium device tests, Phase 2 SQL/staging, Discovery Phase 3, Cherry OS Phase 4 including the updated deterministic priority assertions, Transformation Record Phase 5, release/security/privacy, visual evidence, and exact-head staging-readiness regeneration/upload.
+The exact run passed:
+- owner/security decision-evidence enforcement;
+- fail-closed secure-intake runtime;
+- staging preflight;
+- six-width mobile contract;
+- iPhone/WebKit and Pixel/Chromium device-class checks;
+- Phase 2 SQL/staging;
+- Discovery Phase 3;
+- Cherry OS Phase 4 including the new Review now tests;
+- Transformation Record Phase 5;
+- release/security/privacy checks;
+- visual evidence;
+- exact-head staging-readiness regeneration and upload.
 
-Priority coverage verifies:
-- clean local demo state selects item `01` as `Needs Cherry · Needs context`;
-- same-session rationale changes update the displayed priority reason;
+Focused Review now coverage verifies:
 - mixed state `01 Prepared`, `02 Parked`, `03 Needs Cherry` selects item `03`;
-- invalid rationale values fail closed to `Needs context`;
-- injected private/authority-looking fields never render;
-- zero POST/PUT/PATCH/DELETE requests;
-- existing mobile width, owner handoff, focus, routing and privacy protections remain intact.
+- invalid rationale fails closed to `Needs context`;
+- Review now keeps the user on `#/cockpit` and focuses the matching existing local-demo state control;
+- same-session state/rationale changes update the next priority deterministically;
+- injected private-looking fields do not render;
+- no POST/PUT/PATCH/DELETE request occurs;
+- the 390px mobile surface does not overflow horizontally.
 
-This roadmap proof-reconciliation commit is documentation-only; the final exact repository-head proof is recorded in PR #1 after its automatic workflow resolves.
+Run #628 artifacts:
+- staging-readiness artifact `9070716566`, digest `sha256:87a686a3e9b08cc6a63edf9b6888797411df66d1843b67dc5fb2991c3544952e`;
+- mobile visual artifact `9070717031`, digest `sha256:21385a2f556da620c071046099362609222f2b9212eef0ce7dc58b5ac9abeaa0`.
 
 ### Preview deployed
 
-**Yes for the deterministic priority implementation baseline.** Vercel preview `dpl_36RLEMVQPEAbjwcGPDM51KSaZqMD` is READY, Git-sourced from exact head `3445720caa4d1850190603e7ae242a89768167ab`, and non-production (`target: null`).
+**Yes for implementation baseline `454d6b2171ae6c615ba6554eb7c76bc6e6068cb4`.** Vercel preview `dpl_EQ4Dci1zm5Mycaw5P8eh3my2zcJa` is READY, Git-sourced from the exact implementation SHA, and non-production (`target: null`).
 
-Preview READY is deployability/provenance evidence only. The documentation-only reconciliation head receives its own automatic preview and is recorded in PR #1 after verification.
+Preview READY is deployability/provenance evidence only. It is not live-staging or production proof.
 
 ### Live staging
 
-**No.** The exact #616 staging-readiness artifact was downloaded and inspected directly. Its `source_sha` exactly matches `3445720caa4d1850190603e7ae242a89768167ab` and `readiness = BLOCKED`. Confidential intake is disabled, anonymous intake denied, file uploads/private AI/private analytics disabled, production release blocked, persistence unselected, adapter binding false, and no staging or production project IDs are bound. D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 remain OPEN.
+**No.** The exact #628 staging-readiness artifact was downloaded and inspected directly. It contains:
+- `source_sha = 454d6b2171ae6c615ba6554eb7c76bc6e6068cb4`;
+- `readiness = BLOCKED`;
+- live-staging creation blocked;
+- confidential intake disabled;
+- anonymous intake denied;
+- file uploads/private AI/private analytics disabled;
+- production release blocked;
+- persistence unselected;
+- adapter binding false;
+- no staging or production project IDs bound;
+- D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 OPEN.
 
-No real WorldStage staging PostgreSQL/Supabase, authentication, abuse-control, incident-management, notification, signed-user RLS, provider backup/restore, or live kill-switch environment is bound or proven.
+No real WorldStage staging PostgreSQL/Supabase, authentication, signed-user RLS, provider backup/restore, or live kill-switch environment is bound or proven.
 
 ### Production verified / released for this line
 
-**No.** The preserved production baseline remains separate at `dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1`, READY with `target: production` and source `redeploy`. The active mobile-v2 / Cherry prototype / secure-intake line has not been promoted.
+**No.** The preserved production baseline remains separate at `dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1`, READY with `target: production` and source `redeploy`. The active mobile-v2 / Cherry prototype line has not been promoted.
 
 ## Done
 
-The deterministic priority judgment is **documented → implemented → tested → preview-deployed** at exact implementation baseline `3445720…` / run #616 / preview `dpl_36RLE…`.
+The **Review now owner focus** is **documented → implemented → tested → preview-deployed** for implementation baseline `454d6b2…` / run #628 / preview `dpl_EQ4Dci…`.
 
-Run #616 produced:
-- staging-readiness artifact `9070140005`, digest `sha256:62e7b340af34be462cac002b20fe75cd6cefeff8f792f77b2f8d9f4d796d3ae6`;
-- mobile evidence artifact `9070140837`, digest `sha256:cf28d9464b2352e1edb55d067e9d2f49a384d2d70ffbc0ad5d04cc2e6698b656`.
-
-The previously completed read-only fixed-rationale projection also remains fully verified.
+It gives Cherry a direct phone action from the deterministic owner priority into the already-existing judgment context without introducing a new data source or external side effect.
 
 ## In progress
 
-- automatic exact-current-head CI/preview proof for this documentation-only roadmap reconciliation;
-- PR #1 exact-head evidence reconciliation after those proofs resolve.
+This roadmap reconciliation is documentation-only and creates a newer repository head after the tested implementation baseline. The automatic exact-current-head CI and preview must resolve before the repository head itself can be called tested/preview-deployed.
 
 ## Hard blockers / gates intentionally not crossed
 
@@ -111,16 +122,16 @@ The previously completed read-only fixed-rationale projection also remains fully
 
 ## Risks
 
-- A polished synthetic workflow may look operational; all product-facing state therefore remains explicitly local/demo-only.
-- The priority card is a deterministic UI ordering rule, not a risk score, AI recommendation, urgency assessment, legal/commercial judgment, or source-derived importance claim.
-- Fixed rationale enums are owner-interface scaffolding, not evidence, approvals, commitments, instructions to staff, or real client records.
+- A polished synthetic owner flow may look operational; all product-facing state therefore remains explicitly local/demo-only.
+- Deterministic priority is a UI ordering rule, not a risk score, AI recommendation, urgency assessment, legal/commercial judgment, or source-derived importance claim.
+- Review now only focuses existing demo context; it does not prove that the context is true, complete, current, or suitable for a real client decision.
 - Browser-local persistence is not a production database or audit trail.
-- Provider-neutral/synthetic tests cannot substitute for live authorization, security, recovery, or operations proof.
+- Provider-neutral/synthetic tests cannot substitute for live authorization, security, recovery, or operational proof.
 - Preview READY does not imply live staging or production suitability.
 
 ## Next autonomous action
 
-Use the deterministic priority item to create one compact **Review now** owner card that opens only the existing local-demo judgment context on the same phone surface. Keep it synthetic/local-only and do not add free text, real client data, provider writes, spending, missing credentials or release authority.
+Turn the existing priority-refresh behavior into a compact **3-minute owner review session** using only the three fixed synthetic judgment items. Show progress through the fixed queue and move to the next deterministic priority after Cherry changes a local demo state. Keep the session on the same phone surface, with no free text, private data, external writes, scoring model, provider binding, spending, or release authority.
 
 ## Explicit non-claims
 
