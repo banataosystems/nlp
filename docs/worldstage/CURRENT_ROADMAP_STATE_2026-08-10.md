@@ -16,7 +16,7 @@ The priority is Cherry-facing operating value using synthetic/local demo state w
 
 ### Documented
 
-Yes. Durable records cover the mobile-first redesign, Discovery, Cherry OS, Transformation Record, Cherry Daily, synthetic engagement loop, 7 / 30 / 90 sustainment workflow, Owner Summary, Owner Handoff, secure-intake contracts, authorization, staging/recovery evidence, fixed-vocabulary decision rationale, and the new read-only rationale projection into the owner-facing summary/handoff.
+Yes. Durable records cover the mobile-first redesign, Discovery, Cherry OS, Transformation Record, Cherry Daily, synthetic engagement loop, 7 / 30 / 90 sustainment workflow, Owner Summary, Owner Handoff, secure-intake contracts, authorization, staging/recovery evidence, fixed-vocabulary decision rationale, and the read-only rationale projection into the owner-facing summary/handoff.
 
 Newest product record:
 - `docs/worldstage/PHASE4_CHERRY_OWNER_RATIONALE_HANDOFF_2026-08-10.md`
@@ -50,11 +50,11 @@ No structural/test result can authorize confidential intake or production releas
 
 ### Tested
 
-**Latest fully verified baseline before the owner-rationale projection:** `e8842d2b92c3d119a86bb20ef1d96e45ab16734d`, GitHub Actions run #598 PASS, with the complete mandatory mobile/security/Phase 2–5/release/visual chain.
+**Yes for the owner-rationale implementation baseline.** Exact head `7cd9dd034437f28b478e51e730e5ec706e471e07` passed GitHub Actions run `31406188276` / #606 across the complete mandatory mobile/security/Phase 2–5/release/visual chain.
 
-**Current owner-rationale projection:** exact-current-head verification is required after this roadmap reconciliation commit. Until the final current-head workflow passes, this new slice is documented + implemented only and must not be described as tested.
+The exact run included successful `test:mobile`, device checks, Phase 2 SQL/staging, Discovery Phase 3, Phase 4 including the updated Owner Summary test, Phase 5, release/security/privacy and visual evidence.
 
-Focused owner-rationale coverage is mandatory and checks:
+Focused owner-rationale coverage verifies:
 - default `Needs context` projection on clean local demo state;
 - same-session reflection after the existing item `01` rationale changes to `Ready`;
 - identical allowlisted rationale across Next Owner Action, inline Owner Handoff, and full Owner Handoff dialog;
@@ -62,31 +62,34 @@ Focused owner-rationale coverage is mandatory and checks:
 - zero POST/PUT/PATCH/DELETE requests;
 - existing phone-width, safe navigation, focus restoration, Escape/close, follow-up and privacy boundaries remain intact.
 
+This roadmap reconciliation commit is documentation-only; the exact-current-head post-reconciliation run remains the final repository-head proof and is recorded in PR #1 once resolved.
+
 ### Preview deployed
 
-**Latest fully verified preview before this new slice:** `dpl_BjmGsh6CrXjFgS2d7ikkqircgQwC`, READY, Git-sourced from `e8842d2b92c3d119a86bb20ef1d96e45ab16734d`, non-production (`target: null`).
+**Yes for the owner-rationale implementation baseline.** Vercel preview `dpl_CYC2UDb95MiobSSauxVF8D7VeZnz` is READY, Git-sourced from exact implementation head `7cd9dd034437f28b478e51e730e5ec706e471e07`, and non-production (`target: null`).
 
-The owner-rationale projection requires its own exact-source READY preview proof after the final head is established. Preview READY is deployability/provenance evidence only.
+Preview READY is deployability/provenance evidence only. The documentation-only reconciliation head receives its own automatic preview; exact-final-head preview evidence is recorded in PR #1.
 
 ### Live staging
 
-**No.** No real WorldStage staging PostgreSQL/Supabase, authentication, abuse-control, incident-management, notification, signed-user RLS, provider backup/restore, or live kill-switch environment is bound or proven.
+**No.** The exact #606 staging-readiness artifact remained intentionally `BLOCKED`; its internal `source_sha` matched `7cd9dd034437f28b478e51e730e5ec706e471e07`. No real WorldStage staging PostgreSQL/Supabase, authentication, abuse-control, incident-management, notification, signed-user RLS, provider backup/restore, or live kill-switch environment is bound or proven.
 
 ### Production verified / released for this line
 
-**No.** The preserved production baseline remains separate at `dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1`. The active mobile-v2 / Cherry prototype / secure-intake line has not been promoted.
+**No.** The preserved production baseline remains separate at `dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1`, READY with `target: production` and source `redeploy`. The active mobile-v2 / Cherry prototype / secure-intake line has not been promoted.
 
 ## Done
 
-At the documented + implemented level, the planned **read-only fixed-rationale projection into Cherry Owner Summary / Owner Handoff** is complete. It adds practical owner context without expanding the data or authority surface.
+The **read-only fixed-rationale projection into Cherry Owner Summary / Owner Handoff** is documented, implemented, tested on its exact implementation head, and preview-deployed on that same exact source. It adds practical owner context without expanding the data or authority surface.
 
-The previously verified fixed-vocabulary rationale slice remains tested + preview-deployed at exact baseline `e8842d2…` / run #598 / preview `dpl_BjmG…`.
+Run #606 produced:
+- staging-readiness artifact `9069772871`, digest `sha256:dfa2848414e091a4d1b3ab06baf2db41b81ba40c7f4878842834448d81907457`;
+- mobile evidence artifact `9069773355`, digest `sha256:1657464fe0bddc7188801ffb4288ba0800cef5a89728bd05dbc166416c9f9ba9`.
 
 ## In progress
 
-- exact-current-head CI verification for the owner-rationale projection + roadmap head;
-- exact-source READY preview verification;
-- PR #1 exact-head evidence reconciliation after both proofs resolve.
+- automatic exact-current-head CI/preview proof for this documentation-only roadmap reconciliation;
+- PR #1 exact-head evidence reconciliation after those proofs resolve.
 
 ## Hard blockers / gates intentionally not crossed
 
@@ -110,7 +113,7 @@ The previously verified fixed-vocabulary rationale slice remains tested + previe
 
 ## Next autonomous action
 
-After exact-head CI and preview provenance close, continue product-facing work rather than adding more evidence infrastructure: make the Owner Summary prioritize the single highest-value synthetic Cherry judgment item in one phone view, using only the existing fixed local demo state and fixed rationale vocabulary. Do not add free text, real client data, external writes, spending, provider bindings, or release authority.
+After final exact-head proof closes, continue product-facing work rather than adding more evidence infrastructure: make the Owner Summary prioritize the single highest-value synthetic Cherry judgment item in one phone view, using only the existing fixed local demo state and fixed rationale vocabulary. Do not add free text, real client data, external writes, spending, provider bindings, or release authority.
 
 ## Explicit non-claims
 
