@@ -9,7 +9,6 @@
 No unresolved item in this register may be silently inferred from public information, developer preference, platform defaults, or convenience.
 
 For each item, record:
-
 - decision;
 - approver;
 - date;
@@ -151,6 +150,8 @@ Blocks:
 - retention.
 
 ## D7 — Retention and deletion
+
+Canonical invariant: **retention/deletion durations are never invented.**
 
 No durations are proposed automatically.
 
