@@ -31,12 +31,7 @@ const SUSTAINMENT_HORIZONS = Object.freeze([
 ]);
 
 function defaultSustainmentState() {
-  return {
-    version: SUSTAINMENT_PLAN_VERSION,
-    day7Prepared: false,
-    day30Prepared: false,
-    day90Prepared: false,
-  };
+  return { version: SUSTAINMENT_PLAN_VERSION, day7Prepared: false, day30Prepared: false, day90Prepared: false };
 }
 
 let sustainmentFallback = defaultSustainmentState();
@@ -58,12 +53,7 @@ function sanitizeSustainmentState(value, ready = syntheticRecordReady()) {
   const day7Prepared = value.day7Prepared === true;
   const day30Prepared = day7Prepared && value.day30Prepared === true;
   const day90Prepared = day30Prepared && value.day90Prepared === true;
-  return {
-    version: SUSTAINMENT_PLAN_VERSION,
-    day7Prepared,
-    day30Prepared,
-    day90Prepared,
-  };
+  return { version: SUSTAINMENT_PLAN_VERSION, day7Prepared, day30Prepared, day90Prepared };
 }
 
 function readSustainmentState() {
@@ -71,7 +61,7 @@ function readSustainmentState() {
   if (!ready) {
     sustainmentFallback = defaultSustainmentState();
     try { localStorage.removeItem(SUSTAINMENT_PLAN_KEY); } catch {}
-    return sustainmentFallback;
+    return { ...sustainmentFallback };
   }
 
   try {
@@ -79,7 +69,7 @@ function readSustainmentState() {
     const sanitized = sanitizeSustainmentState(parsed, true);
     sustainmentFallback = sanitized;
     localStorage.setItem(SUSTAINMENT_PLAN_KEY, JSON.stringify(sanitized));
-    return sanitized;
+    return { ...sanitized };
   } catch {
     return { ...sustainmentFallback };
   }
@@ -133,19 +123,12 @@ function sustainmentCardMarkup(horizon, state, ready) {
   const available = ready && horizonAvailable(state, horizon.id);
   let action = '<span class="sustainment-plan__gate">Complete the synthetic Transformation Record first</span>';
 
-  if (ready && prepared) {
-    action = '<span class="sustainment-plan__prepared">Prepared locally</span>';
-  } else if (ready && available) {
-    action = `<button type="button" class="sustainment-plan__action" data-sustainment-action="${horizon.id}">${horizonActionLabel(horizon.id)}</button>`;
-  } else if (ready) {
-    action = '<span class="sustainment-plan__gate">Prepare the earlier checkpoint first</span>';
-  }
+  if (ready && prepared) action = '<span class="sustainment-plan__prepared">Prepared locally</span>';
+  else if (ready && available) action = `<button type="button" class="sustainment-plan__action" data-sustainment-action="${horizon.id}">${horizonActionLabel(horizon.id)}</button>`;
+  else if (ready) action = '<span class="sustainment-plan__gate">Prepare the earlier checkpoint first</span>';
 
   return `<article class="sustainment-plan__card ${prepared ? 'is-prepared' : ''}" data-sustainment-horizon="${horizon.id}">
-    <div class="sustainment-plan__card-top">
-      <span>${horizon.label}</span>
-      <strong>${prepared ? 'Prepared' : 'Pending'}</strong>
-    </div>
+    <div class="sustainment-plan__card-top"><span>${horizon.label}</span><strong>${prepared ? 'Prepared' : 'Pending'}</strong></div>
     <h3>${horizon.title}</h3>
     <p>${horizon.prompt}</p>
     <dl>
@@ -156,9 +139,18 @@ function sustainmentCardMarkup(horizon, state, ready) {
   </article>`;
 }
 
-function sustainmentPanelMarkup(state, ready, message = '') {
+function sustainmentSignature(ready, state) {
+  return encodeURIComponent(JSON.stringify({
+    ready,
+    day7Prepared: state.day7Prepared,
+    day30Prepared: state.day30Prepared,
+    day90Prepared: state.day90Prepared,
+  }));
+}
+
+function sustainmentPanelMarkup(state, ready, signature, message = '') {
   const count = preparedCount(state);
-  return `<section class="sustainment-plan" data-sustainment-plan aria-labelledby="sustainment-plan-title">
+  return `<section class="sustainment-plan" data-sustainment-plan data-sustainment-signature="${signature}" aria-labelledby="sustainment-plan-title">
     <div class="sustainment-plan__eyebrow">TRANSFORMATION RECORD · SYNTHETIC SUSTAINMENT</div>
     <div class="sustainment-plan__header">
       <div>
@@ -229,20 +221,26 @@ function bindSustainmentPanel(panel) {
 
 function enhanceSustainment(message = '') {
   const host = sustainmentHost();
-  if (!host || host.querySelector('[data-sustainment-plan]')) return;
+  if (!host) return;
+
   const ready = syntheticRecordReady();
   const state = readSustainmentState();
+  const signature = sustainmentSignature(ready, state);
+  const existing = host.querySelector('[data-sustainment-plan]');
+
+  // Keep the locked panel mounted. Replacing it on every child-list mutation
+  // creates a self-triggering MutationObserver loop that can prevent window load.
+  if (existing?.dataset.sustainmentSignature === signature) return;
+  existing?.remove();
+
   const wrapper = document.createElement('div');
-  wrapper.innerHTML = sustainmentPanelMarkup(state, ready, message);
+  wrapper.innerHTML = sustainmentPanelMarkup(state, ready, signature, message);
   const panel = wrapper.firstElementChild;
   insertSustainmentPanel(panel, host);
   bindSustainmentPanel(panel);
 }
 
-new MutationObserver(() => queueMicrotask(() => {
-  const existing = document.querySelector('[data-sustainment-plan]');
-  if (existing && !syntheticRecordReady()) existing.remove();
-  enhanceSustainment();
-})).observe(document.getElementById('app'), { childList: true, subtree: true });
+new MutationObserver(() => queueMicrotask(() => enhanceSustainment()))
+  .observe(document.getElementById('app'), { childList: true, subtree: true });
 window.addEventListener('hashchange', () => queueMicrotask(() => enhanceSustainment()));
 enhanceSustainment();
