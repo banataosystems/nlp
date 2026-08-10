@@ -9,7 +9,7 @@ async function setFlow(page, value) {
   await page.reload();
 }
 
-test('owner continuity strip derives only the three fixed synthetic stages, handoff cue, and existing resume step', async ({ page }) => {
+test('owner continuity strip derives only the three fixed synthetic stages, previous-stage handoff, and existing resume step', async ({ page }) => {
   const networkWrites = [];
   page.on('request', (request) => {
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method())) {
@@ -30,7 +30,9 @@ test('owner continuity strip derives only the three fixed synthetic stages, hand
   let strip = page.locator('[data-cherry-engagement-continuity]');
   await expect(strip).toBeVisible();
   await expect(strip).toHaveAttribute('data-cherry-engagement-continuity-stage', 'discovery');
+  await expect(strip).toHaveAttribute('data-cherry-engagement-continuity-previous', 'none');
   await expect(strip.locator('[data-cherry-engagement-continuity-current]')).toHaveText('Discovery');
+  await expect(strip.locator('[data-cherry-engagement-continuity-previous-label]')).toHaveText('Previous stage: None.');
   await expect(strip.locator('[data-cherry-engagement-continuity-step="discovery"]')).toHaveAttribute('data-cherry-engagement-continuity-status', 'current');
   await expect(strip.locator('[data-cherry-engagement-continuity-step="review"]')).toHaveAttribute('data-cherry-engagement-continuity-status', 'upcoming');
   await expect(strip.locator('[data-cherry-engagement-continuity-step="record"]')).toHaveAttribute('data-cherry-engagement-continuity-status', 'upcoming');
@@ -53,7 +55,9 @@ test('owner continuity strip derives only the three fixed synthetic stages, hand
 
   strip = page.locator('[data-cherry-engagement-continuity]');
   await expect(strip).toHaveAttribute('data-cherry-engagement-continuity-stage', 'review');
+  await expect(strip).toHaveAttribute('data-cherry-engagement-continuity-previous', 'discovery');
   await expect(strip.locator('[data-cherry-engagement-continuity-current]')).toHaveText('Cherry review');
+  await expect(strip.locator('[data-cherry-engagement-continuity-previous-label]')).toHaveText('Previous stage: Discovery.');
   await expect(strip.locator('[data-cherry-engagement-continuity-step="discovery"]')).toHaveAttribute('data-cherry-engagement-continuity-status', 'complete');
   await expect(strip.locator('[data-cherry-engagement-continuity-step="review"]')).toHaveAttribute('data-cherry-engagement-continuity-status', 'current');
   await expect(strip.locator('[data-cherry-engagement-continuity-step="record"]')).toHaveAttribute('data-cherry-engagement-continuity-status', 'upcoming');
@@ -75,7 +79,9 @@ test('owner continuity strip derives only the three fixed synthetic stages, hand
   });
   strip = page.locator('[data-cherry-engagement-continuity]');
   await expect(strip).toHaveAttribute('data-cherry-engagement-continuity-stage', 'record');
+  await expect(strip).toHaveAttribute('data-cherry-engagement-continuity-previous', 'review');
   await expect(strip.locator('[data-cherry-engagement-continuity-current]')).toHaveText('Transformation Record');
+  await expect(strip.locator('[data-cherry-engagement-continuity-previous-label]')).toHaveText('Previous stage: Cherry review.');
   await expect(strip.locator('[data-cherry-engagement-continuity-step="discovery"]')).toHaveAttribute('data-cherry-engagement-continuity-status', 'complete');
   await expect(strip.locator('[data-cherry-engagement-continuity-step="review"]')).toHaveAttribute('data-cherry-engagement-continuity-status', 'complete');
   await expect(strip.locator('[data-cherry-engagement-continuity-step="record"]')).toHaveAttribute('data-cherry-engagement-continuity-status', 'current');
@@ -92,6 +98,8 @@ test('owner continuity strip derives only the three fixed synthetic stages, hand
     recordPrepared: true,
   });
   strip = page.locator('[data-cherry-engagement-continuity]');
+  await expect(strip).toHaveAttribute('data-cherry-engagement-continuity-previous', 'review');
+  await expect(strip.locator('[data-cherry-engagement-continuity-previous-label]')).toHaveText('Previous stage: Cherry review.');
   await expect(strip.locator('[data-cherry-engagement-continuity-step="record"]')).toHaveAttribute('data-cherry-engagement-continuity-status', 'complete-current');
   await expect(strip.locator('[data-cherry-engagement-continuity-prepared]')).toHaveText('Prepared: Discovery brief, Cherry review, and local synthetic Transformation Record.');
   await expect(strip.locator('[data-cherry-engagement-continuity-next]')).toHaveText('Next: review the existing local synthetic Transformation Record.');
@@ -99,7 +107,7 @@ test('owner continuity strip derives only the three fixed synthetic stages, hand
   expect(networkWrites).toEqual([]);
 });
 
-test('continuity handoff fails closed on malformed flow state and remains phone-safe without external writes', async ({ page }) => {
+test('previous-stage indicator fails closed on malformed flow state and remains phone-safe without external writes', async ({ page }) => {
   const networkWrites = [];
   page.on('request', (request) => {
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method())) networkWrites.push(request.url());
@@ -111,6 +119,7 @@ test('continuity handoff fails closed on malformed flow state and remains phone-
     discoveryPrepared: true,
     ownerReviewed: true,
     recordPrepared: true,
+    previousStage: 'Production release',
     privateClientName: 'secret client',
     releaseAuthority: 'yes',
   });
@@ -118,10 +127,13 @@ test('continuity handoff fails closed on malformed flow state and remains phone-
   const strip = page.locator('[data-cherry-engagement-continuity]');
   await expect(strip).toBeVisible();
   await expect(strip).toHaveAttribute('data-cherry-engagement-continuity-stage', 'discovery');
+  await expect(strip).toHaveAttribute('data-cherry-engagement-continuity-previous', 'none');
   await expect(strip.locator('[data-cherry-engagement-continuity-current]')).toHaveText('Discovery');
+  await expect(strip.locator('[data-cherry-engagement-continuity-previous-label]')).toHaveText('Previous stage: None.');
   await expect(strip.locator('[data-cherry-engagement-continuity-step]')).toHaveCount(3);
   await expect(strip.locator('[data-cherry-engagement-continuity-prepared]')).toHaveText('Prepared: owner cockpit shell and fixed synthetic engagement flow only.');
   await expect(strip.locator('[data-cherry-engagement-continuity-next]')).toHaveText('Next: prepare the fixed synthetic Discovery brief.');
+  await expect(strip).not.toContainText('Production release');
   await expect(strip).not.toContainText('secret client');
   await expect(strip).not.toContainText('releaseAuthority');
   await expect(strip.locator('[data-cherry-engagement-continuity-resume]')).toHaveAttribute('data-cherry-engagement-continuity-resume', 'discovery');
