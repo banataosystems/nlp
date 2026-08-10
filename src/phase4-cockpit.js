@@ -75,14 +75,16 @@ function updateCherryDailyUI(message = '') {
 
   Object.entries(counts).forEach(([name, count]) => {
     const node = document.querySelector(`[data-cherry-daily-count="${name}"]`);
-    if (node) node.textContent = String(count);
+    const nextText = String(count);
+    if (node && node.textContent !== nextText) node.textContent = nextText;
   });
 
   document.querySelectorAll('[data-cherry-decision-state]').forEach((node) => {
     const id = node.dataset.cherryDecisionState;
     const value = state[id] || 'needs-cherry';
     const label = node.querySelector('[data-cherry-decision-label]');
-    if (label) label.textContent = cherryDailyLabel(value);
+    const nextLabel = cherryDailyLabel(value);
+    if (label && label.textContent !== nextLabel) label.textContent = nextLabel;
     node.querySelectorAll('[data-cherry-daily-set]').forEach((button) => {
       const isCurrent = button.dataset.cherryDailySet === value;
       button.classList.toggle('is-current', isCurrent);
@@ -91,7 +93,7 @@ function updateCherryDailyUI(message = '') {
   });
 
   const status = document.querySelector('[data-cherry-daily-status]');
-  if (status && message) status.textContent = message;
+  if (status && message && status.textContent !== message) status.textContent = message;
 }
 
 function enhanceCherryDaily() {
