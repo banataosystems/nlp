@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.use({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
 
-test('Cherry owner summary consolidates phase, next action, fixed rationale, owner handoff, judgment counts, follow-up and privacy boundary', async ({ page }) => {
+test('Cherry owner summary consolidates phase, next action, priority judgment, fixed rationale, owner handoff, judgment counts, follow-up and privacy boundary', async ({ page }) => {
   const networkWrites = [];
   page.on('request', (request) => {
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method())) {
@@ -25,6 +25,9 @@ test('Cherry owner summary consolidates phase, next action, fixed rationale, own
   await expect(page.locator('[data-owner-summary-phase]')).toHaveText('Discovery');
   await expect(page.locator('[data-owner-summary-next]')).toHaveText('Prepare synthetic Discovery brief');
   await expect(page.locator('[data-owner-summary-rationale]')).toHaveText('Why surfaced: Needs context · fixed rationale for demo item 01.');
+  await expect(page.locator('[data-owner-summary-priority-item]')).toHaveText('Item 01');
+  await expect(page.locator('[data-owner-summary-priority-state]')).toHaveText('Needs Cherry · Needs context');
+  await expect(page.locator('[data-owner-summary-priority]')).toContainText('No scoring model or private data is used');
   await expect(page.locator('[data-owner-summary-daily="needs"]')).toHaveText('3');
   await expect(summary).toContainText('7 days');
   await expect(summary).toContainText('Locked');
@@ -34,6 +37,7 @@ test('Cherry owner summary consolidates phase, next action, fixed rationale, own
   const item01 = page.locator('[data-cherry-decision-state="01"]');
   await item01.locator('[data-cherry-rationale-set="ready"]').click();
   await expect(page.locator('[data-owner-summary-rationale]')).toHaveText('Why surfaced: Ready · fixed rationale for demo item 01.');
+  await expect(page.locator('[data-owner-summary-priority-state]')).toHaveText('Needs Cherry · Ready');
 
   const handoff = page.locator('[data-owner-summary-brief]');
   await expect(handoff).toBeVisible();
@@ -70,7 +74,7 @@ test('Cherry owner summary consolidates phase, next action, fixed rationale, own
   expect(networkWrites).toEqual([]);
 });
 
-test('Cherry owner summary and handoff read only sanitized sequential local demo state and allowlisted rationale', async ({ page }) => {
+test('Cherry owner summary prioritizes Needs Cherry deterministically and reads only sanitized sequential local demo state and allowlisted rationale', async ({ page }) => {
   await page.goto('http://127.0.0.1:4173/#/cockpit');
   await page.evaluate(() => {
     localStorage.setItem('worldstage.synthetic.engagement.flow.v1', JSON.stringify({
@@ -108,6 +112,8 @@ test('Cherry owner summary and handoff read only sanitized sequential local demo
   await expect(page.locator('[data-owner-summary-phase]')).toHaveText('Sustainment');
   await expect(page.locator('[data-owner-summary-next]')).toHaveText('Prepare 30-day review');
   await expect(page.locator('[data-owner-summary-rationale]')).toHaveText('Why surfaced: Can wait · fixed rationale for demo item 01.');
+  await expect(page.locator('[data-owner-summary-priority-item]')).toHaveText('Item 03');
+  await expect(page.locator('[data-owner-summary-priority-state]')).toHaveText('Needs Cherry · Needs context');
   await expect(page.locator('[data-owner-summary-daily="needs"]')).toHaveText('1');
   await expect(page.locator('[data-owner-summary-daily="prepared"]')).toHaveText('1');
   await expect(page.locator('[data-owner-summary-daily="parked"]')).toHaveText('1');
