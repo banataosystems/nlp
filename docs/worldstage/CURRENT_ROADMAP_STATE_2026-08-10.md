@@ -10,7 +10,7 @@
 
 **Owner-operable mobile prototype hardening plus provider-neutral secure-intake/recovery preparation before live staging.**
 
-The priority has shifted from adding more evidence-chain machinery toward proving a useful Cherry-facing workflow with synthetic/demo data while preserving the existing security boundary. The active line remains reversible and non-live: no billable environment creation, real-provider binding, confidential-data activation, credential use, real migration or production release is authorized here.
+The priority remains proving useful Cherry-facing workflows with synthetic/demo data while preserving the existing security boundary. The active line remains reversible and non-live: no billable environment creation, real-provider binding, confidential-data activation, credential use, real migration or production release is authorized here.
 
 ## Proof-state separation
 
@@ -21,10 +21,12 @@ Current durable Phase 2–5 records cover:
 - secure intake, authorization, receipt/incident control and kill-switch behavior;
 - staging handoff, rollback, backup/restore, deployment isolation and environment binding;
 - signed-user live-test and live-staging evidence contracts;
-- reference-only evidence manifest/checkpoint continuity;
+- reference-only evidence manifest/checkpoint continuity plus checkpoint portability;
 - Discovery, Cherry OS and Transformation Record prototype boundaries;
 - `PHASE4_CHERRY_DAILY_OWNER_WORKFLOW_2026-08-10.md` for the owner-operable daily judgment workflow;
-- `PHASE4_5_SYNTHETIC_ENGAGEMENT_FLOW_2026-08-10.md` for the new end-to-end local synthetic operating loop.
+- `PHASE4_5_SYNTHETIC_ENGAGEMENT_FLOW_2026-08-10.md` for the end-to-end local synthetic operating loop;
+- `PHASE5_SYNTHETIC_SUSTAINMENT_PLAN_2026-08-10.md` for the owner-operable synthetic 7 / 30 / 90-day follow-through workflow;
+- `PHASE2_STAGING_EVIDENCE_CHECKPOINT_CAPSULE_2026-08-10.md` for deterministic checkpoint-chain portability without raw evidence or release authority.
 
 ### Implemented on the active branch
 
@@ -37,7 +39,8 @@ Current durable Phase 2–5 records cover:
 - Cherry OS judgment queue with demo-only source map and 60-second Room briefing pattern;
 - **Cherry Daily owner workflow:** each demo judgment item can be marked `Needs Cherry`, `Prepared` or `Parked`; summary counts update immediately; demo state persists in local browser storage and can be reset; no external system is changed;
 - Transformation Record prototype with evidence-state and privacy-governance explanations;
-- **Synthetic engagement operating loop:** one fixed synthetic engagement now moves from Discovery → Cherry judgment → Transformation Record across the three existing mobile surfaces. The shared flow persists only a schema version and three booleans, never reads Discovery form values, requires the actual Cherry Daily item `01` prepared state before owner judgment advances, performs no network write, and can be reset locally.
+- **Synthetic engagement operating loop:** one fixed synthetic engagement moves from Discovery → Cherry judgment → Transformation Record across the three existing mobile surfaces. The shared flow persists only a schema version and three booleans, never reads Discovery form values, requires the actual Cherry Daily item `01` prepared state before owner judgment advances, performs no network write, and can be reset locally;
+- **Synthetic 7 / 30 / 90 sustainment workflow:** after the synthetic Transformation Record is complete, Cherry can prepare fixed 7-day ownership, 30-day pattern, and 90-day sustainment checkpoints. A separate local demo object stores only version + three sequential booleans; skipped/tampered state fails closed; no calendar, CRM, client communication, database, evidence claim, or production system is changed.
 
 #### Secure-intake boundary
 
@@ -64,13 +67,14 @@ Current durable Phase 2–5 records cover:
 - signed-user live-test contract;
 - live-staging evidence aggregator;
 - reference-only staging evidence manifest;
-- deterministic staging evidence checkpoint continuity.
+- deterministic staging evidence checkpoint continuity;
+- self-contained checkpoint portability capsule that verifies complete genesis-to-terminal checkpoint chains across durable copies while embedding no underlying provider evidence and granting no activation or release authority.
 
-All of those contracts remain non-activating: structural completeness does not authorize confidential intake or production release.
+All of those contracts remain non-activating: structural completeness or portability does not authorize confidential intake or production release.
 
 ### Tested
 
-The last exact verified project baseline before the Cherry Daily and synthetic engagement commits is:
+The last exact verified project baseline recorded in durable project evidence is:
 - source head `ae3b8ed38680188b499758e5ab7d2b1689fa686a`;
 - GitHub Actions run `31381398045` (#495), **PASS**;
 - staging-readiness artifact `9060036850`, digest `sha256:64b07fdb78165a1dbb18ef2daf18c2d1ffddbbe203fc4a7fca8c697d0a6a8757`;
@@ -78,13 +82,13 @@ The last exact verified project baseline before the Cherry Daily and synthetic e
 
 That baseline recorded `readiness = BLOCKED`, confidential intake disabled, provider/persistence bindings absent and owner/security decisions D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 still open.
 
-Cherry Daily and the synthetic engagement loop are **implemented with authored Playwright coverage but are not self-certified as tested in this roadmap**. An exact-current-head CI pass is required after this roadmap commit. Exact-head run/artifact evidence belongs in PR #1 because editing this file itself changes the source head.
+Cherry Daily, the synthetic engagement loop, checkpoint portability capsule, and synthetic 7 / 30 / 90 sustainment workflow are **implemented with authored automated coverage but are not self-certified as tested in this roadmap**. An exact-current-head CI pass is required after this reconciliation commit. Exact-head run/artifact evidence belongs in PR #1 because editing this file itself changes the source head.
 
 ### Preview deployed
 
-The latest verified non-production preview immediately before the synthetic engagement implementation is `dpl_4p1JWif882venj4pG8YY5She4kMR`, READY, Git-sourced, `target: null`, tied to source `71bfc571b46da2453b7ad1ac8d96b4140db568c1`. That source includes the Cherry Daily implementation and roadmap reconciliation, but its GitHub Actions run #504 was still in progress when the synthetic engagement implementation began.
+The last exact verified preview recorded before the newer product slices is `dpl_4p1JWif882venj4pG8YY5She4kMR`, READY, Git-sourced, `target: null`, tied to source `71bfc571b46da2453b7ad1ac8d96b4140db568c1`.
 
-The synthetic engagement loop is not called preview-deployed until a newer Vercel preview is verified against its exact source SHA. Preview READY is deployability/provenance evidence only and is kept separate from CI test proof.
+Newer Vercel previews may exist, but checkpoint portability and the 7 / 30 / 90 sustainment workflow are not called preview-deployed until the final tested head is matched to a READY non-production deployment by exact Git SHA. Preview READY is deployability/provenance evidence only and is kept separate from CI test proof.
 
 ### Live staging
 
@@ -92,7 +96,7 @@ The synthetic engagement loop is not called preview-deployed until a newer Verce
 
 ### Production
 
-The preserved production baseline remains `dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1`, READY, `target: production`, source `redeploy`, with `cherrypua.vercel.app` among its recorded aliases. The mobile-v2 / Cherry Daily / synthetic engagement / secure-intake line has not been promoted and is not production-approved.
+The preserved production baseline remains `dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1`, READY, `target: production`, source `redeploy`, with `cherrypua.vercel.app` among its recorded aliases. The mobile-v2 / Cherry Daily / synthetic engagement / sustainment / secure-intake line has not been promoted and is not production-approved.
 
 ## Current hard gates / blockers
 
@@ -107,18 +111,20 @@ The preserved production baseline remains `dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1`, RE
 
 ## Risks
 
-- A polished demo workflow can look operational even though it still uses synthetic/demo data; Cherry Daily and the synthetic engagement loop therefore remain explicitly local-demo-only.
+- A polished demo workflow can look operational even though it still uses synthetic/demo data; Cherry Daily, the synthetic engagement loop and the 7 / 30 / 90 sustainment plan therefore remain explicitly local-demo-only.
+- The synthetic sustainment checkpoints are planning states, not calendar events, client commitments, measured outcomes or evidence claims.
 - The synthetic loop proves an operating pattern, not the correctness of real client data, real authentication, provider security, or real Transformation Record evidence.
 - Provider-neutral/synthetic proof cannot substitute for live database-policy, security, recovery or operational proof.
+- Checkpoint portability proves that a checkpoint lineage was copied intact; it does not prove underlying provider evidence and grants no activation/release authority.
 - Preview READY proves deployability/provenance only, not production suitability.
 - The preserved production baseline must remain isolated until explicit production-release authority and all required live proof gates exist.
 - Pandora unavailability prevents canonical memory reconciliation until access is restored or a separately authorized governance exception exists.
 
 ## Current safe next autonomous actions
 
-1. Obtain exact-current-head CI proof for Cherry Daily, the synthetic engagement loop, and the existing mandatory security/mobile chain.
+1. Obtain exact-current-head CI proof for Cherry Daily, synthetic engagement, checkpoint portability, synthetic 7 / 30 / 90 sustainment, and the existing mandatory security/mobile chain.
 2. Verify exact-current-head non-production Vercel preview provenance while preserving the production baseline.
-3. Continue the highest-value safe product slice after that proof: make the Transformation Record owner-operable with a synthetic 7 / 30 / 90-day sustainment and evidence follow-up plan that remains local-only and non-authoritative.
+3. After that proof, continue the highest-value safe product slice: give Cherry one mobile owner summary that shows the synthetic engagement phase, next owner action, 7 / 30 / 90 follow-up status and evidence boundary without adding real-provider dependencies.
 4. Keep public receipt lookup absent and confidential intake fail-closed until owner/security/auth/privacy gates are resolved.
 5. Do not create billable staging, bind confidential data, use missing credentials, apply real migrations, make legal/public commitments or promote production without separate hard gates.
 
@@ -130,9 +136,9 @@ The preserved production baseline remains `dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1`, RE
 - No public receipt-status endpoint is claimed.
 - No real provider backup/restore or live kill-switch proof is claimed.
 - No participant-private production flow is claimed.
-- Cherry Daily and the synthetic engagement loop do not change any external WorldStage system.
-- The synthetic Transformation Record state is not a real client outcome or evidence claim.
+- Cherry Daily, the synthetic engagement loop and the 7 / 30 / 90 sustainment workflow do not change any external WorldStage system.
+- The synthetic Transformation Record and sustainment states are not real client outcomes, calendar commitments, or evidence claims.
 - No owner/security approval is inferred from code or tests.
 - No physical-device owner approval is inferred from browser automation.
 - No Pandora Memory synchronization is claimed while its connector path is unavailable.
-- No mobile-v2 / Cherry Daily / synthetic engagement / secure-intake production release is claimed.
+- No mobile-v2 / Cherry Daily / synthetic engagement / sustainment / secure-intake production release is claimed.
