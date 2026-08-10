@@ -16,10 +16,10 @@ The priority is Cherry-facing operating value using synthetic/local demo state w
 
 ### Documented
 
-Yes. Durable records cover the mobile-first redesign, Discovery, Cherry OS, Transformation Record, Cherry Daily, synthetic engagement loop, 7 / 30 / 90 sustainment workflow, Owner Summary, Owner Handoff, secure-intake contracts, authorization, staging/recovery evidence, and the new fixed-vocabulary decision-rationale slice.
+Yes. Durable records cover the mobile-first redesign, Discovery, Cherry OS, Transformation Record, Cherry Daily, synthetic engagement loop, 7 / 30 / 90 sustainment workflow, Owner Summary, Owner Handoff, secure-intake contracts, authorization, staging/recovery evidence, fixed-vocabulary decision rationale, and the new read-only rationale projection into the owner-facing summary/handoff.
 
 Newest product record:
-- `docs/worldstage/PHASE4_CHERRY_DECISION_RATIONALE_2026-08-10.md`
+- `docs/worldstage/PHASE4_CHERRY_OWNER_RATIONALE_HANDOFF_2026-08-10.md`
 
 ### Implemented on the active branch
 
@@ -34,14 +34,13 @@ Newest product record:
 - sequential synthetic 7 / 30 / 90 sustainment checkpoints;
 - read-only Cherry Owner Summary;
 - focused phone-first Cherry Owner Handoff;
-- **fixed-vocabulary Cherry decision-rationale lens:** each demo judgment item can carry only `Ready`, `Needs context`, or `Can wait`; no free-text rationale exists; changing the owner decision state supplies a deterministic safe default rationale; arbitrary stored fields/invalid values are sanitized back to the exact allowlisted three-item shape.
+- fixed-vocabulary Cherry decision-rationale lens: each demo judgment item can carry only `Ready`, `Needs context`, or `Can wait`; no free-text rationale exists; changing the owner decision state supplies a deterministic safe default rationale; arbitrary stored fields/invalid values are sanitized by the rationale layer;
+- **read-only owner-rationale projection:** the selected allowlisted rationale for fixed demo item `01` is visible beside the next owner action, in the inline 60-second brief, and in a dedicated `WHY THIS IS SURFACED` card inside the full Owner Handoff. The owner-facing view ignores invalid values/extra fields and cannot edit or expand the rationale vocabulary.
 
-The rationale slice is wired through:
-- `src/cherry-decision-rationale.js`;
-- `src/cherry-decision-rationale.css`;
-- `tests/cherry-decision-rationale.spec.mjs`;
-- `index.html`;
-- mandatory `test:phase4` execution in `package.json`.
+The owner-rationale projection is wired through:
+- `src/cherry-owner-summary.js`;
+- `tests/cherry-owner-summary.spec.mjs`;
+- `docs/worldstage/PHASE4_CHERRY_OWNER_RATIONALE_HANDOFF_2026-08-10.md`.
 
 #### Secure-intake / recovery boundary
 
@@ -51,24 +50,23 @@ No structural/test result can authorize confidential intake or production releas
 
 ### Tested
 
-**Previous exact verified baseline:** `edaef318190c99a5d9bed066789787a5013b46f8`, GitHub Actions run #582 PASS, with the complete mandatory mobile/security/Phase 2–5/release/visual chain.
+**Latest fully verified baseline before the owner-rationale projection:** `e8842d2b92c3d119a86bb20ef1d96e45ab16734d`, GitHub Actions run #598 PASS, with the complete mandatory mobile/security/Phase 2–5/release/visual chain.
 
-**Current rationale implementation:** exact-head verification must be recorded after this roadmap reconciliation commit. Until the final current-head workflow passes, the new rationale slice is implemented/documented but must not be described as tested.
+**Current owner-rationale projection:** exact-current-head verification is required after this roadmap reconciliation commit. Until the final current-head workflow passes, this new slice is documented + implemented only and must not be described as tested.
 
-Focused rationale coverage is mandatory and checks:
-- phone-width rendering;
-- only the three allowlisted rationale enums;
-- no input/textarea/contenteditable rationale path;
-- deterministic decision-state → rationale mapping;
-- tampered/extra local-storage fields removed from the durable shape and never rendered;
+Focused owner-rationale coverage is mandatory and checks:
+- default `Needs context` projection on clean local demo state;
+- same-session reflection after the existing item `01` rationale changes to `Ready`;
+- identical allowlisted rationale across Next Owner Action, inline Owner Handoff, and full Owner Handoff dialog;
+- invalid rationale values and arbitrary private/authority-looking fields never render;
 - zero POST/PUT/PATCH/DELETE requests;
-- local reset semantics.
+- existing phone-width, safe navigation, focus restoration, Escape/close, follow-up and privacy boundaries remain intact.
 
 ### Preview deployed
 
-**Previous exact verified preview:** `dpl_GNLPbPv6dK8d7PZC9aLWTRfugMVx`, READY, Git-sourced from `edaef318190c99a5d9bed066789787a5013b46f8`, non-production (`target: null`).
+**Latest fully verified preview before this new slice:** `dpl_BjmGsh6CrXjFgS2d7ikkqircgQwC`, READY, Git-sourced from `e8842d2b92c3d119a86bb20ef1d96e45ab16734d`, non-production (`target: null`).
 
-The rationale implementation requires its own exact-source preview proof after the final head is established. Preview READY is deployability/provenance evidence only.
+The owner-rationale projection requires its own exact-source READY preview proof after the final head is established. Preview READY is deployability/provenance evidence only.
 
 ### Live staging
 
@@ -80,13 +78,15 @@ The rationale implementation requires its own exact-source preview proof after t
 
 ## Done
 
-At the implemented/documented level, the planned **structured synthetic decision-rationale lens** is complete. It adds practical owner context without expanding the data or authority surface.
+At the documented + implemented level, the planned **read-only fixed-rationale projection into Cherry Owner Summary / Owner Handoff** is complete. It adds practical owner context without expanding the data or authority surface.
+
+The previously verified fixed-vocabulary rationale slice remains tested + preview-deployed at exact baseline `e8842d2…` / run #598 / preview `dpl_BjmG…`.
 
 ## In progress
 
-- exact-current-head CI verification for the rationale + roadmap head;
+- exact-current-head CI verification for the owner-rationale projection + roadmap head;
 - exact-source READY preview verification;
-- PR #1 evidence reconciliation after both proofs resolve.
+- PR #1 exact-head evidence reconciliation after both proofs resolve.
 
 ## Hard blockers / gates intentionally not crossed
 
@@ -103,13 +103,14 @@ At the implemented/documented level, the planned **structured synthetic decision
 
 - A polished synthetic workflow may look operational; all product-facing state therefore remains explicitly local/demo-only.
 - Fixed rationale enums are owner-interface scaffolding, not source evidence, legal reasoning, approvals, commitments, instructions to staff, or real client records.
+- Showing a rationale beside the next action does not mean the system has independently derived a reason; it is a read-only projection of Cherry Daily's allowlisted local demo enum for fixed item `01`.
 - Browser-local persistence is not a production database or audit trail.
 - Provider-neutral/synthetic tests cannot substitute for live authorization, security, recovery, or operations proof.
 - Preview READY does not imply live staging or production suitability.
 
 ## Next autonomous action
 
-After exact-head CI and preview provenance close, expose the selected **fixed rationale** inside the existing Cherry Owner Summary / Owner Handoff so Cherry can see the synthetic next action and the allowlisted reason behind it in one phone view. Keep that follow-on read-only/local-demo-only, reject arbitrary text, and perform no external/provider write.
+After exact-head CI and preview provenance close, continue product-facing work rather than adding more evidence infrastructure: make the Owner Summary prioritize the single highest-value synthetic Cherry judgment item in one phone view, using only the existing fixed local demo state and fixed rationale vocabulary. Do not add free text, real client data, external writes, spending, provider bindings, or release authority.
 
 ## Explicit non-claims
 
