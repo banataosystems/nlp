@@ -153,7 +153,7 @@ function inspectSignedUserLiveTestEvidence(evidence, plan) {
   if ((evidence.test_plan_digest || '').toLowerCase() !== plan.digest) errors.push('signed_user_live_test_plan_digest_mismatch');
   if (evidence.fixture_data_class !== 'synthetic_only') errors.push('signed_user_live_test_fixture_must_be_synthetic_only');
   if (evidence.real_person_data_used !== false) errors.push('signed_user_live_test_real_person_data_must_be_false');
-  if (evidence.confidential_payloads_used !== false) errors.push('signed_user_live_test_confidential_payloads_must_be_false');
+  if (evidence.confidential_data_used !== false) errors.push('signed_user_live_test_confidential_data_must_be_false');
   if (evidence.production_access !== false) errors.push('signed_user_live_test_production_access_must_be_false');
   if (evidence.intake_control !== 'disabled') errors.push('signed_user_live_test_intake_must_be_disabled');
   if (evidence.ephemeral_sessions !== true) errors.push('signed_user_live_test_sessions_must_be_ephemeral');
