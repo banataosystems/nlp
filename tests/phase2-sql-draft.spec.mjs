@@ -12,6 +12,7 @@ function read(rel) {
 const schema = `${draftDir}/001_minimum_schema.sql`;
 const rls = `${draftDir}/002_rls_policy_skeleton.sql`;
 const fixtures = `${draftDir}/003_negative_authorization_fixtures.sql`;
+const runtimeAlignment = `${draftDir}/004_runtime_alignment_constraints.sql`;
 const readme = `${draftDir}/README.md`;
 
 const privateTables = [
@@ -29,7 +30,7 @@ const privateTables = [
 ];
 
 test('Phase 2 SQL stays in documentation, not executable migration paths', () => {
-  for (const rel of [readme, schema, rls, fixtures]) expect(fs.existsSync(path.join(root, rel))).toBe(true);
+  for (const rel of [readme, schema, rls, fixtures, runtimeAlignment]) expect(fs.existsSync(path.join(root, rel))).toBe(true);
   expect(draftDir).toMatch(/^docs\/worldstage\//);
   expect(draftDir).not.toMatch(/(^|\/)supabase\/migrations(\/|$)/);
   expect(draftDir).not.toMatch(/(^|\/)migrations(\/|$)/);
@@ -45,6 +46,17 @@ test('minimum schema contains only the bounded Phase 2 slice and no retention sc
   expect(source).not.toMatch(/retention.*interval\s*['"]/i);
   expect(source).not.toContain('SUPABASE_SERVICE_ROLE_KEY');
   expect(source).not.toContain('service_role');
+});
+
+test('runtime-alignment draft converts receipts to opaque text and scopes idempotency by actor', () => {
+  const source = read(runtimeAlignment);
+  expect(source).toContain('alter column receipt_code type text');
+  expect(source).toContain('drop constraint if exists ws_intakes_idempotency_key_key');
+  expect(source).toContain('idempotency_actor_scope text');
+  expect(source).toContain('ws_intakes_actor_idempotency_unique');
+  expect(source).toContain('(idempotency_actor_scope, idempotency_key)');
+  expect(source).toContain('browser cannot supply or override');
+  expect(source).toContain('No global unique index on idempotency_key should remain');
 });
 
 test('every private table explicitly enables and forces RLS', () => {
