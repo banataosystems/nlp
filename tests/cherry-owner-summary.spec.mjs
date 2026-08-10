@@ -2,7 +2,14 @@ import { test, expect } from '@playwright/test';
 
 test.use({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
 
-test('Cherry owner summary consolidates phase, next action, judgment counts, follow-up and privacy boundary', async ({ page }) => {
+test('Cherry owner summary consolidates phase, next action, owner handoff, judgment counts, follow-up and privacy boundary', async ({ page }) => {
+  const networkWrites = [];
+  page.on('request', (request) => {
+    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method())) {
+      networkWrites.push({ method: request.method(), url: request.url() });
+    }
+  });
+
   await page.goto('http://127.0.0.1:4173/#/cockpit');
   await page.evaluate(() => {
     localStorage.removeItem('worldstage.synthetic.engagement.flow.v1');
@@ -22,14 +29,23 @@ test('Cherry owner summary consolidates phase, next action, judgment counts, fol
   await expect(page.locator('[data-owner-summary-boundary]')).toContainText('Local synthetic demo only');
   await expect(page.locator('[data-owner-summary-boundary]')).toContainText('No real client data');
 
+  const handoff = page.locator('[data-owner-summary-brief]');
+  await expect(handoff).toBeVisible();
+  await expect(handoff).toContainText('OWNER HANDOFF · 60-SECOND BRIEF');
+  await expect(page.locator('[data-owner-summary-brief-title]')).toHaveText('Open the synthetic Discovery brief');
+  await expect(page.locator('[data-owner-summary-brief-decision]')).toContainText('ready to enter Cherry’s judgment queue');
+  await expect(page.locator('[data-owner-summary-brief-boundary]')).toContainText('No Discovery form text');
+
   const sizes = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth }));
   expect(sizes.sw).toBeLessThanOrEqual(sizes.cw + 1);
+  expect(networkWrites).toEqual([]);
 
   await page.locator('[data-owner-summary-nav="discovery"]').click();
   await expect(page).toHaveURL(/#\/discovery$/);
+  expect(networkWrites).toEqual([]);
 });
 
-test('Cherry owner summary reads only sanitized sequential local demo state', async ({ page }) => {
+test('Cherry owner summary and handoff read only sanitized sequential local demo state', async ({ page }) => {
   await page.goto('http://127.0.0.1:4173/#/cockpit');
   await page.evaluate(() => {
     localStorage.setItem('worldstage.synthetic.engagement.flow.v1', JSON.stringify({
@@ -67,6 +83,12 @@ test('Cherry owner summary reads only sanitized sequential local demo state', as
   await expect(checkpoints.nth(0)).toContainText('Prepared');
   await expect(checkpoints.nth(1)).toContainText('Next');
   await expect(checkpoints.nth(2)).toContainText('Locked');
+
+  const handoff = page.locator('[data-owner-summary-brief]');
+  await expect(page.locator('[data-owner-summary-brief-title]')).toHaveText('Review the 30-day pattern');
+  await expect(page.locator('[data-owner-summary-brief-context]')).toContainText('7-day checkpoint is prepared locally');
+  await expect(page.locator('[data-owner-summary-brief-boundary]')).toContainText('not a measured outcome');
+  await expect(handoff).not.toContainText('must not appear');
   await expect(summary).not.toContainText('must not appear');
 
   await page.locator('[data-owner-summary-nav="client"]').click();
