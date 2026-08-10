@@ -8,10 +8,11 @@
     "test:devices": "playwright test tests/device-iphone-webkit.spec.mjs tests/device-pixel-chromium.spec.mjs",
     "test:phase2sql": "playwright test tests/phase2-sql-draft.spec.mjs",
     "test:phase2api": "playwright test tests/phase2-api-contract.spec.mjs",
+    "test:phase2staging": "playwright test tests/phase2-staging-spec.spec.mjs",
     "test:phase3": "playwright test tests/discovery-phase3.spec.mjs",
     "test:phase4": "playwright test tests/cockpit-phase4.spec.mjs",
     "test:phase5": "playwright test tests/record-phase5.spec.mjs",
-    "test:release": "playwright test tests/release-contract.spec.mjs tests/phase2-sql-draft.spec.mjs tests/phase2-api-contract.spec.mjs",
+    "test:release": "playwright test tests/release-contract.spec.mjs tests/phase2-sql-draft.spec.mjs tests/phase2-api-contract.spec.mjs tests/phase2-staging-spec.spec.mjs",
     "test:visual": "playwright test tests/mobile-visual-evidence.spec.mjs"
   },
   "devDependencies": {
