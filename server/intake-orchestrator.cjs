@@ -2,6 +2,7 @@ const crypto = require('node:crypto');
 const { evaluateRequest } = require('./intake-contract.cjs');
 const { persistValidatedIntake } = require('./intake-persistence.cjs');
 const { validateStagingAdapter } = require('./staging-adapter-contract.cjs');
+const { buildAbuseContext, validateAbuseDecision } = require('./intake-abuse-contract.cjs');
 
 function response(status, body) {
   return { status, body };
@@ -11,6 +12,7 @@ async function processSecureIntake({
   request,
   env = process.env,
   adapter,
+  checkAbuse,
   authenticate,
   authorizeSubmission,
   expectedSourceSha,
@@ -24,6 +26,23 @@ async function processSecureIntake({
     env,
   });
   if (contract.status !== 200) return contract;
+
+  if (typeof checkAbuse !== 'function') {
+    return response(503, { error: 'abuse_controls_not_configured', message: 'Secure intake is not available yet.' });
+  }
+
+  let abuseDecision;
+  try {
+    abuseDecision = validateAbuseDecision(await checkAbuse(buildAbuseContext({ request, correlationId })));
+  } catch {
+    return response(503, { error: 'abuse_controls_unavailable', message: 'Secure intake is not available yet.' });
+  }
+  if (!abuseDecision.valid) {
+    return response(503, { error: 'abuse_controls_unavailable', message: 'Secure intake is not available yet.' });
+  }
+  if (!abuseDecision.allowed) {
+    return response(429, { error: 'request_not_accepted', message: 'Please try again later.' });
+  }
 
   if (typeof authenticate !== 'function') {
     return response(503, { error: 'authentication_not_configured', message: 'Secure intake is not available yet.' });
