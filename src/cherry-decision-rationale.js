@@ -72,7 +72,7 @@ function cherryRationaleLabel(value) {
 
 function setCherryRationaleStatus(message) {
   const status = document.querySelector('[data-cherry-daily-status]');
-  if (status && message) status.textContent = message;
+  if (status && message && status.textContent !== message) status.textContent = message;
 }
 
 function updateCherryRationaleUI(message = '') {
@@ -81,7 +81,8 @@ function updateCherryRationaleUI(message = '') {
     const id = node.dataset.cherryRationaleState;
     const value = state[id] || 'needs-context';
     const label = node.querySelector('[data-cherry-rationale-label]');
-    if (label) label.textContent = cherryRationaleLabel(value);
+    const nextLabel = cherryRationaleLabel(value);
+    if (label && label.textContent !== nextLabel) label.textContent = nextLabel;
 
     node.querySelectorAll('[data-cherry-rationale-set]').forEach((button) => {
       const isCurrent = button.dataset.cherryRationaleSet === value;
