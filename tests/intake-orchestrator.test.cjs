@@ -2,6 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { processSecureIntake } = require('../server/intake-orchestrator.cjs');
 const { createSyntheticStagingAdapter } = require('../server/synthetic-staging-adapter.cjs');
+const { createSyntheticControlAdapter } = require('../server/synthetic-control-adapter.cjs');
 const { issueSyntheticToken, verifySyntheticToken } = require('../server/synthetic-identity.cjs');
 
 const sourceSha = 'synthetic-e2e-source-sha';
@@ -53,16 +54,53 @@ async function allowAbuse(context) {
   return { allowed: true, provider: 'synthetic-limiter', decision_id: `allow-${context.correlation_id}` };
 }
 
+function enabledControl() {
+  return createSyntheticControlAdapter({ initialState: 'enabled' });
+}
+
 function baseOptions(adapter) {
   return {
-    request: request(), env, adapter, checkAbuse: allowAbuse, authenticate,
+    request: request(), env, adapter, controlAdapter: enabledControl(), checkAbuse: allowAbuse, authenticate,
     authorizeSubmission: allowSyntheticSubmission, expectedSourceSha: sourceSha,
   };
 }
 
+test('pipeline remains unavailable without dynamic intake control', async () => {
+  const adapter = createSyntheticStagingAdapter({ sourceSha });
+  const result = await processSecureIntake({
+    request: request(), env, adapter, checkAbuse: allowAbuse, authenticate,
+    authorizeSubmission: allowSyntheticSubmission, expectedSourceSha: sourceSha,
+  });
+  assert.equal(result.status, 503);
+  assert.equal(result.body.error, 'intake_control_disabled');
+  assert.equal(adapter.snapshot().intakes.length, 0);
+});
+
+test('disabled or unavailable dynamic control fails closed before downstream work', async () => {
+  const adapter = createSyntheticStagingAdapter({ sourceSha });
+  let abuseCalled = false;
+  const disabled = await processSecureIntake({
+    ...baseOptions(adapter),
+    controlAdapter: createSyntheticControlAdapter({ initialState: 'disabled' }),
+    checkAbuse: async () => { abuseCalled = true; return { allowed: true, provider: 'synthetic-limiter', decision_id: 'unexpected' }; },
+  });
+  assert.equal(disabled.status, 503);
+  assert.equal(disabled.body.error, 'intake_control_disabled');
+  assert.equal(abuseCalled, false);
+  assert.equal(adapter.snapshot().intakes.length, 0);
+
+  const unavailable = await processSecureIntake({
+    ...baseOptions(adapter),
+    controlAdapter: { async readState() { throw new Error('control store unavailable'); } },
+  });
+  assert.equal(unavailable.status, 503);
+  assert.equal(unavailable.body.error, 'intake_control_disabled');
+  assert.equal(adapter.snapshot().intakes.length, 0);
+});
+
 test('pipeline remains unavailable without abuse controls', async () => {
   const adapter = createSyntheticStagingAdapter({ sourceSha });
-  const result = await processSecureIntake({ request: request(), env, adapter, authenticate, authorizeSubmission: allowSyntheticSubmission, expectedSourceSha: sourceSha });
+  const result = await processSecureIntake({ request: request(), env, adapter, controlAdapter: enabledControl(), authenticate, authorizeSubmission: allowSyntheticSubmission, expectedSourceSha: sourceSha });
   assert.equal(result.status, 503);
   assert.equal(result.body.error, 'abuse_controls_not_configured');
   assert.equal(adapter.snapshot().intakes.length, 0);
@@ -108,7 +146,7 @@ test('abuse controls receive only coarse metadata, not body, contact data or bea
 
 test('pipeline remains unavailable without an authentication adapter', async () => {
   const adapter = createSyntheticStagingAdapter({ sourceSha });
-  const result = await processSecureIntake({ request: request(), env, adapter, checkAbuse: allowAbuse, authorizeSubmission: allowSyntheticSubmission, expectedSourceSha: sourceSha });
+  const result = await processSecureIntake({ request: request(), env, adapter, controlAdapter: enabledControl(), checkAbuse: allowAbuse, authorizeSubmission: allowSyntheticSubmission, expectedSourceSha: sourceSha });
   assert.equal(result.status, 503);
   assert.equal(result.body.error, 'authentication_not_configured');
   assert.equal(adapter.snapshot().intakes.length, 0);
@@ -116,7 +154,7 @@ test('pipeline remains unavailable without an authentication adapter', async () 
 
 test('pipeline remains unavailable without a submission policy', async () => {
   const adapter = createSyntheticStagingAdapter({ sourceSha });
-  const result = await processSecureIntake({ request: request(), env, adapter, checkAbuse: allowAbuse, authenticate, expectedSourceSha: sourceSha });
+  const result = await processSecureIntake({ request: request(), env, adapter, controlAdapter: enabledControl(), checkAbuse: allowAbuse, authenticate, expectedSourceSha: sourceSha });
   assert.equal(result.status, 503);
   assert.equal(result.body.error, 'submission_policy_not_configured');
   assert.equal(adapter.snapshot().intakes.length, 0);
