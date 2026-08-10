@@ -6,23 +6,23 @@
 
 ## What is now implemented
 
-A minimal server boundary now exists at:
+A minimal server boundary and non-live transaction contract now exist at:
 
 - `api/v1/intakes.js`
 - `server/intake-contract.cjs`
+- `server/intake-persistence.cjs`
 
 This is intentionally a **fail-closed runtime shell**, not a live confidential intake service.
 
-## Safety state
+## Three independent activation gates
 
-The route refuses intake unless both conditions are explicitly true:
+The request path refuses intake unless all three conditions are explicitly true:
 
 1. `WORLDSTAGE_SECURE_INTAKE_ENABLED=true`
 2. `WORLDSTAGE_SECURE_INTAKE_PERSISTENCE=staging`
+3. `WORLDSTAGE_SECURE_INTAKE_ADAPTER=bound`
 
-Even when both are set, the current runtime performs validation only. It has no database, Supabase, CRM, queue, AI, analytics, email, vector, or other persistence/downstream adapter.
-
-The current browser application does not call `/api/v1/intakes`.
+No real adapter is bound in the repository or connected deployment. The current browser application does not call `/api/v1/intakes`.
 
 ## Runtime enforcement implemented
 
@@ -41,31 +41,50 @@ The current browser application does not call `/api/v1/intakes`.
 - generic internal-error response;
 - no privileged credential or provider integration.
 
-## Authority fields rejected
+## Transaction contract implemented
 
-The runtime rejects client attempts to control fields including reviewer assignment, membership role, permissions/scopes, workflow/approval state, visibility, sensitivity, retention, required authority, decision actor/timestamp, sponsor/public release flags, audit actor/outcome, server timestamps, and privileged identity claims.
+`server/intake-persistence.cjs` defines the future adapter-facing transaction behavior without binding a provider.
+
+Synthetic tests verify:
+
+- intake + idempotency + audit must all succeed before commit;
+- audit failure rolls the whole transaction back;
+- same idempotency key + same body returns the existing receipt without duplicate writes;
+- same idempotency key + different body fails with conflict and rolls back;
+- audit change summaries contain only state/security metadata, not submitted narrative, email, or organization content.
+
+The transaction contract defaults a future accepted record to:
+
+- state: `pending_human_review`;
+- sensitivity: `confidential_client_unclassified`;
+- visibility: `worldstage_internal_only`.
+
+These values remain staging design defaults, not owner-approved production policy.
 
 ## Verification
 
-`tests/intake-runtime.test.cjs` exercises the runtime contract using Node's built-in test runner.
+Node built-in tests:
 
-The CI workflow now runs:
+- `tests/intake-runtime.test.cjs`
+- `tests/intake-persistence.test.cjs`
+
+CI runs both through:
 
 `npm run test:intake-runtime`
 
 before staging preflight and browser/device suites.
 
-The existing Phase 2 API security contract was also updated so that the invariant is no longer “the route must not exist.” The stronger invariant is now:
+The Phase 2 API security contract now enforces the stronger invariant:
 
-**the route may exist as tested server code, but the browser must not call it, persistence must remain unconfigured, authority must remain server-controlled, and activation must fail closed.**
+**server code may exist, but the browser must remain disconnected; authority remains server-controlled; provider persistence remains unbound; and every activation boundary fails closed.**
 
 ## Not implemented / not claimed
 
 - no live staging database;
+- no Supabase/provider adapter;
 - no RLS execution against a real database;
 - no signed-identity authorization verification;
-- no receipt persistence;
-- no idempotency persistence store;
+- no receipt/idempotency persistence store;
 - no rate-limit provider;
 - no CAPTCHA/bot provider;
 - no auth mode activation;
@@ -76,4 +95,4 @@ The existing Phase 2 API security contract was also updated so that the invarian
 
 ## Next safe implementation step
 
-Build the persistence adapter interface, transaction/audit semantics, synthetic staging fixtures, and executable signed-user authorization harness in code **without binding them to any real Supabase project**. A real staging project/branch can be attached only after the billable environment-creation gate is explicitly satisfied.
+Build the executable signed-user authorization harness and provider-neutral adapter interface against synthetic fixtures, then keep the real staging binding blocked until the environment/cost and owner/security gates are legitimately satisfied.
