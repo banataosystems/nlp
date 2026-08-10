@@ -67,7 +67,7 @@ All names are placeholders until implementation review.
 
 No public route is allowed to write directly to `ws_transformations`, `ws_transformation_memberships`, `ws_decisions`, or `ws_audit_events`.
 
-**Privileged service credentials never reach the browser.** They remain server-side only and cannot be used as a substitute for per-actor authorization.
+**privileged service credentials never reach the browser.** They remain server-side only and cannot be used as a substitute for per-actor authorization.
 
 ## Submission request allowlist
 
