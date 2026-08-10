@@ -78,6 +78,66 @@ function ownerSummaryNext(flow, sustainment) {
   return { phase: 'Sustainment complete', action: 'Review completed synthetic loop', route: 'client', detail: 'All demo checkpoints are prepared locally. Nothing has been released or written externally.' };
 }
 
+function ownerSummaryHandoff(state) {
+  const { flow, daily, sustainment } = state;
+  const queue = `${daily.needsCherry} need Cherry · ${daily.prepared} prepared · ${daily.parked} parked`;
+
+  if (!flow.discoveryPrepared) {
+    return {
+      title: 'Open the synthetic Discovery brief',
+      context: `The fixed demo engagement has not entered Discovery yet. Cherry Daily currently shows ${queue}.`,
+      decision: 'Is the fixed demo engagement ready to enter Cherry’s judgment queue?',
+      boundary: 'No Discovery form text, client identifier, contact detail, or private source is read into this briefing.',
+    };
+  }
+  if (!flow.ownerReviewed) {
+    return {
+      title: 'Decide demo judgment item 01',
+      context: `The synthetic Discovery brief is prepared. Cherry Daily currently shows ${queue}.`,
+      decision: 'Should demo item 01 be prepared for the next step, parked, or remain with Cherry?',
+      boundary: 'This is a local demo judgment state only; it does not approve, notify, schedule, or write to a client system.',
+    };
+  }
+  if (!flow.recordPrepared) {
+    return {
+      title: 'Review the synthetic Transformation Record',
+      context: `Demo judgment item 01 is prepared. Cherry Daily currently shows ${queue}.`,
+      decision: 'Is the fixed synthetic outcome ready to be represented in the demo Transformation Record?',
+      boundary: 'The record is prototype evidence only, not a verified client outcome or external record.',
+    };
+  }
+  if (!sustainment.day7Prepared) {
+    return {
+      title: 'Set the 7-day ownership check',
+      context: 'The synthetic Transformation Record is prepared; no sustainment checkpoint has been prepared yet.',
+      decision: 'What ownership follow-through should the fixed demo review at the 7-day checkpoint?',
+      boundary: 'Preparing it stores one local boolean only; it creates no calendar event, task, reminder, or client commitment.',
+    };
+  }
+  if (!sustainment.day30Prepared) {
+    return {
+      title: 'Review the 30-day pattern',
+      context: 'The synthetic 7-day checkpoint is prepared locally; the 30-day pattern review is next.',
+      decision: 'Does the fixed demo pattern suggest the operating rhythm should continue unchanged or be revisited?',
+      boundary: 'This is a planning prompt over synthetic state, not a measured outcome, evidence claim, or business-system update.',
+    };
+  }
+  if (!sustainment.day90Prepared) {
+    return {
+      title: 'Make the 90-day sustainment decision',
+      context: 'The synthetic 7-day and 30-day checkpoints are prepared locally; the final demo checkpoint is next.',
+      decision: 'Should the fixed demo operating rhythm be sustained, adjusted, or retired?',
+      boundary: 'No real program commitment, contract, client communication, or production change is created by this view.',
+    };
+  }
+  return {
+    title: 'Review the completed synthetic loop',
+    context: `All three synthetic sustainment checkpoints are prepared. Cherry Daily currently shows ${queue}.`,
+    decision: 'Is there a useful operating pattern to carry into a future owner-validated design iteration?',
+    boundary: 'Completion here means demo-state completion only; it does not authorize live staging, confidential intake, or production release.',
+  };
+}
+
 function ownerSummaryState() {
   const flow = readOwnerSummaryFlow();
   const daily = readOwnerSummaryDaily();
@@ -95,6 +155,7 @@ function ownerSummaryCheckpoint(label, prepared, available) {
 
 function ownerSummaryMarkup(state, signature) {
   const { flow, daily, sustainment, next } = state;
+  const handoff = ownerSummaryHandoff(state);
   const day7Available = flow.recordPrepared;
   const day30Available = sustainment.day7Prepared;
   const day90Available = sustainment.day30Prepared;
@@ -111,6 +172,16 @@ function ownerSummaryMarkup(state, signature) {
     <div class="cherry-owner-summary__next">
       <div><span>NEXT OWNER ACTION</span><strong data-owner-summary-next>${next.action}</strong><p>${next.detail}</p></div>
       <button type="button" data-owner-summary-nav="${next.route}">Open next step →</button>
+    </div>
+
+    <div class="cherry-owner-summary__next" data-owner-summary-brief>
+      <div>
+        <span>OWNER HANDOFF · 60-SECOND BRIEF</span>
+        <strong data-owner-summary-brief-title>${handoff.title}</strong>
+        <p data-owner-summary-brief-context>${handoff.context}</p>
+        <p><b>Cherry decides:</b> <span data-owner-summary-brief-decision>${handoff.decision}</span></p>
+        <p><b>Boundary:</b> <span data-owner-summary-brief-boundary>${handoff.boundary}</span></p>
+      </div>
     </div>
 
     <div class="cherry-owner-summary__metrics" aria-label="Cherry Daily local demo summary">
