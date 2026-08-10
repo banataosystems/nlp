@@ -5,7 +5,14 @@
 const OWNER_SUMMARY_FLOW_KEY = 'worldstage.synthetic.engagement.flow.v1';
 const OWNER_SUMMARY_DAILY_KEY = 'worldstage.cherry.daily.demo.v1';
 const OWNER_SUMMARY_SUSTAINMENT_KEY = 'worldstage.synthetic.sustainment.plan.v1';
+const OWNER_SUMMARY_RATIONALE_KEY = 'worldstage.cherry.daily.rationale.demo.v1';
 const OWNER_SUMMARY_DAILY_ALLOWED = new Set(['needs-cherry', 'prepared', 'parked']);
+const OWNER_SUMMARY_RATIONALE_ALLOWED = new Set(['ready', 'needs-context', 'can-wait']);
+const OWNER_SUMMARY_RATIONALE_LABELS = Object.freeze({
+  ready: 'Ready',
+  'needs-context': 'Needs context',
+  'can-wait': 'Can wait',
+});
 let ownerSummaryReturnFocus = null;
 
 function safeLocalJson(key) {
@@ -41,6 +48,19 @@ function readOwnerSummaryDaily() {
     else counts.needsCherry += 1;
   });
   return counts;
+}
+
+function readOwnerSummaryRationale() {
+  const value = safeLocalJson(OWNER_SUMMARY_RATIONALE_KEY) || {};
+  const fallback = { '01': 'needs-context', '02': 'needs-context', '03': 'needs-context' };
+  return Object.fromEntries(Object.entries(fallback).map(([id, initial]) => {
+    const candidate = value?.[id];
+    return [id, OWNER_SUMMARY_RATIONALE_ALLOWED.has(candidate) ? candidate : initial];
+  }));
+}
+
+function ownerSummaryRationaleLabel(value) {
+  return OWNER_SUMMARY_RATIONALE_LABELS[value] || OWNER_SUMMARY_RATIONALE_LABELS['needs-context'];
 }
 
 function readOwnerSummarySustainment(flow) {
@@ -149,9 +169,10 @@ function ownerSummaryHandoff(state) {
 function ownerSummaryState() {
   const flow = readOwnerSummaryFlow();
   const daily = readOwnerSummaryDaily();
+  const rationale = readOwnerSummaryRationale();
   const sustainment = readOwnerSummarySustainment(flow);
   const next = ownerSummaryNext(flow, sustainment);
-  return { flow, daily, sustainment, next };
+  return { flow, daily, rationale, sustainment, next };
 }
 
 function ownerSummaryCheckpoint(label, prepared, available) {
@@ -164,6 +185,7 @@ function ownerSummaryCheckpoint(label, prepared, available) {
 function ownerSummaryMarkup(state, signature) {
   const { flow, daily, sustainment, next } = state;
   const handoff = ownerSummaryHandoff(state);
+  const rationaleLabel = ownerSummaryRationaleLabel(state.rationale['01']);
   const day7Available = flow.recordPrepared;
   const day30Available = sustainment.day7Prepared;
   const day90Available = sustainment.day30Prepared;
@@ -178,7 +200,7 @@ function ownerSummaryMarkup(state, signature) {
     </div>
 
     <div class="cherry-owner-summary__next">
-      <div><span>NEXT OWNER ACTION</span><strong data-owner-summary-next>${next.action}</strong><p>${next.detail}</p></div>
+      <div><span>NEXT OWNER ACTION</span><strong data-owner-summary-next>${next.action}</strong><p>${next.detail}</p><p data-owner-summary-rationale>Why surfaced: ${rationaleLabel} · fixed rationale for demo item 01.</p></div>
       <button type="button" data-owner-summary-nav="${next.route}">Open next step →</button>
     </div>
 
@@ -188,6 +210,7 @@ function ownerSummaryMarkup(state, signature) {
         <strong data-owner-summary-brief-title>${handoff.title}</strong>
         <p data-owner-summary-brief-context>${handoff.context}</p>
         <p><b>Cherry decides:</b> <span data-owner-summary-brief-decision>${handoff.decision}</span></p>
+        <p data-owner-summary-brief-rationale><b>Why surfaced:</b> ${rationaleLabel} · fixed rationale for demo item 01.</p>
         <p><b>Boundary:</b> <span data-owner-summary-brief-boundary>${handoff.boundary}</span></p>
       </div>
       <button type="button" data-owner-summary-open-brief>Open 60-second brief →</button>
@@ -214,6 +237,7 @@ function ownerSummaryMarkup(state, signature) {
 
 function ownerSummaryBriefingMarkup(state) {
   const handoff = ownerSummaryHandoff(state);
+  const rationaleLabel = ownerSummaryRationaleLabel(state.rationale['01']);
   return `<div class="cherry-owner-handoff" data-owner-summary-handoff role="dialog" aria-modal="true" aria-labelledby="cherry-owner-handoff-title">
     <div class="cherry-owner-handoff__top">
       <div><span>OWNER HANDOFF · LOCAL SYNTHETIC DEMO</span><h2 id="cherry-owner-handoff-title">${handoff.title}</h2></div>
@@ -222,6 +246,7 @@ function ownerSummaryBriefingMarkup(state) {
     <div class="cherry-owner-handoff__grid">
       <article><span>SITUATION</span><p data-owner-summary-handoff-context>${handoff.context}</p></article>
       <article><span>CHERRY DECIDES</span><p data-owner-summary-handoff-decision>${handoff.decision}</p></article>
+      <article><span>WHY THIS IS SURFACED</span><p data-owner-summary-handoff-rationale>${rationaleLabel} · fixed rationale for demo item 01.</p></article>
       <article><span>IF NO DECISION</span><p data-owner-summary-handoff-defer>${handoff.defer}</p></article>
       <article><span>BOUNDARY</span><p data-owner-summary-handoff-boundary>${handoff.boundary}</p></article>
     </div>
