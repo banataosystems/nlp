@@ -35,7 +35,7 @@ function request(overrides = {}) {
 const fullyBoundEnv = {
   WORLDSTAGE_SECURE_INTAKE_ENABLED: 'true',
   WORLDSTAGE_SECURE_INTAKE_PERSISTENCE: 'staging',
-  WORLDSTAGE_SECURE_INTAKE_ADAPTER: 'bound'
+  WORLDSTAGE_SECURE_INTAKE_ADAPTER_BOUND: 'true'
 };
 
 test('kill switch fails closed before parsing/persistence concerns', () => {
@@ -58,6 +58,18 @@ test('configured staging flag still fails closed until an adapter is explicitly 
   const result = evaluateRequest(request({ env }));
   assert.equal(result.status, 503);
   assert.equal(result.body.error, 'persistence_adapter_not_bound');
+});
+
+test('legacy or malformed adapter binding values do not activate the shell', () => {
+  for (const value of ['bound', '1', 'TRUE', 'yes']) {
+    const result = evaluateRequest(request({ env: {
+      WORLDSTAGE_SECURE_INTAKE_ENABLED: 'true',
+      WORLDSTAGE_SECURE_INTAKE_PERSISTENCE: 'staging',
+      WORLDSTAGE_SECURE_INTAKE_ADAPTER_BOUND: value
+    } }));
+    assert.equal(result.status, 503, value);
+    assert.equal(result.body.error, 'persistence_adapter_not_bound', value);
+  }
 });
 
 test('method is constrained to POST', () => {
