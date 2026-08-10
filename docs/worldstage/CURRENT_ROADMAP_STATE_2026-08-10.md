@@ -4,41 +4,44 @@
 **Project:** WorldStage International / Cherry Africa business-adaptive operating system  
 **Repository:** `banataosystems/nlp`  
 **Active line:** `redesign/mobile-first-v2` / PR #1  
-**Purpose:** current-state reconciliation. Historical provenance remains preserved in commits, CI runs, Vercel deployment records, artifacts and prior Phase 2 evidence documents. This file does not relax the master roadmap, decision ledger, owner/security gates or production-release gates.
+**Purpose:** current-state reconciliation. Historical provenance remains preserved in commits, CI runs, Vercel deployment records, artifacts and prior WorldStage evidence documents. This file does not relax the master roadmap, owner/security gates or production-release gates.
 
 ## Current phase
 
-**Non-live redesign verification plus provider-neutral secure-intake, recovery, environment-binding, signed-user proof, live-staging evidence aggregation, reference-only evidence manifests and immutable evidence-checkpoint continuity, before live staging.**
+**Owner-operable mobile prototype hardening plus provider-neutral secure-intake/recovery preparation before live staging.**
 
-The active line remains limited to reversible non-live work before billable environment creation, real-provider binding, confidential-data activation, credential use, real migrations and production release.
+The priority has shifted from adding more evidence-chain machinery toward proving a useful Cherry-facing workflow with synthetic/demo data while preserving the existing security boundary. The active line remains reversible and non-live: no billable environment creation, real-provider binding, confidential-data activation, credential use, real migration or production release is authorized here.
 
 ## Proof-state separation
 
 ### Documented
 
-Current Phase 2 contracts include:
-- receipt / incident control;
-- staging handoff and restore;
-- deployment isolation;
-- environment-binding verification;
-- signed-user live-test proof;
-- live-staging evidence aggregation;
-- `PHASE2_STAGING_EVIDENCE_CAPTURE_MANIFEST_2026-08-10.md` for nonsecret content-addressed proof references;
-- `PHASE2_STAGING_EVIDENCE_CHECKPOINT_CHAIN_2026-08-10.md` for deterministic parent/manifest/reference continuity.
+Current durable Phase 2–5 records cover:
+- mobile-first redesign and owner-validation packages;
+- secure intake, authorization, receipt/incident control and kill-switch behavior;
+- staging handoff, rollback, backup/restore, deployment isolation and environment binding;
+- signed-user live-test and live-staging evidence contracts;
+- reference-only evidence manifest/checkpoint continuity;
+- Discovery, Cherry OS and Transformation Record prototype boundaries;
+- `PHASE4_CHERRY_DAILY_OWNER_WORKFLOW_2026-08-10.md` for the new owner-operable daily judgment workflow.
 
 ### Implemented on the active branch
 
-Public/prototype layer:
-- phone-first responsive/safe-area foundations;
-- transformation-stage recomposition;
-- conversational Discovery prototype and provenance states;
-- Cherry OS judgment-queue prototype;
-- Transformation Record prototype.
+#### Product-facing prototype
 
-Secure-intake boundary:
+- phone-first responsive/safe-area foundations;
+- public WorldStage transformation narrative using clearly labeled public-source material;
+- conversational Discovery flow and client-supplied provenance states;
+- local-only Discovery context draft and explicit email handoff;
+- Cherry OS judgment queue with demo-only source map and 60-second Room briefing pattern;
+- **Cherry Daily owner workflow:** each demo judgment item can be marked `Needs Cherry`, `Prepared` or `Parked`; summary counts update immediately; demo state persists in local browser storage and can be reset; no external system is changed;
+- Transformation Record prototype with evidence-state and privacy-governance explanations.
+
+#### Secure-intake boundary
+
 - public `/api/v1/intakes` remains inert with no 2xx path;
-- strict request allowlists and recursive authority-field rejection;
-- candidate authenticated-user / bound-invitation auth contracts; anonymous intake denied;
+- strict request allowlists and authority-field rejection;
+- candidate authenticated-user/bound-invitation contracts; anonymous intake denied;
 - privacy-minimized abuse-control contract;
 - synthetic identity/authorization and cross-role, cross-org and revocation simulation;
 - exact-source staging-adapter contract;
@@ -46,41 +49,40 @@ Secure-intake boundary:
 - non-enumerating actor-bound receipt status with no public endpoint;
 - transactional fail-closed intake control / kill switch;
 - bounded structured incident signals;
-- public-route regression guard against private/synthetic runtime binding;
-- non-deployed SQL alignment for opaque receipts and actor-scoped idempotency.
+- public-route guard against private/synthetic runtime binding;
+- non-deployed SQL alignment drafts for future provider binding.
 
-Recovery and staging preparation:
+#### Recovery and staging preparation
+
 - tamper-evident rollback capsule with execution unauthorized by default;
-- secret-rejecting staging handoff manifest that remains non-executable and provider-unbound;
-- synthetic-only content-addressed backup/restore drill with isolated empty staging target and disabled post-restore intake;
-- deployment-isolation capsule requiring exact source/preview provenance and a distinct preserved production baseline;
-- environment-binding verifier requiring exact staging provenance and future signed-user, backup/restore and kill-switch proof digests while always returning `activation_allowed: false`;
-- signed-user live-test proof contract covering positive/negative authz cases with synthetic ephemeral identities, cleanup proof and no activation authority;
-- live-staging evidence aggregator requiring one exact-source, one-environment package with `environment_binding`, `signed_user_policy`, `backup_restore` and `kill_switch` proof classes;
-- staging evidence capture/manifest contract that serializes only content-addressed proof references and explicitly forbids inline/raw evidence, credential-shaped fields, direct sensitive/free-form material, evidence URLs/URIs/paths, production access, confidential data, enabled intake, activation requests and production-release authority;
-- staging evidence checkpoint contract that links a genesis/child chain by checkpoint digest and parent manifest digest while requiring exact continuity of source, preview, production baseline, provider, environment, manifest plan, manifest digest and every individual proof-reference digest.
+- secret-rejecting staging handoff manifest that remains provider-unbound;
+- synthetic-only content-addressed backup/restore drill;
+- deployment-isolation contract preserving a separate production baseline;
+- environment-binding verifier;
+- signed-user live-test contract;
+- live-staging evidence aggregator;
+- reference-only staging evidence manifest;
+- deterministic staging evidence checkpoint continuity.
 
-The checkpoint chain is immutable by design: proof-reference replacement, manifest replacement, environment/provider drift, forged parent links, sequence gaps, extra durable fields, sensitive material and authority escalation all fail closed. A proof rerun or genuinely different manifest must start a separately governed lineage rather than rewriting the existing chain.
-
-The manifest and checkpoint contracts are integrated into mandatory `test:intake-runtime` through `tests/staging-evidence-manifest-contract.test.cjs` and `tests/staging-evidence-checkpoint-contract.test.cjs`. Structural completeness or checkpoint continuity never authorizes intake activation or production release.
+All of those contracts remain non-activating: structural completeness does not authorize confidential intake or production release.
 
 ### Tested
 
-The last exact verified baseline before the checkpoint layer is:
-- source head `7eaa30e1dd37d24a178b8c8e5e1ef758415981eb`;
-- GitHub Actions run `31376831347` (#485), **PASS**;
-- staging-readiness artifact `9058309607`, digest `sha256:b492fefaef39d8a91cc8ec96a352043e1099439a7a4a70852e4bb82de6ed75d2`;
-- mobile artifact `9058309927`, digest `sha256:9e73a35c2bceadc683ebb34ad2bbd7265d068b2d5048516a623420823edefd03`.
+The last exact verified project baseline before the new Cherry Daily commits is:
+- source head `ae3b8ed38680188b499758e5ab7d2b1689fa686a`;
+- GitHub Actions run `31381398045` (#495), **PASS**;
+- staging-readiness artifact `9060036850`, digest `sha256:64b07fdb78165a1dbb18ef2daf18c2d1ffddbbe203fc4a7fca8c697d0a6a8757`;
+- mobile artifact `9060037226`, digest `sha256:12591a22a067d5dd46a3d6df9de89168fbbd93d2a29f2db8b48b8c8fca5784bf`.
 
-That staging-readiness artifact was inspected directly and records exact source `7eaa30e1dd37d24a178b8c8e5e1ef758415981eb`, `readiness = BLOCKED`, confidential intake disabled, persistence/provider binding absent, no staging/production project IDs and unresolved D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18.
+That baseline recorded `readiness = BLOCKED`, confidential intake disabled, provider/persistence bindings absent and owner/security decisions D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 still open.
 
-The new checkpoint layer is **implemented** and placed in the mandatory CI gate. Project-level **tested** status for it requires an exact-current-head CI pass. Exact-head run/artifact IDs are maintained in PR #1 because editing this roadmap itself changes the source head; this document therefore does not self-certify a later CI run by assumption.
+The Cherry Daily implementation and its Playwright coverage are **implemented but not yet called tested at project level in this document**. An exact-current-head CI pass is required after this roadmap commit. Exact-head run/artifact evidence belongs in PR #1 because updating this roadmap changes the source head.
 
 ### Preview deployed
 
-The last exact verified baseline preview is `dpl_DTdw6mPYZhp6MgYS2LLiCQkggh3G`, READY, Git-sourced, `target: null`, tied to source `7eaa30e1dd37d24a178b8c8e5e1ef758415981eb`.
+The last exact verified preview before Cherry Daily is `dpl_9Bqjc3J2q76QCb8vj9UABwDT525b`, READY, Git-sourced, `target: null`, tied to `ae3b8ed38680188b499758e5ab7d2b1689fa686a`.
 
-A newer checkpoint implementation preview must be verified against its exact source SHA before it can be called preview-deployed at that proof level. Preview READY is deployability/provenance evidence only.
+Cherry Daily is not called preview-deployed until a newer Vercel preview is verified against its exact source SHA.
 
 ### Live staging
 
@@ -88,34 +90,32 @@ A newer checkpoint implementation preview must be verified against its exact sou
 
 ### Production
 
-The preserved production baseline remains `dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1`, READY, `target: production`, source `redeploy`, with `cherrypua.vercel.app` among its aliases. The mobile-v2 / secure-intake line has not been promoted and is not production-approved.
+The preserved production baseline remains `dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1`, READY, `target: production`, source `redeploy`, with `cherrypua.vercel.app` among its recorded aliases. The mobile-v2 / Cherry Daily / secure-intake line has not been promoted and is not production-approved.
 
 ## Current hard gates / blockers
 
-1. Owner/security decisions D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 remain OPEN in the decision ledger.
+1. Owner/security decisions D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 remain OPEN.
 2. Live/billable staging creation is not authorized by current evidence.
 3. Real PostgreSQL/Supabase, authentication, abuse-control, incident-management and notification providers remain unbound.
-4. Real signed-user PostgreSQL/RLS, provider backup/restore and live kill-switch proof do not exist; only provider-neutral/synthetic contracts and drills are proven.
+4. Real signed-user PostgreSQL/RLS, provider backup/restore and live kill-switch proof do not exist.
 5. Physical-device / owner validation remains separate from automated WebKit/Chromium evidence.
 6. Authentic owner-approved Cherry/program/client content and rights evidence remain separate owner/content gates.
-7. Pandora Memory synchronization remains unproven because the current connector/plugin set does not expose Pandora Memory; repository/CI/Vercel evidence remains fallback evidence, not a substitute for canonical synchronization.
+7. Pandora Memory synchronization remains unavailable/unproven through the current connector path; repository/CI/Vercel evidence is fallback evidence only, not canonical-memory proof.
 8. Production release remains separately unauthorized and fail-closed.
 
 ## Risks
 
-- Provider-neutral/synthetic proof reduces implementation risk but cannot substitute for live database-policy, security, recovery or operational proof.
-- Reference-only evidence manifests preserve provenance without secrets, but they do not prove the referenced provider evidence was valid unless the separate live-staging aggregator verifies it.
-- Checkpoint continuity proves that reference digests were not silently replaced inside one lineage; it does not prove the underlying evidence itself and must not be treated as activation authority.
-- A structurally complete manifest, aggregated package or valid checkpoint chain is not production-release evidence.
+- A polished demo workflow can look operational even though it still uses synthetic/demo data; every Cherry Daily state therefore remains explicitly local-demo-only.
+- Provider-neutral/synthetic proof cannot substitute for live database-policy, security, recovery or operational proof.
 - Preview READY proves deployability/provenance only, not production suitability.
 - The preserved production baseline must remain isolated until explicit production-release authority and all required live proof gates exist.
 - Pandora unavailability prevents canonical memory reconciliation until access is restored or a separately authorized governance exception exists.
 
 ## Current safe next autonomous actions
 
-1. Obtain exact-current-head CI proof with the evidence checkpoint contract inside the mandatory runtime gate and reconcile run/artifact evidence in PR #1.
-2. Verify exact-current-head non-production Vercel provenance while preserving the production baseline.
-3. Continue provider-neutral rollback/recovery and security-evidence hardening without binding a real provider.
+1. Obtain exact-current-head CI proof for Cherry Daily plus the existing mandatory security/mobile chain.
+2. Verify exact-current-head non-production Vercel preview provenance while preserving the production baseline.
+3. Continue the highest-value product slice: a synthetic end-to-end engagement flow linking Discovery → Cherry judgment → Transformation Record so the phone prototype demonstrates a real operating loop rather than isolated screens.
 4. Keep public receipt lookup absent and confidential intake fail-closed until owner/security/auth/privacy gates are resolved.
 5. Do not create billable staging, bind confidential data, use missing credentials, apply real migrations, make legal/public commitments or promote production without separate hard gates.
 
@@ -127,7 +127,8 @@ The preserved production baseline remains `dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1`, RE
 - No public receipt-status endpoint is claimed.
 - No real provider backup/restore or live kill-switch proof is claimed.
 - No participant-private production flow is claimed.
+- Cherry Daily does not change any external WorldStage system.
 - No owner/security approval is inferred from code or tests.
 - No physical-device owner approval is inferred from browser automation.
 - No Pandora Memory synchronization is claimed while its connector path is unavailable.
-- No mobile-v2 / secure-intake production release is claimed.
+- No mobile-v2 / Cherry Daily / secure-intake production release is claimed.
