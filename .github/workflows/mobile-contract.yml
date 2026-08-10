@@ -25,6 +25,8 @@ jobs:
       - run: npm install --no-audit --no-fund
       - name: Enforce owner/security decision evidence
         run: npm run check:decision-evidence
+      - name: Verify fail-closed secure intake runtime
+        run: npm run test:intake-runtime
       - name: Generate fail-closed staging readiness report
         env:
           WORLDSTAGE_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
