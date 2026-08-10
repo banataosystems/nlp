@@ -42,6 +42,18 @@
   color: rgba(255,255,255,.62);
 }
 
+.cherry-owner-review-recap__actions {
+  display: grid;
+  gap: 8px;
+  align-self: end;
+}
+
+.cherry-owner-review-recap__actions [data-cherry-owner-review-recap-recheck] {
+  border-color: rgba(255,255,255,.28);
+  background: transparent;
+  color: #f5f5f2;
+}
+
 @media (max-width: 640px) {
   .cherry-owner-review-recap {
     grid-template-columns: 1fr;
@@ -67,5 +79,9 @@
 
   .cherry-owner-review-recap__list article small {
     text-align: right;
+  }
+
+  .cherry-owner-review-recap__actions {
+    width: 100%;
   }
 }
