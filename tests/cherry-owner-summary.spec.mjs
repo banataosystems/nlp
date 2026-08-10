@@ -36,11 +36,28 @@ test('Cherry owner summary consolidates phase, next action, owner handoff, judgm
   await expect(page.locator('[data-owner-summary-brief-decision]')).toContainText('ready to enter Cherry’s judgment queue');
   await expect(page.locator('[data-owner-summary-brief-boundary]')).toContainText('No Discovery form text');
 
+  const openBrief = page.locator('[data-owner-summary-open-brief]');
+  await openBrief.click();
+  const briefing = page.locator('[data-owner-summary-handoff]');
+  await expect(briefing).toBeVisible();
+  await expect(briefing).toContainText('OWNER HANDOFF · LOCAL SYNTHETIC DEMO');
+  await expect(page.locator('[data-owner-summary-handoff-context]')).toContainText('has not entered Discovery yet');
+  await expect(page.locator('[data-owner-summary-handoff-decision]')).toContainText('ready to enter Cherry’s judgment queue');
+  await expect(page.locator('[data-owner-summary-handoff-defer]')).toContainText('no external system changes');
+  await expect(page.locator('[data-owner-summary-handoff-boundary]')).toContainText('No Discovery form text');
+  await expect(page.locator('[data-owner-summary-handoff-close]')).toBeFocused();
+  await expect(page.locator('body')).toHaveClass(/cherry-owner-handoff-open/);
+
   const sizes = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth }));
   expect(sizes.sw).toBeLessThanOrEqual(sizes.cw + 1);
   expect(networkWrites).toEqual([]);
 
-  await page.locator('[data-owner-summary-nav="discovery"]').click();
+  await page.locator('[data-owner-summary-handoff-close]').click();
+  await expect(page.locator('[data-owner-summary-handoff]')).toHaveCount(0);
+  await expect(openBrief).toBeFocused();
+
+  await openBrief.click();
+  await page.locator('[data-owner-summary-handoff-next="discovery"]').click();
   await expect(page).toHaveURL(/#\/discovery$/);
   expect(networkWrites).toEqual([]);
 });
@@ -90,6 +107,20 @@ test('Cherry owner summary and handoff read only sanitized sequential local demo
   await expect(page.locator('[data-owner-summary-brief-boundary]')).toContainText('not a measured outcome');
   await expect(handoff).not.toContainText('must not appear');
   await expect(summary).not.toContainText('must not appear');
+
+  const openBrief = page.locator('[data-owner-summary-open-brief]');
+  await openBrief.click();
+  const briefing = page.locator('[data-owner-summary-handoff]');
+  await expect(briefing).toBeVisible();
+  await expect(page.locator('[data-owner-summary-handoff-context]')).toContainText('7-day checkpoint is prepared locally');
+  await expect(page.locator('[data-owner-summary-handoff-decision]')).toContainText('operating rhythm should continue unchanged or be revisited');
+  await expect(page.locator('[data-owner-summary-handoff-defer]')).toContainText('90-day review stays locked');
+  await expect(page.locator('[data-owner-summary-handoff-boundary]')).toContainText('not a measured outcome');
+  await expect(briefing).not.toContainText('must not appear');
+
+  await page.keyboard.press('Escape');
+  await expect(briefing).toHaveCount(0);
+  await expect(openBrief).toBeFocused();
 
   await page.locator('[data-owner-summary-nav="client"]').click();
   await expect(page).toHaveURL(/#\/client$/);
