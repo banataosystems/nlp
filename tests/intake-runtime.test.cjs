@@ -32,6 +32,12 @@ function request(overrides = {}) {
   };
 }
 
+const fullyBoundEnv = {
+  WORLDSTAGE_SECURE_INTAKE_ENABLED: 'true',
+  WORLDSTAGE_SECURE_INTAKE_PERSISTENCE: 'staging',
+  WORLDSTAGE_SECURE_INTAKE_ADAPTER: 'bound'
+};
+
 test('kill switch fails closed before parsing/persistence concerns', () => {
   const result = evaluateRequest(request());
   assert.equal(result.status, 503);
@@ -42,6 +48,16 @@ test('enabled route still fails closed when staging persistence is not configure
   const result = evaluateRequest(request({ env: { WORLDSTAGE_SECURE_INTAKE_ENABLED: 'true' } }));
   assert.equal(result.status, 503);
   assert.equal(result.body.error, 'persistence_not_configured');
+});
+
+test('configured staging flag still fails closed until an adapter is explicitly bound', () => {
+  const env = {
+    WORLDSTAGE_SECURE_INTAKE_ENABLED: 'true',
+    WORLDSTAGE_SECURE_INTAKE_PERSISTENCE: 'staging'
+  };
+  const result = evaluateRequest(request({ env }));
+  assert.equal(result.status, 503);
+  assert.equal(result.body.error, 'persistence_adapter_not_bound');
 });
 
 test('method is constrained to POST', () => {
@@ -73,21 +89,13 @@ test('runtime requires valid email and required version fields', () => {
   assert.equal(validateBody(body).body.error, 'required_field_invalid');
 });
 
-test('configured shell enforces content type and idempotency before accepting a valid body', () => {
-  const env = {
-    WORLDSTAGE_SECURE_INTAKE_ENABLED: 'true',
-    WORLDSTAGE_SECURE_INTAKE_PERSISTENCE: 'staging'
-  };
-  assert.equal(evaluateRequest(request({ env, headers: { 'idempotency-key': '0123456789abcdef' } })).status, 415);
-  assert.equal(evaluateRequest(request({ env, headers: { 'content-type': 'application/json' } })).body.error, 'invalid_idempotency_key');
-  assert.equal(evaluateRequest(request({ env })).status, 200);
+test('fully bound validation shell enforces content type and idempotency', () => {
+  assert.equal(evaluateRequest(request({ env: fullyBoundEnv, headers: { 'idempotency-key': '0123456789abcdef' } })).status, 415);
+  assert.equal(evaluateRequest(request({ env: fullyBoundEnv, headers: { 'content-type': 'application/json' } })).body.error, 'invalid_idempotency_key');
+  assert.equal(evaluateRequest(request({ env: fullyBoundEnv })).status, 200);
 });
 
-test('payload limit is enforced', () => {
-  const env = {
-    WORLDSTAGE_SECURE_INTAKE_ENABLED: 'true',
-    WORLDSTAGE_SECURE_INTAKE_PERSISTENCE: 'staging'
-  };
-  const result = evaluateRequest(request({ env, rawBody: 'x'.repeat(MAX_BODY_BYTES + 1) }));
+test('payload limit is enforced only after all activation gates are explicitly satisfied', () => {
+  const result = evaluateRequest(request({ env: fullyBoundEnv, rawBody: 'x'.repeat(MAX_BODY_BYTES + 1) }));
   assert.equal(result.status, 413);
 });
