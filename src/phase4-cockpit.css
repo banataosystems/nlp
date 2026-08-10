@@ -119,6 +119,136 @@
 .room-brief-stat strong { display: block; margin-top: 7px; font-family: var(--serif); font-size: 20px; font-weight: 500; }
 body.cockpit-modal-open { overflow: hidden; overscroll-behavior: none; }
 
+/* Cherry Daily turns the demo judgment deck into an owner-operable local workflow without touching external systems. */
+.cherry-daily {
+  margin: 0 clamp(20px, 5vw, 72px) clamp(30px, 5vw, 58px);
+  padding: clamp(22px, 4vw, 38px);
+  border: 1px solid rgba(255,255,255,.10);
+  background: linear-gradient(145deg, rgba(255,255,255,.045), rgba(255,255,255,.015));
+}
+.cherry-daily__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+.cherry-daily__top span {
+  display: block;
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .16em;
+  color: #d5a44d;
+}
+.cherry-daily__top h2 {
+  margin: 10px 0 0;
+  max-width: 760px;
+  font-family: var(--serif);
+  font-size: clamp(30px, 5vw, 56px);
+  line-height: 1;
+  letter-spacing: -.035em;
+  font-weight: 500;
+}
+.cherry-daily__top button,
+.cherry-decision-state__actions button {
+  min-height: 44px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.cherry-daily__top button {
+  padding: 0 16px;
+  white-space: nowrap;
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.cherry-daily__lede {
+  max-width: 780px;
+  margin: 18px 0 0;
+  color: rgba(255,255,255,.56);
+  font-size: 13px;
+  line-height: 1.65;
+}
+.cherry-daily__metrics {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  margin-top: 24px;
+  border-top: 1px solid rgba(255,255,255,.10);
+  border-bottom: 1px solid rgba(255,255,255,.10);
+}
+.cherry-daily__metrics article {
+  padding: 18px 16px 18px 0;
+  border-right: 1px solid rgba(255,255,255,.08);
+}
+.cherry-daily__metrics article:last-child { border-right: 0; padding-left: 16px; }
+.cherry-daily__metrics article:nth-child(2) { padding-left: 16px; }
+.cherry-daily__metrics strong {
+  display: block;
+  font-family: var(--serif);
+  font-size: clamp(30px, 5vw, 44px);
+  font-weight: 500;
+}
+.cherry-daily__metrics span {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.45);
+}
+.cherry-daily__notice {
+  margin-top: 14px;
+  min-height: 20px;
+  color: rgba(255,255,255,.44);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.cherry-decision-state {
+  margin: 22px 0 18px;
+  padding: 16px;
+  border: 1px solid rgba(213,164,77,.20);
+  background: rgba(213,164,77,.045);
+}
+.cherry-decision-state__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.cherry-decision-state__meta span {
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .12em;
+  color: rgba(255,255,255,.42);
+}
+.cherry-decision-state__meta strong {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .08em;
+  color: #d5a44d;
+  text-transform: uppercase;
+}
+.cherry-decision-state__actions {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+.cherry-decision-state__actions button {
+  padding: 0 10px;
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .06em;
+}
+.cherry-decision-state__actions button.is-current {
+  border-color: rgba(213,164,77,.65);
+  background: rgba(213,164,77,.12);
+  color: #f4d596;
+}
+
 @media (max-width: 900px) {
   .cockpit-overlay { align-items: end; }
   .cockpit-drawer { width: 100%; max-height: 86dvh; border-left: 0; border-radius: 0; padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)); }
@@ -126,6 +256,17 @@ body.cockpit-modal-open { overflow: hidden; overscroll-behavior: none; }
   .room-brief-header { grid-template-columns: 1fr; }
   .room-brief-stat { border-bottom: 1px solid rgba(255,255,255,.08); }
   .room-brief-stat:last-child { border-bottom: 0; }
+
+  .cherry-daily {
+    margin: 0 max(14px, env(safe-area-inset-left)) 30px max(14px, env(safe-area-inset-right));
+    padding: 20px;
+  }
+  .cherry-daily__top { display: block; }
+  .cherry-daily__top button { width: 100%; margin-top: 18px; }
+  .cherry-daily__metrics article { padding: 14px 10px 14px 0; }
+  .cherry-daily__metrics article:nth-child(2),
+  .cherry-daily__metrics article:last-child { padding-left: 10px; }
+  .cherry-decision-state__actions button { min-height: 48px; }
 
   /* Mobile deck contract: one judgment occupies one viewport-width deck page. */
   .judgment-card {
@@ -144,6 +285,19 @@ body.cockpit-modal-open { overflow: hidden; overscroll-behavior: none; }
     hyphens: none;
   }
   .judgment-card__actions button { min-height: 46px; }
+}
+
+@media (max-width: 520px) {
+  .cherry-daily__metrics { grid-template-columns: 1fr; }
+  .cherry-daily__metrics article,
+  .cherry-daily__metrics article:nth-child(2),
+  .cherry-daily__metrics article:last-child {
+    padding: 12px 0;
+    border-right: 0;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  .cherry-daily__metrics article:last-child { border-bottom: 0; }
+  .cherry-decision-state__actions { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {
