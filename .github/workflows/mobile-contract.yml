@@ -44,6 +44,14 @@ jobs:
       - run: npm run test:phase5
       - run: npm run test:release
       - run: npm run test:visual
+      - name: Regenerate exact-head staging readiness evidence
+        env:
+          WORLDSTAGE_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          WORLDSTAGE_INTAKE_ENABLED: "false"
+          WORLDSTAGE_SECURE_INTAKE_ENABLED: "false"
+          WORLDSTAGE_SECURE_INTAKE_PERSISTENCE: ""
+          WORLDSTAGE_SECURE_INTAKE_ADAPTER_BOUND: "false"
+        run: npm run preflight:staging
       - name: Upload Phase 2 staging readiness evidence
         if: always()
         uses: actions/upload-artifact@v4
