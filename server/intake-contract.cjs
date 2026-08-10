@@ -29,7 +29,7 @@ function persistenceConfigured(env = process.env) {
 }
 
 function adapterBound(env = process.env) {
-  return env.WORLDSTAGE_SECURE_INTAKE_ADAPTER === 'bound';
+  return env.WORLDSTAGE_SECURE_INTAKE_ADAPTER_BOUND === 'true';
 }
 
 function hasForbiddenKey(value) {
