@@ -4,7 +4,7 @@
 **Project:** WorldStage International / Cherry Africa business-adaptive operating system  
 **Repository:** `banataosystems/nlp`  
 **Active line:** `redesign/mobile-first-v2` / PR #1  
-**Purpose:** current-state reconciliation. Historical provenance remains preserved in commits, CI runs, Vercel deployment records, artifacts and prior WorldStage evidence documents. This file does not relax the master roadmap, owner/security gates or production-release gates.
+**Purpose:** current-state reconciliation. Historical provenance remains preserved in commits, CI runs, Vercel deployment records, artifacts and the prior WorldStage evidence documents. This file does not relax the master roadmap, owner/security gates or production-release gates.
 
 ## Current phase
 
@@ -16,18 +16,18 @@ The priority remains useful Cherry-facing workflows with synthetic/demo data whi
 
 ### Documented
 
-Current durable Phase 2–5 records cover:
-- mobile-first redesign and owner-validation packages;
+Durable Phase 2–5 records now cover:
+- mobile-first redesign, owner-validation and release evidence;
 - secure intake, authorization, receipt/incident control and kill-switch behavior;
 - staging handoff, rollback, backup/restore, deployment isolation and environment binding;
 - signed-user live-test and live-staging evidence contracts;
 - reference-only evidence manifest/checkpoint continuity plus checkpoint portability;
 - Discovery, Cherry OS and Transformation Record prototype boundaries;
-- `PHASE4_CHERRY_DAILY_OWNER_WORKFLOW_2026-08-10.md` for the owner-operable daily judgment workflow;
-- `PHASE4_5_SYNTHETIC_ENGAGEMENT_FLOW_2026-08-10.md` for the end-to-end local synthetic operating loop;
-- `PHASE5_SYNTHETIC_SUSTAINMENT_PLAN_2026-08-10.md` for the owner-operable synthetic 7 / 30 / 90-day follow-through workflow;
-- `PHASE4_CHERRY_OWNER_SUMMARY_2026-08-10.md` for the consolidated read-only phone owner summary;
-- `PHASE2_STAGING_EVIDENCE_CHECKPOINT_CAPSULE_2026-08-10.md` for deterministic checkpoint-chain portability without raw evidence or release authority.
+- Cherry Daily owner workflow;
+- one fixed synthetic Discovery → Cherry judgment → Transformation Record operating loop;
+- synthetic 7 / 30 / 90 sustainment workflow;
+- consolidated Cherry Owner Summary;
+- **phone-first Cherry Owner Handoff** in `PHASE4_CHERRY_OWNER_HANDOFF_2026-08-10.md`, translating the sanitized next action into Situation → Cherry decides → If no decision → Boundary without real client data or external writes.
 
 ### Implemented on the active branch
 
@@ -37,18 +37,20 @@ Current durable Phase 2–5 records cover:
 - public WorldStage transformation narrative using clearly labeled public-source material;
 - conversational Discovery flow and client-supplied provenance states;
 - local-only Discovery context draft and explicit email handoff;
-- Cherry OS judgment queue with demo-only source map and 60-second Room briefing pattern;
-- **Cherry Daily owner workflow:** each demo judgment item can be marked `Needs Cherry`, `Prepared` or `Parked`; summary counts update immediately; demo state persists in local browser storage and can be reset; no external system is changed;
+- Cherry OS judgment queue with demo-only source map and The Room 60-second briefing pattern;
+- **Cherry Daily owner workflow:** each fixed demo item can be marked `Needs Cherry`, `Prepared` or `Parked`; summary counts update immediately; state remains in local browser storage only;
 - Transformation Record prototype with evidence-state and privacy-governance explanations;
-- **Synthetic engagement operating loop:** one fixed synthetic engagement moves from Discovery → Cherry judgment → Transformation Record across the three existing mobile surfaces. Shared state persists only a schema version and three booleans, never reads Discovery form values, requires the actual Cherry Daily item `01` prepared state before owner judgment advances, performs no network write, and can be reset locally;
-- **Synthetic 7 / 30 / 90 sustainment workflow:** after the synthetic Transformation Record is complete, Cherry can prepare fixed 7-day ownership, 30-day pattern, and 90-day sustainment checkpoints. A separate local demo object stores only version + three sequential booleans; skipped/tampered state fails closed; reset removes the storage key; no calendar, CRM, client communication, database, evidence claim, or production system is changed;
-- **Cherry Owner Summary:** one phone-first read-only Cherry OS view independently sanitizes existing local demo states and shows current synthetic engagement phase, one deterministic next owner action, Cherry Daily queue counts, sequential 7 / 30 / 90 status and the explicit evidence/privacy boundary. Its only action is safe hash navigation to an existing prototype route; it creates no business-system write or authority.
+- **synthetic engagement operating loop:** one fixed demo engagement moves sequentially from Discovery → Cherry judgment → Transformation Record and stores only schema version plus allowlisted booleans/state enums;
+- **synthetic 7 / 30 / 90 sustainment workflow:** sequential local-only checkpoints with fail-closed sanitization and no calendar, CRM, client communication, database, evidence claim or production write;
+- **Cherry Owner Summary:** one read-only phone view showing current synthetic phase, deterministic next owner action, Cherry Daily queue counts, sequential 7 / 30 / 90 status and the explicit privacy/evidence boundary;
+- **Cherry Owner Handoff:** `Open 60-second brief` opens a focused phone briefing generated only from sanitized local demo state. It shows the minimum four fields needed for a synthetic owner judgment: Situation, Cherry decides, If no decision, and Boundary. The dialog has safe-area mobile composition, body-scroll lock, focus trap, Escape handling, focus restoration and one allowlisted hash-navigation action to the existing prototype step. It cannot approve, send, schedule, store, release or activate anything outside the browser.
 
 #### Product hardening completed on 2026-08-10
 
-- fixed an app-wide mutation loop in the locked sustainment view that could prevent `/client` from reaching browser load on all six mobile viewport checks;
-- the sustainment renderer now uses a deterministic readiness/state signature and leaves an unchanged locked panel mounted rather than remove/recreate looping it;
-- fixed reset persistence so `Reset follow-up` returns the 7 / 30 / 90 demo to `0/3` while keeping `worldstage.synthetic.sustainment.plan.v1` absent, without weakening sanitization of tampered stored material.
+- eliminated a locked sustainment `MutationObserver` remove/recreate loop that previously prevented `/client` mobile loads;
+- preserved cleared sustainment state correctly after reset while retaining fail-closed sanitization;
+- kept Owner Summary and Owner Handoff state readers independent from arbitrary extra local-storage fields so injected client/private text is not rendered;
+- maintained a zero mutating-network-write contract for the owner summary/handoff prototype.
 
 #### Secure-intake boundary
 
@@ -58,8 +60,8 @@ Current durable Phase 2–5 records cover:
 - privacy-minimized abuse-control contract;
 - synthetic identity/authorization and cross-role, cross-org and revocation simulation;
 - exact-source staging-adapter contract;
-- atomic persistence/audit with actor-scoped idempotency;
-- non-enumerating actor-bound receipt status with no public endpoint;
+- atomic persistence/audit contract with actor-scoped idempotency;
+- non-enumerating actor-bound receipt-status contract with no public endpoint;
 - transactional fail-closed intake control / kill switch;
 - bounded structured incident signals;
 - public-route guard against private/synthetic runtime binding;
@@ -76,42 +78,43 @@ Current durable Phase 2–5 records cover:
 - live-staging evidence aggregator;
 - reference-only staging evidence manifest;
 - deterministic staging evidence checkpoint continuity;
-- self-contained checkpoint portability capsule that verifies complete genesis-to-terminal checkpoint chains across durable copies while embedding no underlying provider evidence and granting no activation or release authority.
+- self-contained checkpoint portability capsule.
 
-All of those contracts remain non-activating: structural completeness or portability does not authorize confidential intake or production release.
+All of those contracts remain non-activating: structural completeness, test success or portability never authorizes confidential intake or production release.
 
 ### Tested
 
-The latest exact fully tested **product-code head** is:
-- source head `68d468555de2dff2c9dcaa40cb6fea56fddd3164`;
-- commit `Preserve cleared sustainment state after reset`;
-- GitHub Actions run `31393311622` (#566), **PASS**;
+The latest exact fully tested **product + Owner Handoff documentation head** before this roadmap reconciliation is:
+- source head `dbde74da3d23af5f2ff252872d3cf7de729c2203`;
+- commit `Document Cherry owner handoff briefing slice`;
+- GitHub Actions run `31395445947` (#580), **PASS**;
 - owner/security decision-evidence enforcement: PASS;
 - secure-intake runtime/security: PASS;
+- staging preflight: PASS;
 - six-width mobile contract: PASS;
 - iPhone/WebKit + Pixel/Chromium device contract: PASS;
 - Phase 2 SQL and staging tests: PASS;
 - Discovery Phase 3: PASS;
-- Cherry OS Phase 4 including Owner Summary: PASS;
-- Transformation Record Phase 5 including sequential 7 / 30 / 90 prepare/reset/fail-closed behavior: PASS;
+- Cherry OS Phase 4 including Owner Summary + focused Owner Handoff coverage: PASS;
+- Transformation Record Phase 5: PASS;
 - release/security/privacy tests: PASS;
 - visual evidence tests: PASS;
 - exact-head staging-readiness regeneration: PASS.
 
-Exact-head artifacts from run #566:
-- staging-readiness artifact `9064617626`, digest `sha256:2f1df33d6f8b7404c581c9bbe62a843905fae9facd04a8192c2389ebee1a8b22`;
-- mobile visual artifact `9064618057`, digest `sha256:577b88d1c69b7b366c5303ece78562c1d98343ed919b1cd3e8535986c66cd761`.
+Run #580 artifacts:
+- staging-readiness artifact `9065486132`, digest `sha256:367c8bceb26e2ae31409a0245041effd364d74d93170b73fbe501311e6c2c2fe`;
+- mobile visual artifact `9065486604`, digest `sha256:72b169f224354779fde0244e041c54fb3407a99a88a5d3961b0376b88ea2916d`.
 
-The staging-readiness artifact was inspected directly. It contains exact `source_sha = 68d468555de2dff2c9dcaa40cb6fea56fddd3164`, `readiness = BLOCKED`, confidential intake disabled, anonymous intake denied, file uploads/private AI/private analytics disabled, production release blocked, both intake activation flags false, persistence unselected, adapter binding false, no staging/production project IDs, no bound Phase 2 persistence paths, and owner/security decisions D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 still OPEN. That BLOCKED status is intentional fail-closed evidence, not a test failure.
+The staging-readiness ZIP was inspected directly. It contains exact `source_sha = dbde74da3d23af5f2ff252872d3cf7de729c2203`, `readiness = BLOCKED`, confidential intake disabled, anonymous intake denied, file uploads/private AI/private analytics disabled, production release blocked, both intake activation flags false, persistence unselected, adapter binding false, no staging/production project IDs, no bound Phase 2 persistence paths, and owner/security decisions D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 still OPEN. That BLOCKED status is intentional fail-closed evidence, not a test failure.
 
-Historical failure provenance is preserved: run #562 isolated six `/client` browser-load timeouts to a sustainment MutationObserver loop; run #564 proved that repair across mobile/device suites but exposed a Phase 5 reset-persistence regression; run #566 passed after the reset semantics were repaired. Validation was not weakened to obtain the pass.
+This roadmap reconciliation changes the repository head after `dbde74d…`; therefore the final exact-head CI/preview proof for the reconciliation commit belongs in PR #1 rather than being self-referentially written into this file.
 
 ### Preview deployed
 
-The latest exact product-code preview is:
-- Vercel deployment `dpl_GKHuBEQJp6AyFqPC6iGYr8xqhfuu`;
+The exact tested `dbde74da3d23af5f2ff252872d3cf7de729c2203` head has Vercel preview:
+- deployment `dpl_5x613KpTng47yt3QL5VhfuZYJwnn`;
 - state `READY`;
-- Git source SHA `68d468555de2dff2c9dcaa40cb6fea56fddd3164`;
+- Git source SHA `dbde74da3d23af5f2ff252872d3cf7de729c2203`;
 - branch `redesign/mobile-first-v2`;
 - `target: null` / non-production.
 
@@ -123,7 +126,7 @@ This is deployment/provenance evidence only. It does not imply live staging, own
 
 ### Production
 
-The preserved production baseline remains `dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1`, READY, `target: production`, source `redeploy`, with `cherrypua.vercel.app` among its recorded aliases. The mobile-v2 / Cherry Daily / synthetic engagement / sustainment / owner-summary / secure-intake line has not been promoted and is not production-approved.
+The preserved production baseline remains `dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1`, READY and `target: production`. The mobile-v2 / Cherry Daily / synthetic engagement / sustainment / Owner Summary / Owner Handoff / secure-intake line has not been promoted and is not production-approved.
 
 ## Current hard gates / blockers
 
@@ -138,21 +141,19 @@ The preserved production baseline remains `dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1`, RE
 
 ## Risks
 
-- A polished demo workflow can look operational even though it still uses synthetic/demo data; Cherry Daily, the synthetic engagement loop, 7 / 30 / 90 sustainment plan and Owner Summary therefore remain explicitly local-demo-only.
-- The Owner Summary is an operating view over sanitized local booleans/state enums, not a real client dashboard or source-of-truth record.
-- The synthetic sustainment checkpoints are planning states, not calendar events, client commitments, measured outcomes or evidence claims.
-- The synthetic loop proves an operating pattern, not the correctness of real client data, real authentication, provider security, or real Transformation Record evidence.
+- A polished demo workflow can look operational even though it still uses synthetic/demo data; all Cherry-facing prototype states therefore remain explicitly local-demo-only.
+- The Owner Handoff is a decision-interface pattern over sanitized enums/booleans, not a real client briefing or verified source-of-truth record.
+- Synthetic sustainment checkpoints are planning states, not calendar events, client commitments, measured outcomes or evidence claims.
+- Browser/device automation is technical evidence, not Cherry's physical-device acceptance.
 - Provider-neutral/synthetic proof cannot substitute for live database-policy, security, recovery or operational proof.
-- Checkpoint portability proves that a checkpoint lineage was copied intact; it does not prove underlying provider evidence and grants no activation/release authority.
 - Preview READY proves deployability/provenance only, not production suitability.
 - The preserved production baseline must remain isolated until explicit production-release authority and all required live proof gates exist.
-- Pandora unavailability prevents canonical memory reconciliation until access is restored or a separately authorized governance exception exists.
 
 ## Current safe next autonomous actions
 
-1. Reconcile PR #1 with the exact tested product head, run/artifact digests and exact-SHA READY preview while preserving the production baseline.
-2. Continue the next high-value product-facing provider-independent slice: a synthetic owner handoff/briefing view that translates the Owner Summary next action into the minimum context Cherry needs to make that decision from a phone.
-3. Add focused automated coverage and mobile/device verification for that owner handoff without introducing real client data or provider writes.
+1. Reconcile PR #1 with the final exact roadmap-head CI/artifact/READY-preview evidence while preserving the production baseline.
+2. Continue the next product-facing provider-independent slice only after that proof closes: a **structured synthetic decision-rationale lens** for Cherry Daily that allows only a tiny fixed reason vocabulary (no free text) so Cherry can distinguish `ready`, `needs context`, and `can wait` without introducing client data or external writes.
+3. Add focused automated/mobile coverage for that rationale lens and keep all arbitrary text/provider writes out of the state model.
 4. Keep public receipt lookup absent and confidential intake fail-closed until owner/security/auth/privacy gates are resolved.
 5. Do not create billable staging, bind confidential data, use missing credentials, apply real migrations, make legal/public commitments or promote production without separate hard gates.
 
@@ -164,9 +165,9 @@ The preserved production baseline remains `dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1`, RE
 - No public receipt-status endpoint is claimed.
 - No real provider backup/restore or live kill-switch proof is claimed.
 - No participant-private production flow is claimed.
-- Cherry Daily, the synthetic engagement loop, 7 / 30 / 90 sustainment workflow and Owner Summary do not change any external WorldStage system.
-- The synthetic Transformation Record and sustainment states are not real client outcomes, calendar commitments, or evidence claims.
+- Cherry Daily, the synthetic engagement loop, sustainment workflow, Owner Summary and Owner Handoff do not change any external WorldStage system.
+- The synthetic Transformation Record and sustainment states are not real client outcomes, calendar commitments or evidence claims.
 - No owner/security approval is inferred from code or tests.
 - No physical-device owner approval is inferred from browser automation.
 - No Pandora Memory synchronization is claimed while its connector path is unavailable.
-- No mobile-v2 / Cherry Daily / synthetic engagement / sustainment / owner-summary / secure-intake production release is claimed.
+- No mobile-v2 / Cherry prototype / secure-intake production release is claimed.
