@@ -116,7 +116,7 @@ test('a missing ancestor cannot be exported as a valid chain', () => {
   const { child } = lineage();
   assert.throws(
     () => buildStagingEvidenceCheckpointCapsule({ checkpoints: [child] }),
-    /staging_evidence_checkpoint_capsule_checkpoint_invalid:0/,
+    /staging_evidence_checkpoint_capsule_genesis_invalid/,
   );
 });
 
@@ -124,7 +124,7 @@ test('reordered checkpoints fail continuity verification', () => {
   const { genesis, child } = lineage();
   assert.throws(
     () => buildStagingEvidenceCheckpointCapsule({ checkpoints: [child, genesis] }),
-    /staging_evidence_checkpoint_capsule_checkpoint_invalid:0/,
+    /staging_evidence_checkpoint_capsule_checkpoint_invalid:1:staging_evidence_checkpoint_sequence_discontinuity/,
   );
 });
 
