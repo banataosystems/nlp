@@ -17,10 +17,18 @@ module.exports = async function handler(req, res) {
 
     res.setHeader('Cache-Control', 'no-store');
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    res.status(result.status).json(result.body);
+
+    if (result.status === 200) {
+      return res.status(503).json({
+        error: 'runtime_dependencies_not_bound',
+        message: 'Secure intake is not available yet.',
+      });
+    }
+
+    return res.status(result.status).json(result.body);
   } catch {
     res.setHeader('Cache-Control', 'no-store');
-    res.status(500).json({
+    return res.status(500).json({
       error: 'internal_error',
       message: 'Secure intake is temporarily unavailable.',
     });
