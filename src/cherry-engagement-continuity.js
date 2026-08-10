@@ -41,6 +41,8 @@ function cherryContinuityCurrent(flow) {
       label: 'Discovery',
       route: 'discovery',
       detail: 'Resume the fixed synthetic Discovery brief. No client form values are read into this strip.',
+      prepared: 'Prepared: owner cockpit shell and fixed synthetic engagement flow only.',
+      next: 'Next: prepare the fixed synthetic Discovery brief.',
     };
   }
   if (!flow.ownerReviewed) {
@@ -50,6 +52,8 @@ function cherryContinuityCurrent(flow) {
       label: 'Cherry review',
       route: 'cockpit',
       detail: 'Resume the existing synthetic Cherry judgment step on this phone view.',
+      prepared: 'Prepared: fixed synthetic Discovery brief.',
+      next: 'Next: complete the existing local-demo Cherry review.',
     };
   }
   return {
@@ -60,6 +64,12 @@ function cherryContinuityCurrent(flow) {
     detail: flow.recordPrepared
       ? 'Resume the existing local synthetic Transformation Record review.'
       : 'Resume preparation of the existing local synthetic Transformation Record.',
+    prepared: flow.recordPrepared
+      ? 'Prepared: Discovery brief, Cherry review, and local synthetic Transformation Record.'
+      : 'Prepared: Discovery brief and Cherry review.',
+    next: flow.recordPrepared
+      ? 'Next: review the existing local synthetic Transformation Record.'
+      : 'Next: prepare the local synthetic Transformation Record.',
   };
 }
 
@@ -84,6 +94,11 @@ function cherryContinuityMarkup(flow, current, signature) {
       <span>ENGAGEMENT CONTINUITY · LOCAL SYNTHETIC DEMO</span>
       <strong data-cherry-engagement-continuity-current>${current.label}</strong>
       <p>${current.detail}</p>
+      <div class="cherry-engagement-continuity__handoff" data-cherry-engagement-continuity-handoff aria-label="Synthetic engagement handoff cue">
+        <span>HANDOFF CUE · READ ONLY</span>
+        <p data-cherry-engagement-continuity-prepared>${current.prepared}</p>
+        <p data-cherry-engagement-continuity-next>${current.next}</p>
+      </div>
     </div>
     <div class="cherry-engagement-continuity__steps" aria-label="Discovery, Cherry review, Transformation Record">
       ${CHERRY_CONTINUITY_STAGES.map((stage, index) => {
