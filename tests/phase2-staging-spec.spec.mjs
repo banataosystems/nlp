@@ -96,6 +96,6 @@ test('rollback is data-aware and does not assume destructive reversal', () => {
 });
 
 test('spec explicitly remains non-live', () => {
-  expect(spec).toContain('No live Supabase/database environment');
+  expect(spec).toContain('This specification does not create a Supabase project, database, auth tenant, secret, endpoint, migration, or production release');
   expect(spec).toContain('No staging or production database environment has been created by this step');
 });
