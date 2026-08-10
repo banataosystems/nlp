@@ -24,19 +24,29 @@ function cherryRecheckCloseComplete(recap, completion) {
   const status = recap.querySelector('[data-cherry-owner-review-recap-recheck-status]');
   const recheck = recap.querySelector('[data-cherry-owner-review-recap-recheck]');
   const next = recap.querySelector('[data-cherry-owner-review-recap-route]');
-  if (!(status instanceof HTMLElement) || !(recheck instanceof HTMLButtonElement) || !(next instanceof HTMLButtonElement)) return;
+  const sessionRestart = document.querySelector('[data-cherry-review-session] [data-cherry-review-session-restart]');
+  if (!(status instanceof HTMLElement)
+    || !(recheck instanceof HTMLButtonElement)
+    || !(next instanceof HTMLButtonElement)
+    || !(sessionRestart instanceof HTMLButtonElement)) return;
 
   const route = next.dataset.cherryOwnerReviewRecapRoute;
   if (!CHERRY_RECHECK_CLOSE_ROUTES.has(route)) return;
 
   recap.dataset.cherryOwnerReviewRecheckComplete = 'true';
+  recap.dataset.cherryOwnerReviewRestartBoundary = 'true';
   status.dataset.cherryOwnerReviewRecheckCompleteStatus = 'true';
-  status.textContent = `Recheck complete · ${completion.total} changed item${completion.total === 1 ? '' : 's'} revisited. Navigation only; completed review unchanged.`;
+  status.textContent = `Recheck complete · ${completion.total} changed item${completion.total === 1 ? '' : 's'} revisited. Choose a new 3-minute review or continue to the existing synthetic next step; the completed review stays unchanged until restart is deliberately tapped.`;
 
   recheck.hidden = true;
   recheck.setAttribute('aria-hidden', 'true');
 
+  sessionRestart.dataset.cherryOwnerReviewBoundaryRestart = 'true';
+  sessionRestart.textContent = 'Start a new 3-minute review →';
+  sessionRestart.setAttribute('aria-label', 'Start a new 3-minute synthetic owner review');
+
   next.dataset.cherryOwnerReviewCloseNext = 'true';
+  next.dataset.cherryOwnerReviewBoundaryNext = 'true';
   next.textContent = 'Continue to existing synthetic next step →';
   next.setAttribute('aria-label', 'Continue to the existing synthetic next step');
 }
