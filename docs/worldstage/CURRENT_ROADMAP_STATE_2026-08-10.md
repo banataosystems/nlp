@@ -25,7 +25,7 @@ Current design, security and operating boundaries are documented in the WorldSta
 - conversational Discovery prototype and provenance states;
 - Cherry OS judgment-queue prototype;
 - Transformation Record prototype;
-- public `/api/v1/intakes` server shell that remains intentionally inert;
+- public `/api/v1/intakes` server shell that remains intentionally inert and has no 2xx path;
 - strict server request allowlists and recursive rejection of client-controlled authority fields;
 - candidate authenticated-user / bound-invitation authentication contracts with anonymous intake denied;
 - privacy-minimized abuse-control contract;
@@ -42,15 +42,37 @@ Current design, security and operating boundaries are documented in the WorldSta
 - static regression guard preventing the public route from silently importing/binding the private orchestrator or synthetic adapters;
 - non-deployed SQL design alignment for opaque receipts and actor-scoped idempotency.
 
-### Tested
+### Tested — latest verified implementation/evidence baseline
 
-The last fully green implementation head before the evidence-pipeline correction was `17627fc4a9646e22f7cf1e0f717b22fba3555309` in GitHub Actions run `31353949556` (#399). That run passed the secure-intake runtime gate, mobile/device contracts, Phase 2 SQL/staging contracts, Discovery, Cherry OS, Transformation Record, release/security/privacy checks and visual evidence generation.
+The latest fully verified implementation/evidence baseline before this documentation-only reconciliation commit is:
 
-The active head after the evidence-pipeline correction requires its own exact-head CI success before the branch as a whole may again be labelled **tested**. Older green runs are preserved as provenance but do not substitute for exact-current-head proof.
+- source head: `ab1ce3c06af333cc5f256e9803284b540fe1545c`;
+- GitHub Actions run: `31354154647` (#403);
+- conclusion: **PASS**.
 
-### Preview deployed
+That exact-source run passed:
 
-Git-linked Vercel previews are proven to trace branch commits by exact Git SHA and use `target: null`. They are preview deployments, not production releases.
+- decision-evidence enforcement;
+- the expanded secure-intake runtime/security suite;
+- fail-closed staging preflight;
+- six-width mobile contract;
+- iPhone/WebKit and Pixel/Chromium device-class contracts;
+- Phase 2 SQL and staging contracts;
+- Discovery Phase 3;
+- Cherry OS Phase 4;
+- Transformation Record Phase 5;
+- release/security/privacy contract;
+- visual evidence generation;
+- post-test exact-head staging-evidence regeneration;
+- both evidence artifact uploads.
+
+This reconciliation file changes documentation only. Any later implementation/workflow change still requires its own exact-head proof before inheriting the tested label.
+
+### Preview deployed — exact-source baseline
+
+Vercel preview deployment `dpl_5tpmHBvCQaQ1dYKtR7bcDLHHTamv` is READY, `target: null`, source Git, and records exact Git SHA `ab1ce3c06af333cc5f256e9803284b540fe1545c` on `redesign/mobile-first-v2` / PR #1.
+
+That is preview evidence only, not production release evidence.
 
 ### Live staging
 
@@ -58,29 +80,51 @@ Git-linked Vercel previews are proven to trace branch commits by exact Git SHA a
 
 ### Production
 
-The existing `cherrypua` production baseline remains separately deployed and reachable. The mobile-v2 / secure-intake branch has **not** been promoted to production and is not production-approved.
+The existing `cherrypua` production baseline remains separately deployed and reachable at deployment `dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1`, READY, target production, source redeploy. The mobile-v2 / secure-intake branch has **not** been promoted to production and is not production-approved.
 
-## Evidence-pipeline correction discovered on 2026-08-10
+## Evidence-pipeline correction — repaired and verified
 
-GitHub Actions run #399 was green and uploaded both expected artifacts, but inspection of its Phase 2 staging-readiness ZIP found that the report's internal `source_sha` had been overwritten to `synthetic-ci-sha` by the staging preflight test suite before artifact upload.
+A prior green run uploaded a Phase 2 staging-readiness report whose internal `source_sha` had been overwritten to `synthetic-ci-sha` by staging-preflight tests before artifact upload. The GitHub artifact metadata still pointed to the correct head, but the report itself was therefore not acceptable as exact-source proof.
 
-This did **not** mean the workflow executed against the wrong Git commit; the GitHub artifact metadata correctly identified head `17627fc4a9646e22f7cf1e0f717b22fba3555309`. It did mean the uploaded report itself was not acceptable as exact-source provenance.
+The workflow was corrected to regenerate staging-readiness evidence **after all tests and visual generation, immediately before upload**, with the actual workflow head SHA and fail-closed intake/persistence flags.
 
-The workflow has therefore been corrected to regenerate the staging-readiness report **after all tests and immediately before artifact upload**, with `WORLDSTAGE_SOURCE_SHA` bound to the actual workflow head SHA and all intake/persistence activation flags explicitly fail-closed. The corrected workflow must pass and its new artifact must be inspected before exact-source staging-readiness evidence is considered repaired.
+The repaired exact-source proof is now verified:
 
-The prior artifact remains part of history and must not be represented as exact-source proof.
+- source head: `ab1ce3c06af333cc5f256e9803284b540fe1545c`;
+- workflow run: `31354154647` (#403), PASS;
+- Phase 2 staging-readiness artifact ID: `9050056960`;
+- artifact digest: `sha256:d49f63de7298c4701ca1fdc2ea2ec257dcdd552b816e4c84733134c47602eb1e`;
+- mobile visual artifact ID: `9050057166`;
+- visual artifact digest: `sha256:5a0f327428eae7caba1128bbab624fac068433f02682ee51169c3d53707bb0d7`.
 
-## Verified production baseline facts
+The staging-readiness ZIP was inspected directly. Its JSON contains:
 
-- Vercel project: `cherrypua`.
-- Production deployment baseline: `dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1`.
-- State: READY.
-- Target: production.
-- Source: redeploy of the preserved baseline, not the mobile-v2 branch.
-- `https://cherrypua.vercel.app/` returned HTTP 200 during this verification pass.
-- Vercel reported no runtime errors for the project in the queried 7-day window.
+- `source_sha: ab1ce3c06af333cc5f256e9803284b540fe1545c`;
+- `readiness: BLOCKED`;
+- confidential intake disabled;
+- secure-intake persistence unselected;
+- adapter binding false;
+- no bound Phase 2 persistence paths;
+- only blocker: `OWNER_SECURITY_DECISIONS_OPEN` for D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18.
 
-These facts verify reachability/hosting health of the preserved production baseline only. They do **not** constitute approval of the mobile-v2 redesign, secure intake, confidential-data handling or owner content.
+This BLOCKED result is the intended fail-closed state before live staging; it is not a test failure.
+
+The older contaminated artifact remains historical evidence and must not be represented as exact-source staging-readiness proof.
+
+## Receipt / incident-control hardening state
+
+Implemented and verified on the exact-source baseline:
+
+- actor-bound, non-enumerating receipt lookup with no public route;
+- identical unavailable response for malformed, missing, cross-actor, adapter-failure and unknown-state receipt cases;
+- transactional dynamic intake control with disabled fail-closed reads;
+- external authorization decision required for state changes; no D18 owner role is hard-coded;
+- additional readiness evidence required before enabling intake;
+- control state + audit committed atomically; audit failure rolls the state change back;
+- dynamic control enforced in the private synthetic orchestrator before abuse/auth/persistence;
+- structured incident signals limited to category, severity, correlation ID, source and optional error class;
+- no live incident-management provider, pager, webhook or automatic production shutdown is wired;
+- public `/api/v1/intakes` remains an inert shell and is regression-tested not to import/bind private runtime dependencies.
 
 ## Current blockers / gates
 
@@ -90,16 +134,16 @@ These facts verify reachability/hosting health of the preserved production basel
 4. **Real-data proof:** no signed-user PostgreSQL/RLS execution has occurred; confidential intake remains disabled.
 5. **Physical-device / owner validation:** automated WebKit/Chromium device-class checks do not replace required physical-device/owner approval.
 6. **Authentic owner-approved content:** production-quality Cherry/program/client media and rights/evidence remain separate owner/content gates.
-7. **Pandora Memory:** canonical synchronization is currently unproven because the ProjectOS/Pandora MCP endpoint is returning `401 Protected deployment`. Do not treat repository documentation as a successful Pandora sync.
+7. **Pandora Memory:** canonical synchronization is currently unproven because the ProjectOS/Pandora MCP path remains unavailable/protected in the current tool state. Do not treat repository documentation as a successful Pandora sync.
 8. **Production release:** no authorization has been given to promote this branch; production promotion remains fail-closed.
 
 ## Current safe next autonomous actions
 
-1. Complete exact-head CI after the evidence-pipeline correction.
-2. Inspect the newly uploaded staging-readiness artifact and verify its internal `source_sha` exactly equals the workflow head SHA; preserve artifact ID and digest.
-3. Verify the exact-head Vercel preview is READY and records the same Git SHA.
-4. Reconcile PR #1 evidence metadata to that exact head without changing production.
-5. Continue only non-live/provider-neutral hardening, rollback/security evidence and documentation that do not create a billable environment, bind confidential data, make legal/public commitments or promote production.
+1. Continue non-live provider-boundary and rollback/security hardening without binding a real provider.
+2. Keep receipt status and confidential intake non-public until owner/security/auth/privacy gates are resolved.
+3. Preserve exact-source preview, CI, staging-readiness and visual evidence for each meaningful implementation change.
+4. Recheck production isolation after meaningful branch changes.
+5. Do not create a billable live staging environment, bind confidential data or promote production without satisfying the separate hard gates.
 
 ## Explicit non-claims
 
@@ -110,5 +154,5 @@ These facts verify reachability/hosting health of the preserved production basel
 - No participant-private production flow is claimed.
 - No owner/security approval is inferred from code or tests.
 - No physical-device owner approval is inferred from browser automation.
-- No Pandora Memory synchronization is claimed while the connector is protected.
+- No Pandora Memory synchronization is claimed while the connector/path is unavailable.
 - No mobile-v2 / secure-intake production release is claimed.
