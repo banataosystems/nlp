@@ -65,7 +65,12 @@ function readSustainmentState() {
   }
 
   try {
-    const parsed = JSON.parse(localStorage.getItem(SUSTAINMENT_PLAN_KEY) || 'null');
+    const raw = localStorage.getItem(SUSTAINMENT_PLAN_KEY);
+    if (raw === null) {
+      sustainmentFallback = defaultSustainmentState();
+      return { ...sustainmentFallback };
+    }
+    const parsed = JSON.parse(raw);
     const sanitized = sanitizeSustainmentState(parsed, true);
     sustainmentFallback = sanitized;
     localStorage.setItem(SUSTAINMENT_PLAN_KEY, JSON.stringify(sanitized));
