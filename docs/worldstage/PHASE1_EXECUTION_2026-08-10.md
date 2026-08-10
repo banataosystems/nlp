@@ -9,7 +9,7 @@
 
 ## Current lifecycle truth
 
-The mobile-first recovery branch is the active implementation line. It contains the phone-first interaction design, production-shaped non-confidential Discovery prototype, Cherry OS provenance surfaces, Transformation Record evidence governance, security/privacy hardening, six-width mobile contracts, iPhone/WebKit and Pixel/Chromium device-class contracts, visual evidence, and traceable Git-linked Vercel previews.
+The mobile-first recovery branch is the active implementation line. It contains the phone-first interaction design, production-shaped non-confidential Discovery prototype, Cherry OS provenance surfaces, Transformation Record evidence governance, security/privacy hardening, six-width mobile contracts, iPhone/WebKit and Pixel/Chromium device-class contracts, visual evidence, traceable Git-linked Vercel previews, and non-deployed Phase 2 schema/API security planning.
 
 Current production remains the preserved baseline artifact and must not be confused with mobile-v2. Mobile-v2 has **not** been promoted to production.
 
@@ -22,6 +22,8 @@ Current production remains the preserved baseline artifact and must not be confu
 - Cherry OS Phase 4 contract: verified.
 - Transformation Record Phase 5 contract: verified.
 - Security/privacy release contract: verified.
+- Phase 2 SQL static safety contract: verified on exact tested branch head; this is not live database/RLS verification.
+- Phase 2 secure-intake API/threat-model static contract: verified on exact tested branch head; this is not endpoint implementation.
 - Git → Vercel preview binding: proven with exact repository/branch/SHA metadata.
 - Physical-device owner approval: not yet verified.
 - Mobile-v2 production deployment: not performed.
@@ -57,16 +59,7 @@ Current public material supports this operating rhythm:
 
 `Current state / pain points → Discovery / FGD / goal-setting alignment → Intervention / boot camp → Post-intervention analytics → Next steps / sustainment`
 
-Public WorldStage pages also consistently support:
-
-- company-specific, non-cookie-cutter interventions;
-- Team Building & Culture Development;
-- Learning & Development / Fire University;
-- Keynotes & Motivation;
-- FIRE / Shock & Awe / Fire Impact Learning Technology vocabulary;
-- evidence/analytics and post-intervention follow-through;
-- safe learning environments;
-- head, heart and gut engagement.
+Public WorldStage pages also consistently support company-specific/non-cookie-cutter interventions, Team Building & Culture Development, Learning & Development / Fire University, Keynotes & Motivation, FIRE / Shock & Awe / Fire Impact Learning Technology vocabulary, evidence/analytics and post-intervention follow-through, safe learning environments, and head/heart/gut engagement.
 
 These are **public candidate truths**, not proof of the private internal sales/operations workflow.
 
@@ -97,31 +90,17 @@ Record which person, file, message thread, calendar, spreadsheet, deck, form, or
 
 ### P1.3 — Cherry judgment boundary
 
-The first conservative draft exists in `docs/worldstage/DECISION_AUTHORITY_DRAFT_2026-08-10.md`. It separates likely judgment-sensitive decisions from candidate routine operations and fails closed when authority/source/privacy/rights/commercial context is unknown.
-
-Owner validation must confirm decisions truly requiring Cherry personally, delegated roles and limits, relationship ownership, commercial exception authority, participant/sponsor visibility decisions, public/client claim approval, what the system may do without interruption, and what must always require explicit human confirmation.
+The conservative draft exists in `docs/worldstage/DECISION_AUTHORITY_DRAFT_2026-08-10.md`. It separates likely judgment-sensitive decisions from candidate routine operations and fails closed when authority/source/privacy/rights/commercial context is unknown.
 
 **Proof:** owner-approved decision-authority matrix.
 
 ### P1.4 — Data sensitivity and retention
 
-Validate at least:
-
-1. public;
-2. internal business;
-3. confidential client;
-4. participant/person-level;
-5. highly sensitive/restricted.
-
-Define what must never enter public repositories, analytics, screenshots, semantic memory, or unauthorized AI contexts.
-
-The operating-data-model draft already requires every private object to be evaluated for organization isolation, team role, sponsor/participant visibility, Cherry-only visibility, AI eligibility, analytics eligibility, retention/deletion class and public-release permission.
+Validate at least public, internal business, confidential client, participant/person-level, and highly sensitive/restricted classes. Define what must never enter public repositories, analytics, screenshots, semantic memory, or unauthorized AI contexts.
 
 **Proof:** data-classification/retention matrix.
 
 ### P1.5 — Systems-of-record inventory
-
-Public evidence proves that website discovery/contact and event registration/order surfaces exist, but it does **not** prove they are authoritative systems of record.
 
 Owner validation must identify the real systems for email, calendar, Drive/docs/sheets, CRM/contact history, proposals/contracts, accounting/invoicing, ticketing/event registration, payment/reconciliation, messaging, participant forms/surveys, LMS / Fire University, website CMS, and analytics.
 
@@ -135,7 +114,7 @@ Default recommendation pending owner validation:
 
 **Secure Discovery Intake → Human Review → Cherry Judgment Queue**
 
-Why it remains the default: current public evidence shows that WorldStage explicitly starts with understanding current state and ambition before designing an intervention. However, this remains a recommendation—not an owner-approved production decision.
+This remains a recommendation—not an owner-approved production decision.
 
 ### P1.7 — Validate the operating data model
 
@@ -151,25 +130,55 @@ Candidate aggregate:
 
 Cross-cutting objects include Person / relationship contact, Commitment / promise, Source reference, and Decision / approval.
 
-The draft explicitly separates client-supplied statements from WorldStage interpretation and requires source provenance for consequential insights.
-
-Owner validation must answer the model-changing questions, especially what the team actually thinks of as “the client job,” when a transformation formally begins, how proposals relate to transformations, actual participant/sponsor privacy boundaries, canonical systems for contacts/proposals/schedules/payments/follow-ups, Cherry-only decisions, and what evidence qualifies as “worked.”
-
 **Proof:** owner-approved logical data model before production database schema activation.
 
 ## Phase 2 — Secure intake/security planning
 
-**State:** architecture documented; not implemented; not owner/security approved.
+**State:** architecture, schema hypothesis, API contract and threat model documented; not live; not owner/security approved.
 
-The following non-deployed drafts now exist:
+Current non-deployed Phase 2 package:
 
 - `docs/worldstage/PHASE2_SECURE_INTAKE_SECURITY_BLUEPRINT_2026-08-10.md`
 - `docs/worldstage/PHASE2_RLS_RBAC_VERIFICATION_MATRIX_2026-08-10.md`
 - `docs/worldstage/PHASE2_SECURITY_RELEASE_CHECKLIST_2026-08-10.md`
+- `docs/worldstage/phase2-sql-drafts/README.md`
+- `docs/worldstage/phase2-sql-drafts/001_minimum_schema.sql`
+- `docs/worldstage/phase2-sql-drafts/002_rls_policy_skeleton.sql`
+- `docs/worldstage/phase2-sql-drafts/003_negative_authorization_fixtures.sql`
+- `docs/worldstage/PHASE2_SECURE_INTAKE_API_CONTRACT_2026-08-10.md`
+- `docs/worldstage/PHASE2_SECURE_INTAKE_THREAT_MODEL_2026-08-10.md`
+- `docs/worldstage/PHASE2_SECURE_INTAKE_FAILURE_MATRIX_2026-08-10.md`
 
-They define a conservative target for secure intake, authentication, transformation-scoped memberships, server-side authorization, RLS, audit events, participant/sponsor separation, AI/analytics boundaries, retention/deletion placeholders, incident response, backup/restore, rollback and release provenance.
+### Phase 2 API boundary
 
-These documents are **planning artifacts only**. No database, auth provider, secrets, RLS policies, production routes or confidential intake endpoints have been created by this Phase 2 drafting work.
+Proposed future route family is disabled/nonexistent today. The static contract requires:
+
+- browser may submit content but never authority;
+- strict request allowlist and rejection of unknown fields;
+- reviewer, membership, visibility, sensitivity, decision authority, audit identity and retention remain server/human-controlled;
+- privileged service credentials never reach the browser;
+- anonymous public intake default denied until explicit approval;
+- idempotency and atomic failure behavior;
+- low-information/non-enumerating error responses;
+- quarantine path for unexpected highly sensitive content;
+- same-origin/CORS and CSRF controls according to chosen auth mode;
+- a pre-activation kill switch that prevents persistence and downstream actions;
+- no automatic LLM/analytics/vector/session-replay path from intake;
+- production release authority remains completely outside intake APIs.
+
+### Phase 2 threat model
+
+Threat coverage includes identity spoofing, tampering, repudiation, information disclosure, denial-of-service/abuse, privilege escalation, prompt injection, sensitive oversharing, markup/formula injection, cross-tenant/IDOR risk, logging leakage, external-provider boundaries and incident response.
+
+### Phase 2 static verification
+
+CI now checks the SQL draft and API/threat-model contracts as part of release/security verification. Static PASS means the design boundaries are structurally represented and the current prototype still contains no live secure-intake API route. It does **not** mean:
+
+- PostgreSQL/Supabase execution has been tested;
+- RLS behavior has been validated with signed identities;
+- a secure endpoint exists;
+- confidential data collection is enabled;
+- owner/security approval has occurred.
 
 ### Phase 2 fail-closed rules
 
@@ -182,7 +191,7 @@ Until owner/security validation:
 - AI/system suggestions cannot approve, publish, send relationship-sensitive communications, change permissions, delete restricted data, or authorize releases;
 - privileged service credentials never reach the browser;
 - public website cannot directly write privileged business tables;
-- confidential intake cannot be called production-ready from RLS tests alone.
+- confidential intake cannot be called production-ready from static tests alone.
 
 ## Phase 2 entry gate
 
@@ -192,10 +201,14 @@ Do not activate secure real-data intake until all are true:
 - owner-approved logical data model or documented corrections;
 - roles/authority boundaries confirmed;
 - data sensitivity and retention confirmed;
+- participant/sponsor visibility confirmed;
 - systems of record inventoried;
 - first production workflow selected;
-- target data environment verified;
+- target dev/staging/production data environment verified;
+- authentication mode selected;
 - authentication, RLS/RBAC and audit requirements approved;
+- executable migrations reviewed and tested in staging;
+- signed-identity positive/negative authorization tests pass;
 - rollback/test/incident plan approved;
 - backup/restore strategy verified;
 - physical-device validation completed;
@@ -208,7 +221,10 @@ Do not activate secure real-data intake until all are true:
 - Owner approval of the decision-authority matrix is open.
 - Data-retention/deletion rules are not owner/legal/security approved.
 - Actual internal roles and delegated authority are not approved.
+- Participant/sponsor visibility is not owner-approved.
 - Actual systems of record are not confirmed.
+- Intake authentication mode is not selected.
+- No target staging database has been approved.
 - Physical-device owner visual approval remains open.
 - Authentic Cherry media/content approval remains open.
 - Secure server-side Discovery intake is not implemented.
@@ -229,6 +245,8 @@ Do not activate secure real-data intake until all are true:
 - Phase 2 secure-intake/security architecture draft.
 - Phase 2 RLS/RBAC verification matrix draft.
 - Phase 2 security/release/incident checklist draft.
+- Phase 2 non-deployed SQL/RLS draft package with static safety contract.
+- Phase 2 secure-intake API contract, threat model and deterministic failure matrix with static safety contract.
 
 ## Required proof discipline
 
@@ -236,4 +254,4 @@ Keep these states separate:
 
 **documented → implemented → tested → preview-deployed → production-deployed → production-verified**
 
-Browser/device emulation is not physical-device approval. A READY preview is not production. Public-source process evidence is not owner validation. A draft data model is not a production schema. A draft authority matrix is not an authorization policy. A security blueprint is not security implementation. RLS policies without negative tests are not verified. No confidential/private workflow becomes production truth until the owner and authorized team confirm it.
+Browser/device emulation is not physical-device approval. A READY preview is not production. Public-source process evidence is not owner validation. A draft data model is not a production schema. A draft authority matrix is not an authorization policy. A security blueprint is not security implementation. Static SQL/API contract tests are not live RLS/API verification. No confidential/private workflow becomes production truth until the owner and authorized team confirm it.
