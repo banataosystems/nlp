@@ -1,6 +1,6 @@
 /* WorldStage / Cherry — read-only recap for the completed 3-minute synthetic owner review.
    This module reads only allowlisted browser-local demo values and performs navigation only.
-   It does not persist recap state, write to providers, infer urgency/value, or grant authority. */
+   It does not persist recap/session-delta state, write to providers, infer urgency/value, or grant authority. */
 
 const CHERRY_REVIEW_RECAP_DAILY_KEY = 'worldstage.cherry.daily.demo.v1';
 const CHERRY_REVIEW_RECAP_RATIONALE_KEY = 'worldstage.cherry.daily.rationale.demo.v1';
@@ -19,6 +19,8 @@ const CHERRY_REVIEW_RECAP_RATIONALE_LABELS = Object.freeze({
   'needs-context': 'Needs context',
   'can-wait': 'Can wait',
 });
+
+let cherryReviewRecapSessionStart = null;
 
 function cherryReviewRecapSafeJson(key) {
   try {
@@ -45,6 +47,35 @@ function cherryReviewRecapSnapshot() {
       decisionLabel: CHERRY_REVIEW_RECAP_STATE_LABELS[decisionState] || 'Needs Cherry',
       rationaleValue,
       rationaleLabel: CHERRY_REVIEW_RECAP_RATIONALE_LABELS[rationaleValue] || 'Needs context',
+    };
+  });
+}
+
+function cherryReviewRecapCaptureSessionStart() {
+  cherryReviewRecapSessionStart = cherryReviewRecapSnapshot().map((row) => Object.freeze({
+    id: row.id,
+    decisionState: row.decisionState,
+    rationaleValue: row.rationaleValue,
+  }));
+}
+
+function cherryReviewRecapSessionDelta(rows) {
+  if (!Array.isArray(cherryReviewRecapSessionStart)
+    || cherryReviewRecapSessionStart.length !== CHERRY_REVIEW_RECAP_IDS.length) return null;
+
+  const startById = Object.fromEntries(cherryReviewRecapSessionStart.map((row) => [row.id, row]));
+  return rows.map((row) => {
+    const start = startById[row.id];
+    if (!start
+      || !CHERRY_REVIEW_RECAP_STATES.has(start.decisionState)
+      || !CHERRY_REVIEW_RECAP_RATIONALES.has(start.rationaleValue)) {
+      return { id: row.id, status: 'unavailable', label: 'Session comparison unavailable' };
+    }
+    const changed = start.decisionState !== row.decisionState || start.rationaleValue !== row.rationaleValue;
+    return {
+      id: row.id,
+      status: changed ? 'changed' : 'same',
+      label: changed ? 'Changed this review' : 'Stayed the same',
     };
   });
 }
@@ -89,25 +120,33 @@ function cherryReviewRecapNextStep() {
   };
 }
 
-function cherryReviewRecapSignature(rows, next) {
+function cherryReviewRecapSignature(rows, next, delta) {
   const rowSignature = rows
     .map((row) => `${row.id}:${row.decisionState}:${row.rationaleValue}`)
     .join('|');
-  return `${rowSignature}|${next.action}`;
+  const deltaSignature = Array.isArray(delta)
+    ? delta.map((row) => `${row.id}:${row.status}`).join('|')
+    : 'delta-unavailable';
+  return `${rowSignature}|${deltaSignature}|${next.action}`;
 }
 
-function cherryReviewRecapMarkup(rows, next, signature) {
+function cherryReviewRecapMarkup(rows, next, delta, signature) {
+  const deltaById = Object.fromEntries((delta || []).map((row) => [row.id, row]));
   return `<section class="cherry-owner-summary__next cherry-owner-review-recap" data-cherry-owner-review-recap data-cherry-owner-review-recap-signature="${signature}" aria-label="Completed synthetic owner review recap">
     <div>
       <span>OWNER REVIEW RECAP · READ ONLY · SYNTHETIC</span>
-      <strong>Three final local-demo judgments, one safe next route.</strong>
-      <p>This recap only reflects the three allowlisted browser-local demo states at this moment. It is not an approval, client record, task, recommendation, or production action.</p>
+      <strong>Three final local-demo judgments, plus what changed this review.</strong>
+      <p>This recap only reflects the three allowlisted browser-local demo states at this moment. Change means only that the fixed state or fixed reason differs from this review session's in-memory starting snapshot. The snapshot is discarded on restart or navigation.</p>
       <div class="cherry-owner-review-recap__list" role="list">
-        ${rows.map((row) => `<article role="listitem" data-cherry-owner-review-recap-item="${row.id}">
+        ${rows.map((row) => {
+          const change = deltaById[row.id] || { status: 'unavailable', label: 'Session comparison unavailable' };
+          return `<article role="listitem" data-cherry-owner-review-recap-item="${row.id}">
           <span>ITEM ${row.id}</span>
           <strong>${row.decisionLabel}</strong>
           <small>${row.rationaleLabel}</small>
-        </article>`).join('')}
+          <small data-cherry-owner-review-recap-delta="${change.status}">${change.label}</small>
+        </article>`;
+        }).join('')}
       </div>
       <p data-cherry-owner-review-recap-next>${next.hint}</p>
     </div>
@@ -158,12 +197,13 @@ function enhanceCherryOwnerReviewRecap() {
   }
 
   const rows = cherryReviewRecapSnapshot();
+  const delta = cherryReviewRecapSessionDelta(rows);
   const next = cherryReviewRecapNextStep();
-  const signature = cherryReviewRecapSignature(rows, next);
+  const signature = cherryReviewRecapSignature(rows, next, delta);
   if (existing?.dataset.cherryOwnerReviewRecapSignature === signature) return;
 
   const wrapper = document.createElement('div');
-  wrapper.innerHTML = cherryReviewRecapMarkup(rows, next, signature);
+  wrapper.innerHTML = cherryReviewRecapMarkup(rows, next, delta, signature);
   const recap = wrapper.firstElementChild;
   if (!(recap instanceof HTMLElement)) return;
 
@@ -176,6 +216,15 @@ function scheduleCherryReviewRecapRefresh() {
   requestAnimationFrame(enhanceCherryOwnerReviewRecap);
 }
 
+/* Capture the sanitized starting state before the review-session button handler runs.
+   This exists only in this page's JavaScript memory and is replaced on every restart. */
+document.addEventListener('click', (event) => {
+  const target = event.target instanceof Element
+    ? event.target.closest('[data-cherry-review-session-start], [data-cherry-review-session-restart]')
+    : null;
+  if (target) cherryReviewRecapCaptureSessionStart();
+}, true);
+
 /* Event-driven refresh intentionally replaces a broad app MutationObserver. The recap
    only depends on review-session controls, route changes, and cross-tab storage changes;
    observing every DOM mutation caused decision controls to be repeatedly destabilized. */
@@ -185,6 +234,9 @@ document.addEventListener('click', (event) => {
     : null;
   if (target) scheduleCherryReviewRecapRefresh();
 });
-window.addEventListener('hashchange', scheduleCherryReviewRecapRefresh);
+window.addEventListener('hashchange', () => {
+  if (cherryReviewRecapRoute() !== 'cockpit') cherryReviewRecapSessionStart = null;
+  scheduleCherryReviewRecapRefresh();
+});
 window.addEventListener('storage', scheduleCherryReviewRecapRefresh);
 queueMicrotask(enhanceCherryOwnerReviewRecap);
