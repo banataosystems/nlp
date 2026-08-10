@@ -16,41 +16,40 @@ The product priority remains Cherry-facing operating value using synthetic/local
 
 ### Documented
 
-Yes. Durable records cover the mobile-first redesign, Discovery, Cherry OS, Transformation Record, Cherry Daily, synthetic engagement loop, 7 / 30 / 90 sustainment workflow, Owner Summary, Owner Handoff, fixed-vocabulary decision rationale, deterministic priority judgment, Review now owner focus, 3-minute owner review session, secure-intake/recovery contracts, and the new read-only owner review recap.
+Yes. Durable records cover the mobile-first redesign, Discovery, Cherry OS, Transformation Record, Cherry Daily, synthetic engagement loop, 7 / 30 / 90 sustainment workflow, Owner Summary, Owner Handoff, fixed-vocabulary decision rationale, deterministic priority judgment, Review now owner focus, 3-minute owner review session, read-only owner review recap, secure-intake/recovery contracts, and the new in-memory owner-review session delta.
 
-Newest product record:
+Newest product record remains:
 - `docs/worldstage/PHASE4_CHERRY_OWNER_REVIEW_RECAP_2026-08-10.md`
+
+The current roadmap and PR evidence now record the delta verification state separately from its implementation source.
 
 ### Implemented
 
-**Yes for exact product/document source `8702f8466a6562dbcd2cc0cfa66fd8016081f3b2`.**
+**Yes for exact product/test source `9311da9e0c9851bebd3362c6021a90775357b67d`.**
 
-The phone-first owner experience now includes the existing three synthetic judgment items and a completion recap that:
-- appears only after the existing 3-minute review reaches `3 of 3`;
-- renders exactly items `01`, `02`, `03`;
-- shows only allowlisted decision states `Needs Cherry`, `Prepared`, `Parked`;
-- shows only allowlisted rationale values `Ready`, `Needs context`, `Can wait`;
-- fails closed to allowlisted defaults when stored values are malformed;
-- ignores injected arbitrary/private/authority-looking fields;
-- adds no browser-storage key and persists no recap state;
-- reads the already-existing synthetic engagement-flow contract with strict version/sequencing checks;
-- offers exactly one navigation-only safe next route: synthetic Discovery, the existing Cherry judgment step, or the existing synthetic Transformation Record;
-- disappears when the review session restarts or the cockpit route is left;
-- performs no CRM, email, calendar, messaging, task, notification, database, analytics, AI, provider, staging, or production write.
+The completed phone-first owner review now adds a strictly in-memory comparison between the sanitized review-session starting snapshot and the three final allowlisted local-demo judgments.
+
+The session delta:
+- captures only fixed item IDs `01`, `02`, `03` immediately before the existing review starts or restarts;
+- stores only allowlisted decision-state and rationale enums in JavaScript memory;
+- never creates a browser-storage key or backend record for the starting snapshot;
+- marks each final row only as `Changed this review`, `Stayed the same`, or fail-closed `Session comparison unavailable`;
+- treats a row as changed only when its allowlisted decision state or allowlisted rationale differs from the in-memory starting snapshot;
+- discards/replaces the prior snapshot on review restart;
+- discards the snapshot when the user leaves the cockpit route;
+- continues rejecting arbitrary injected storage fields and malformed state/rationale values through the existing allowlists;
+- performs no free-text capture, significance inference, scoring, private-source lookup, CRM/email/calendar/database/provider write, client communication, staging action, or release action.
 
 Implementation/test surfaces:
 - `src/cherry-owner-review-recap.js`;
-- `src/cherry-owner-review-recap.css`;
 - `tests/cherry-owner-review-session.spec.mjs`;
-- `docs/worldstage/PHASE4_CHERRY_OWNER_REVIEW_RECAP_2026-08-10.md`;
-- `index.html`;
 - existing mandatory Phase 4 test gate.
 
 ### Tested
 
-**Yes for exact source `8702f8466a6562dbcd2cc0cfa66fd8016081f3b2`.** GitHub Actions run `31417078856` / **#658 completed SUCCESS** across the complete mandatory chain.
+**Yes for exact source `9311da9e0c9851bebd3362c6021a90775357b67d`.** GitHub Actions run `31421404009` / **#660 completed SUCCESS** across the complete mandatory chain.
 
-Run #658 passed:
+Run #660 passed:
 - owner/security decision-evidence enforcement;
 - fail-closed secure-intake runtime;
 - fail-closed staging preflight;
@@ -58,42 +57,38 @@ Run #658 passed:
 - iPhone/WebKit and Pixel/Chromium device-class checks;
 - Phase 2 SQL/staging;
 - Discovery Phase 3;
-- Cherry OS Phase 4 including the owner-review session and recap coverage;
+- Cherry OS Phase 4 including the updated owner-review session/delta coverage;
 - Transformation Record Phase 5;
 - release/security/privacy checks;
 - visual evidence;
 - exact-head staging-readiness regeneration and both evidence uploads.
 
-Focused recap coverage verifies:
-- recap appears after clean `3 of 3` completion;
-- exactly three fixed rows are rendered;
-- final local-demo state/rationale labels are allowlisted;
-- injected private/authority-looking fields do not render;
-- malformed synthetic engagement-flow state fails closed to Discovery;
-- a valid completed synthetic judgment navigates to the existing Transformation Record route without state mutation;
-- restarting the review removes the recap;
-- zero POST/PUT/PATCH/DELETE requests occur;
-- the 390px phone surface does not overflow horizontally.
+Focused delta coverage proves:
+- all three rows report changed when state/reason differs from the sanitized session start;
+- a mixed session can report items `01` and `03` as `Stayed the same` while item `02` reports `Changed this review`;
+- malformed/injected stored state and rationale fields do not become comparison content;
+- no `unavailable` marker occurs in the normal start → complete path;
+- restart removes the completed recap and replaces the comparison baseline for the new in-memory review;
+- no POST/PUT/PATCH/DELETE request occurs;
+- the 390px phone surface remains within horizontal bounds.
 
-Run #658 artifacts:
-- staging-readiness artifact `9073904526`, digest `sha256:1857e622ee7d9f4ee05a29d118ac66b320deceb8aa3cdbdf03bcdc724473c6bf`;
-- mobile visual artifact `9073905287`, digest `sha256:0a7145dcdf7e0d5d458bedce30584713a3ef7c2233965583014a4d4778faf705`.
+Run #660 artifacts:
+- staging-readiness artifact `9075541994`, digest `sha256:3f2257977c42bc725a90acc4a61ccfe964a0adcb921def2ec6acf2650257f253`;
+- mobile visual artifact `9075542662`, digest `sha256:fef86b23ac39764c1906c909409144f99aea87e60994148f5dbf2b8c07ea74dc`.
 
-The staging-readiness ZIP was downloaded and inspected directly. Its internal `source_sha` exactly matches `8702f8466a6562dbcd2cc0cfa66fd8016081f3b2`; `readiness = BLOCKED`; confidential intake is disabled; anonymous intake denied; file uploads/private AI/private analytics disabled; production release blocked; persistence remains unselected; adapter binding false; no staging or production project IDs are bound; and D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 remain OPEN.
-
-#### Preserved failed verification provenance
-
-The immediately preceding exact-source run `31416579516` / **#656 failed** during Phase 4. Two owner-review Playwright clicks repeatedly found the decision element visible/enabled but unstable. The recap module had introduced a broad `MutationObserver` over the application DOM. That observer was removed and replaced with event-driven refresh on the specific decision/session controls, route changes, and cross-tab storage changes. The recap now uses a deterministic allowlisted state signature to avoid unnecessary replacement. Exact-source run #658 proves the repair without weakening the recap’s safety boundary. The failed run remains part of project provenance rather than being erased.
+The staging-readiness ZIP was downloaded and inspected directly. Its internal `source_sha` exactly matches `9311da9e0c9851bebd3362c6021a90775357b67d`; `readiness = BLOCKED`; confidential intake is disabled; anonymous intake denied; file uploads/private AI/private analytics disabled; production release blocked; persistence remains unselected; adapter binding false; no staging or production project IDs are bound; and D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 remain OPEN.
 
 ### Preview deployed
 
-**Yes for exact tested source `8702f8466a6562dbcd2cc0cfa66fd8016081f3b2`.** Vercel preview `dpl_6s4wfbAw6yQhYSbTp8xvDCig3BND` is READY, Git-sourced from that exact SHA, and non-production (`target: null`).
+**Yes for exact tested source `9311da9e0c9851bebd3362c6021a90775357b67d`.** Vercel preview `dpl_BJ2qsjJcvYBFPw3oxrTf4LrTbrUH` is READY, Git-sourced from that exact SHA, and non-production (`target: null`).
+
+The CI-generated evidence-only child commit `3304601e266fe265ec4dbda083c36beba1224b86` changes only `docs/worldstage/evidence/WORLDSTAGE_MOBILE_V2_VISUAL_EVIDENCE.pdf`; its Vercel preview `dpl_DfM7MsSrYwqocqV2oFdKfCbemoXT` is also READY and non-production. That evidence-only child does not change application/runtime/test source and is not used to transfer test proof away from exact tested source `9311da9e...`.
 
 Preview READY is deployability/provenance evidence only. It is not live-staging or production proof.
 
 ### Live staging
 
-**No.** The exact #658 staging-readiness artifact proves the live-staging gate remains intentionally fail-closed. No real WorldStage staging PostgreSQL/Supabase, authentication, signed-user RLS, provider backup/restore, or live kill-switch environment is bound or proven.
+**No.** The exact #660 staging-readiness artifact proves the live-staging gate remains intentionally fail-closed. No real WorldStage staging PostgreSQL/Supabase, authentication, signed-user RLS, provider backup/restore, or live kill-switch environment is bound or proven.
 
 ### Production verified / released for this line
 
@@ -101,15 +96,13 @@ Preview READY is deployability/provenance evidence only. It is not live-staging 
 
 ## Done
 
-The **read-only Cherry owner review recap** is now **documented → implemented → tested → preview-deployed** for exact source `8702f8466a6562dbcd2cc0cfa66fd8016081f3b2` / run #658 / preview `dpl_6s4wfbAw6yQhYSbTp8xvDCig3BND`.
+The **in-memory Cherry owner-review session delta** is now **documented → implemented → tested → preview-deployed** for exact source `9311da9e0c9851bebd3362c6021a90775357b67d` / run #660 / preview `dpl_BJ2qsjJcvYBFPw3oxrTf4LrTbrUH`.
 
-The recap closes the current 3-minute synthetic review loop with one compact phone view while preserving the distinction between a local demo judgment and a real client record, approval, task, recommendation, or operational action.
-
-The DOM-churn defect found by run #656 is also repaired and exact-source verified by #658.
+Cherry’s completed synthetic 3-minute review can now distinguish which fixed judgments actually changed during that specific review from those that stayed the same, without creating a persisted starting record or widening the prototype’s authority/data boundary.
 
 ## In progress
 
-This roadmap reconciliation is documentation-only and intentionally uses `[skip ci]`, so it may create a newer repository/Vercel documentation head after the exact tested source above. It does not alter application/runtime/test source. Product testing remains attributed to exact source `8702f846...` rather than being falsely transferred to a documentation-only child commit.
+This roadmap reconciliation is documentation-only and intentionally uses `[skip ci]`, so it creates or may create a newer repository/Vercel documentation head after exact tested source `9311da9e...`. It does not alter application/runtime/test source. Product testing remains attributed to the exact source above rather than being falsely transferred to a documentation-only child commit.
 
 ## Hard blockers / gates intentionally not crossed
 
@@ -125,14 +118,14 @@ This roadmap reconciliation is documentation-only and intentionally uses `[skip 
 ## Risks
 
 - A polished synthetic owner flow may look operational; all product-facing state therefore remains explicitly local/demo-only.
-- The recap is a read-only reflection of browser-local demo state, not a durable audit record or real client summary.
-- Deterministic ordering is a UI rule, not a risk score, AI recommendation, urgency assessment, legal/commercial judgment, or source-derived importance claim.
+- The session delta is an ephemeral comparison of three allowlisted demo enums, not an audit trail, business significance assessment, client-history record, or durable change log.
+- `Changed this review` means only that the fixed local state or fixed local reason differs from the sanitized in-memory starting snapshot; it does not mean the item became more important, risky, urgent, approved, or commercially significant.
 - Provider-neutral/synthetic tests cannot substitute for live authorization, security, recovery, operational proof, or Cherry’s physical-device acceptance.
 - Preview READY does not imply live staging or production suitability.
 
 ## Next autonomous action
 
-Add a compact **session delta** to the completed owner-review recap: show, in memory only, which of the three synthetic fixed-vocabulary judgments changed during that 3-minute session and which stayed the same. Do not persist the starting snapshot, add free text, infer significance, score decisions, access private sources, or perform external/provider writes. Reset the delta on session restart/navigation.
+Add a compact **changed-item recheck** to the completed recap: show the changed/same counts and allow one navigation-only tap to focus the changed synthetic items again in fixed item order on the same cockpit screen. Do not change the completed-session record, create persistence, add free text, infer importance, reopen external workflows, access private sources, or perform provider/production writes.
 
 ## Explicit non-claims
 
