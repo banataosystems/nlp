@@ -1,5 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
 const handler = require('../api/v1/intakes.js');
 
 const validBody = {
@@ -117,5 +119,19 @@ test('no tested route state returns a 2xx response', async () => {
   for (const input of cases) {
     const result = await callRoute(input);
     assert.equal(result.status >= 200 && result.status < 300, false, JSON.stringify(input));
+  }
+});
+
+test('public route source remains an inert shell and cannot silently bind private runtime dependencies', () => {
+  const source = fs.readFileSync(path.join(__dirname, '..', 'api', 'v1', 'intakes.js'), 'utf8');
+  const forbiddenBindings = [
+    'intake-orchestrator',
+    'synthetic-staging-adapter',
+    'synthetic-control-adapter',
+    'receipt-status-contract',
+    'processSecureIntake',
+  ];
+  for (const binding of forbiddenBindings) {
+    assert.equal(source.includes(binding), false, `public route unexpectedly references ${binding}`);
   }
 });
