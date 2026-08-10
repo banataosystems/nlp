@@ -66,6 +66,7 @@ function cherryReviewRecapNextStep() {
   if (!state.discoveryPrepared) {
     return {
       route: 'discovery',
+      action: 'continue-discovery',
       label: 'Continue with synthetic Discovery →',
       hint: 'Synthetic engagement next step: prepare the fixed Discovery brief.',
     };
@@ -73,12 +74,14 @@ function cherryReviewRecapNextStep() {
   if (!state.ownerReviewed) {
     return {
       route: 'cockpit',
+      action: 'continue-owner-review',
       label: 'Continue synthetic engagement →',
       hint: 'Synthetic engagement next step: complete the existing Cherry judgment step.',
     };
   }
   return {
     route: 'client',
+    action: state.recordPrepared ? 'view-record' : 'open-record',
     label: state.recordPrepared ? 'View synthetic Transformation Record →' : 'Open synthetic Transformation Record →',
     hint: state.recordPrepared
       ? 'Synthetic engagement loop is complete; the local demo Transformation Record can be reviewed.'
@@ -86,11 +89,15 @@ function cherryReviewRecapNextStep() {
   };
 }
 
-function cherryReviewRecapMarkup() {
-  const rows = cherryReviewRecapSnapshot();
-  const next = cherryReviewRecapNextStep();
+function cherryReviewRecapSignature(rows, next) {
+  const rowSignature = rows
+    .map((row) => `${row.id}:${row.decisionState}:${row.rationaleValue}`)
+    .join('|');
+  return `${rowSignature}|${next.action}`;
+}
 
-  return `<section class="cherry-owner-summary__next cherry-owner-review-recap" data-cherry-owner-review-recap aria-label="Completed synthetic owner review recap">
+function cherryReviewRecapMarkup(rows, next, signature) {
+  return `<section class="cherry-owner-summary__next cherry-owner-review-recap" data-cherry-owner-review-recap data-cherry-owner-review-recap-signature="${signature}" aria-label="Completed synthetic owner review recap">
     <div>
       <span>OWNER REVIEW RECAP · READ ONLY · SYNTHETIC</span>
       <strong>Three final local-demo judgments, one safe next route.</strong>
@@ -150,22 +157,34 @@ function enhanceCherryOwnerReviewRecap() {
     return;
   }
 
-  const expected = cherryReviewRecapMarkup();
-  if (existing?.outerHTML === expected) return;
+  const rows = cherryReviewRecapSnapshot();
+  const next = cherryReviewRecapNextStep();
+  const signature = cherryReviewRecapSignature(rows, next);
+  if (existing?.dataset.cherryOwnerReviewRecapSignature === signature) return;
 
-  existing?.remove();
   const wrapper = document.createElement('div');
-  wrapper.innerHTML = expected;
+  wrapper.innerHTML = cherryReviewRecapMarkup(rows, next, signature);
   const recap = wrapper.firstElementChild;
-  session.insertAdjacentElement('afterend', recap);
+  if (!(recap instanceof HTMLElement)) return;
+
   bindCherryReviewRecapRoute(recap);
+  if (existing) existing.replaceWith(recap);
+  else session.insertAdjacentElement('afterend', recap);
 }
 
-const cherryReviewRecapApp = document.getElementById('app');
-if (cherryReviewRecapApp) {
-  new MutationObserver(() => queueMicrotask(enhanceCherryOwnerReviewRecap))
-    .observe(cherryReviewRecapApp, { childList: true, subtree: true, characterData: true });
+function scheduleCherryReviewRecapRefresh() {
+  requestAnimationFrame(enhanceCherryOwnerReviewRecap);
 }
-window.addEventListener('hashchange', () => queueMicrotask(enhanceCherryOwnerReviewRecap));
-window.addEventListener('storage', () => queueMicrotask(enhanceCherryOwnerReviewRecap));
-enhanceCherryOwnerReviewRecap();
+
+/* Event-driven refresh intentionally replaces a broad app MutationObserver. The recap
+   only depends on review-session controls, route changes, and cross-tab storage changes;
+   observing every DOM mutation caused decision controls to be repeatedly destabilized. */
+document.addEventListener('click', (event) => {
+  const target = event.target instanceof Element
+    ? event.target.closest('[data-cherry-daily-set], [data-cherry-review-session-start], [data-cherry-review-session-restart]')
+    : null;
+  if (target) scheduleCherryReviewRecapRefresh();
+});
+window.addEventListener('hashchange', scheduleCherryReviewRecapRefresh);
+window.addEventListener('storage', scheduleCherryReviewRecapRefresh);
+queueMicrotask(enhanceCherryOwnerReviewRecap);
