@@ -32,9 +32,11 @@ function createSyntheticStagingAdapter({ sourceSha = 'synthetic-source-sha' } = 
       }
 
       return {
-        async findIdempotency(key) {
+        async findIdempotency(key, actorScope) {
           ensureOpen();
-          return working.idempotency.find((record) => record.idempotency_key === key) || null;
+          return working.idempotency.find((record) =>
+            record.idempotency_key === key && record.actor_scope === actorScope
+          ) || null;
         },
         async insertIntake(record) {
           ensureOpen();
@@ -44,7 +46,9 @@ function createSyntheticStagingAdapter({ sourceSha = 'synthetic-source-sha' } = 
         },
         async insertIdempotency(record) {
           ensureOpen();
-          if (working.idempotency.some((item) => item.idempotency_key === record.idempotency_key)) {
+          if (working.idempotency.some((item) =>
+            item.idempotency_key === record.idempotency_key && item.actor_scope === record.actor_scope
+          )) {
             const error = new Error('idempotency_unique_violation');
             error.code = 'idempotency_unique_violation';
             throw error;
