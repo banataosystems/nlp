@@ -6,6 +6,7 @@ const OWNER_SUMMARY_FLOW_KEY = 'worldstage.synthetic.engagement.flow.v1';
 const OWNER_SUMMARY_DAILY_KEY = 'worldstage.cherry.daily.demo.v1';
 const OWNER_SUMMARY_SUSTAINMENT_KEY = 'worldstage.synthetic.sustainment.plan.v1';
 const OWNER_SUMMARY_DAILY_ALLOWED = new Set(['needs-cherry', 'prepared', 'parked']);
+let ownerSummaryReturnFocus = null;
 
 function safeLocalJson(key) {
   try {
@@ -87,6 +88,7 @@ function ownerSummaryHandoff(state) {
       title: 'Open the synthetic Discovery brief',
       context: `The fixed demo engagement has not entered Discovery yet. Cherry Daily currently shows ${queue}.`,
       decision: 'Is the fixed demo engagement ready to enter Cherry’s judgment queue?',
+      defer: 'If Cherry does nothing, the synthetic engagement remains before Discovery and no external system changes.',
       boundary: 'No Discovery form text, client identifier, contact detail, or private source is read into this briefing.',
     };
   }
@@ -95,6 +97,7 @@ function ownerSummaryHandoff(state) {
       title: 'Decide demo judgment item 01',
       context: `The synthetic Discovery brief is prepared. Cherry Daily currently shows ${queue}.`,
       decision: 'Should demo item 01 be prepared for the next step, parked, or remain with Cherry?',
+      defer: 'If Cherry does nothing, item 01 remains in its current local demo state and the Transformation Record stays locked.',
       boundary: 'This is a local demo judgment state only; it does not approve, notify, schedule, or write to a client system.',
     };
   }
@@ -103,6 +106,7 @@ function ownerSummaryHandoff(state) {
       title: 'Review the synthetic Transformation Record',
       context: `Demo judgment item 01 is prepared. Cherry Daily currently shows ${queue}.`,
       decision: 'Is the fixed synthetic outcome ready to be represented in the demo Transformation Record?',
+      defer: 'If Cherry does nothing, the synthetic record remains unprepared and no sustainment checkpoint becomes available.',
       boundary: 'The record is prototype evidence only, not a verified client outcome or external record.',
     };
   }
@@ -111,6 +115,7 @@ function ownerSummaryHandoff(state) {
       title: 'Set the 7-day ownership check',
       context: 'The synthetic Transformation Record is prepared; no sustainment checkpoint has been prepared yet.',
       decision: 'What ownership follow-through should the fixed demo review at the 7-day checkpoint?',
+      defer: 'If Cherry does nothing, the synthetic loop remains complete through the Transformation Record and follow-through stays pending.',
       boundary: 'Preparing it stores one local boolean only; it creates no calendar event, task, reminder, or client commitment.',
     };
   }
@@ -119,6 +124,7 @@ function ownerSummaryHandoff(state) {
       title: 'Review the 30-day pattern',
       context: 'The synthetic 7-day checkpoint is prepared locally; the 30-day pattern review is next.',
       decision: 'Does the fixed demo pattern suggest the operating rhythm should continue unchanged or be revisited?',
+      defer: 'If Cherry does nothing, the synthetic 30-day checkpoint remains pending and the 90-day review stays locked.',
       boundary: 'This is a planning prompt over synthetic state, not a measured outcome, evidence claim, or business-system update.',
     };
   }
@@ -127,6 +133,7 @@ function ownerSummaryHandoff(state) {
       title: 'Make the 90-day sustainment decision',
       context: 'The synthetic 7-day and 30-day checkpoints are prepared locally; the final demo checkpoint is next.',
       decision: 'Should the fixed demo operating rhythm be sustained, adjusted, or retired?',
+      defer: 'If Cherry does nothing, the synthetic 90-day checkpoint remains pending and the demo loop stays open.',
       boundary: 'No real program commitment, contract, client communication, or production change is created by this view.',
     };
   }
@@ -134,6 +141,7 @@ function ownerSummaryHandoff(state) {
     title: 'Review the completed synthetic loop',
     context: `All three synthetic sustainment checkpoints are prepared. Cherry Daily currently shows ${queue}.`,
     decision: 'Is there a useful operating pattern to carry into a future owner-validated design iteration?',
+    defer: 'If Cherry does nothing, the completed local demo remains unchanged; nothing is promoted, released, or sent anywhere.',
     boundary: 'Completion here means demo-state completion only; it does not authorize live staging, confidential intake, or production release.',
   };
 }
@@ -182,6 +190,7 @@ function ownerSummaryMarkup(state, signature) {
         <p><b>Cherry decides:</b> <span data-owner-summary-brief-decision>${handoff.decision}</span></p>
         <p><b>Boundary:</b> <span data-owner-summary-brief-boundary>${handoff.boundary}</span></p>
       </div>
+      <button type="button" data-owner-summary-open-brief>Open 60-second brief →</button>
     </div>
 
     <div class="cherry-owner-summary__metrics" aria-label="Cherry Daily local demo summary">
@@ -203,8 +212,60 @@ function ownerSummaryMarkup(state, signature) {
   </section>`;
 }
 
+function ownerSummaryBriefingMarkup(state) {
+  const handoff = ownerSummaryHandoff(state);
+  return `<div class="cherry-owner-handoff" data-owner-summary-handoff role="dialog" aria-modal="true" aria-labelledby="cherry-owner-handoff-title">
+    <div class="cherry-owner-handoff__top">
+      <div><span>OWNER HANDOFF · LOCAL SYNTHETIC DEMO</span><h2 id="cherry-owner-handoff-title">${handoff.title}</h2></div>
+      <button type="button" data-owner-summary-handoff-close aria-label="Close owner handoff">Close</button>
+    </div>
+    <div class="cherry-owner-handoff__grid">
+      <article><span>SITUATION</span><p data-owner-summary-handoff-context>${handoff.context}</p></article>
+      <article><span>CHERRY DECIDES</span><p data-owner-summary-handoff-decision>${handoff.decision}</p></article>
+      <article><span>IF NO DECISION</span><p data-owner-summary-handoff-defer>${handoff.defer}</p></article>
+      <article><span>BOUNDARY</span><p data-owner-summary-handoff-boundary>${handoff.boundary}</p></article>
+    </div>
+    <div class="cherry-owner-handoff__footer">
+      <p>This briefing is generated only from sanitized local demo state. It cannot approve, send, schedule, store, release, or activate anything outside this browser.</p>
+      <button type="button" data-owner-summary-handoff-next="${state.next.route}">Open ${state.next.phase} step →</button>
+    </div>
+  </div>`;
+}
+
 function currentOwnerSummaryRoute() {
   return location.hash.replace('#/', '').replace('#', '') || 'home';
+}
+
+function closeOwnerSummaryBriefing({ restoreFocus = true } = {}) {
+  document.querySelector('[data-owner-summary-handoff-overlay]')?.remove();
+  document.body.classList.remove('cherry-owner-handoff-open');
+  if (restoreFocus && ownerSummaryReturnFocus instanceof HTMLElement) ownerSummaryReturnFocus.focus({ preventScroll: true });
+  ownerSummaryReturnFocus = null;
+}
+
+function openOwnerSummaryBriefing(trigger) {
+  closeOwnerSummaryBriefing({ restoreFocus: false });
+  ownerSummaryReturnFocus = trigger;
+  const state = ownerSummaryState();
+  const overlay = document.createElement('div');
+  overlay.className = 'cherry-owner-handoff-overlay';
+  overlay.dataset.ownerSummaryHandoffOverlay = '';
+  overlay.innerHTML = ownerSummaryBriefingMarkup(state);
+  document.body.append(overlay);
+  document.body.classList.add('cherry-owner-handoff-open');
+
+  const close = overlay.querySelector('[data-owner-summary-handoff-close]');
+  close?.addEventListener('click', () => closeOwnerSummaryBriefing());
+  overlay.addEventListener('pointerdown', (event) => {
+    if (event.target === overlay) closeOwnerSummaryBriefing();
+  });
+  overlay.querySelector('[data-owner-summary-handoff-next]')?.addEventListener('click', (event) => {
+    const target = event.currentTarget.dataset.ownerSummaryHandoffNext;
+    if (!new Set(['discovery', 'cockpit', 'client']).has(target)) return;
+    closeOwnerSummaryBriefing({ restoreFocus: false });
+    location.hash = `#/${target}`;
+  });
+  close?.focus({ preventScroll: true });
 }
 
 function bindOwnerSummary(summary) {
@@ -212,12 +273,16 @@ function bindOwnerSummary(summary) {
     const target = event.currentTarget.dataset.ownerSummaryNav;
     if (new Set(['discovery', 'cockpit', 'client']).has(target)) location.hash = `#/${target}`;
   });
+  summary.querySelector('[data-owner-summary-open-brief]')?.addEventListener('click', (event) => {
+    openOwnerSummaryBriefing(event.currentTarget);
+  });
 }
 
 function enhanceOwnerSummary() {
   const existing = document.querySelector('[data-cherry-owner-summary]');
   if (currentOwnerSummaryRoute() !== 'cockpit') {
     existing?.remove();
+    closeOwnerSummaryBriefing({ restoreFocus: false });
     return;
   }
 
@@ -239,7 +304,36 @@ function enhanceOwnerSummary() {
   bindOwnerSummary(summary);
 }
 
+function trapOwnerSummaryBriefingFocus(event) {
+  if (event.key !== 'Tab') return;
+  const dialog = document.querySelector('[data-owner-summary-handoff]');
+  if (!dialog) return;
+  const focusable = [...dialog.querySelectorAll('button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])')]
+    .filter((node) => node.offsetParent !== null);
+  if (!focusable.length) return;
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
+}
+
 new MutationObserver(() => queueMicrotask(enhanceOwnerSummary)).observe(document.getElementById('app'), { childList: true, subtree: true });
-window.addEventListener('hashchange', () => queueMicrotask(enhanceOwnerSummary));
+window.addEventListener('hashchange', () => {
+  closeOwnerSummaryBriefing({ restoreFocus: false });
+  queueMicrotask(enhanceOwnerSummary);
+});
 window.addEventListener('storage', () => queueMicrotask(enhanceOwnerSummary));
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && document.querySelector('[data-owner-summary-handoff-overlay]')) {
+    event.preventDefault();
+    closeOwnerSummaryBriefing();
+    return;
+  }
+  trapOwnerSummaryBriefingFocus(event);
+});
 enhanceOwnerSummary();
