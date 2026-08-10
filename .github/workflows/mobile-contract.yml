@@ -23,17 +23,31 @@ jobs:
         with:
           node-version: 22
       - run: npm install --no-audit --no-fund
+      - name: Generate fail-closed staging readiness report
+        env:
+          WORLDSTAGE_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          WORLDSTAGE_INTAKE_ENABLED: "false"
+        run: npm run preflight:staging
       - run: npx playwright install --with-deps chromium webkit
       - run: npx http-server . -p 4173 -c-1 > /tmp/worldstage-http.log 2>&1 &
       - run: npx wait-on http://127.0.0.1:4173
       - run: npm run test:mobile
       - run: npm run test:devices
       - run: npm run test:phase2sql
+      - run: npm run test:phase2staging
       - run: npm run test:phase3
       - run: npm run test:phase4
       - run: npm run test:phase5
       - run: npm run test:release
       - run: npm run test:visual
+      - name: Upload Phase 2 staging readiness evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: worldstage-phase2-staging-readiness
+          path: artifacts/staging-readiness/*
+          if-no-files-found: error
+          retention-days: 14
       - name: Upload mobile visual evidence
         if: always()
         uses: actions/upload-artifact@v4
