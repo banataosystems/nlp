@@ -73,7 +73,7 @@ function buildEnvironmentBindingPlan({
       confidential_intake_active: false,
       production_access: false,
     },
-    required_nonsecret_evidence: [
+    required_public_evidence: [
       'provider_name',
       'environment_id',
       'environment_target_staging',
