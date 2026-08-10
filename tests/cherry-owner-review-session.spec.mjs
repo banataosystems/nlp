@@ -62,9 +62,12 @@ test('3-minute owner review advances through each unseen deterministic priority 
   const recap = page.locator('[data-cherry-owner-review-recap]');
   await expect(recap).toBeVisible();
   await expect(recap).toContainText('OWNER REVIEW RECAP · READ ONLY · SYNTHETIC');
+  await expect(recap).toContainText('what changed this review');
   await expect(recap.locator('[data-cherry-owner-review-recap-item="01"]')).toContainText('Parked');
   await expect(recap.locator('[data-cherry-owner-review-recap-item="02"]')).toContainText('Prepared');
   await expect(recap.locator('[data-cherry-owner-review-recap-item="03"]')).toContainText('Prepared');
+  await expect(recap.locator('[data-cherry-owner-review-recap-delta="changed"]')).toHaveCount(3);
+  await expect(recap).toContainText('Changed this review');
   await expect(recap).not.toContainText('must not appear');
   await expect(recap).not.toContainText('privateClientContext');
   await expect(recap.locator('[data-cherry-owner-review-recap-next]')).toContainText('Transformation Record');
@@ -119,14 +122,20 @@ test('3-minute owner review stays fixed-vocabulary, restartable, and non-authori
   await expect(page.locator('[data-cherry-review-session-item]')).toHaveText('Item 01');
   await expect(page.locator('[data-cherry-review-session-reason]')).toHaveText('Needs Cherry · Needs context');
 
-  for (const id of ['01', '02', '03']) {
-    await page.locator(`[data-cherry-decision-state="${id}"] [data-cherry-daily-set="prepared"]`).click();
-  }
+  await page.locator('[data-cherry-decision-state="01"] [data-cherry-daily-set="needs-cherry"]').click();
+  await expect(page.locator('[data-cherry-review-session-item]')).toHaveText('Item 02');
+  await page.locator('[data-cherry-decision-state="02"] [data-cherry-daily-set="prepared"]').click();
+  await expect(page.locator('[data-cherry-review-session-item]')).toHaveText('Item 03');
+  await page.locator('[data-cherry-decision-state="03"] [data-cherry-daily-set="needs-cherry"]').click();
   await expect(session).toContainText('Three of three reviewed.');
 
   const recap = page.locator('[data-cherry-owner-review-recap]');
   await expect(recap).toBeVisible();
   await expect(recap.locator('[data-cherry-owner-review-recap-item]')).toHaveCount(3);
+  await expect(recap.locator('[data-cherry-owner-review-recap-item="01"] [data-cherry-owner-review-recap-delta="same"]')).toHaveText('Stayed the same');
+  await expect(recap.locator('[data-cherry-owner-review-recap-item="02"] [data-cherry-owner-review-recap-delta="changed"]')).toHaveText('Changed this review');
+  await expect(recap.locator('[data-cherry-owner-review-recap-item="03"] [data-cherry-owner-review-recap-delta="same"]')).toHaveText('Stayed the same');
+  await expect(recap.locator('[data-cherry-owner-review-recap-delta="unavailable"]')).toHaveCount(0);
   await expect(recap).not.toContainText('secret reason');
   await expect(recap).not.toContainText('releaseAuthority');
   await expect(recap).not.toContainText('productionRelease');
