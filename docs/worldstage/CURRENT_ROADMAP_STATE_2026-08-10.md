@@ -16,10 +16,11 @@ The priority is Cherry-facing operating value using synthetic/local demo state w
 
 ### Documented
 
-Yes. Durable records cover the mobile-first redesign, Discovery, Cherry OS, Transformation Record, Cherry Daily, synthetic engagement loop, 7 / 30 / 90 sustainment workflow, Owner Summary, Owner Handoff, secure-intake contracts, authorization, staging/recovery evidence, fixed-vocabulary decision rationale, and the read-only rationale projection into the owner-facing summary/handoff.
+Yes. Durable records cover the mobile-first redesign, Discovery, Cherry OS, Transformation Record, Cherry Daily, synthetic engagement loop, 7 / 30 / 90 sustainment workflow, Owner Summary, Owner Handoff, secure-intake contracts, authorization, staging/recovery evidence, fixed-vocabulary decision rationale, read-only rationale projection, and the new deterministic priority-judgment slice.
 
-Newest product record:
+Newest product records:
 - `docs/worldstage/PHASE4_CHERRY_OWNER_RATIONALE_HANDOFF_2026-08-10.md`
+- `docs/worldstage/PHASE4_CHERRY_PRIORITY_JUDGMENT_2026-08-10.md`
 
 ### Implemented on the active branch
 
@@ -34,13 +35,14 @@ Newest product record:
 - sequential synthetic 7 / 30 / 90 sustainment checkpoints;
 - read-only Cherry Owner Summary;
 - focused phone-first Cherry Owner Handoff;
-- fixed-vocabulary Cherry decision-rationale lens: each demo judgment item can carry only `Ready`, `Needs context`, or `Can wait`; no free-text rationale exists; changing the owner decision state supplies a deterministic safe default rationale; arbitrary stored fields/invalid values are sanitized by the rationale layer;
-- **read-only owner-rationale projection:** the selected allowlisted rationale for fixed demo item `01` is visible beside the next owner action, in the inline 60-second brief, and in a dedicated `WHY THIS IS SURFACED` card inside the full Owner Handoff. The owner-facing view ignores invalid values/extra fields and cannot edit or expand the rationale vocabulary.
+- fixed-vocabulary Cherry decision-rationale lens: `Ready`, `Needs context`, or `Can wait`, with no free-text rationale;
+- read-only rationale projection beside the next owner action and inside the Owner Handoff;
+- **deterministic priority judgment:** the Owner Summary now identifies one synthetic item using only fixed local states. `Needs Cherry` outranks `Prepared`, which outranks `Parked`; ties use the lowest fixed item number. The priority card also shows only that item's allowlisted fixed rationale. No score, AI ranking, private source, commercial-value estimate, or urgency inference exists.
 
-The owner-rationale projection is wired through:
+The new priority slice is wired through:
 - `src/cherry-owner-summary.js`;
 - `tests/cherry-owner-summary.spec.mjs`;
-- `docs/worldstage/PHASE4_CHERRY_OWNER_RATIONALE_HANDOFF_2026-08-10.md`.
+- `docs/worldstage/PHASE4_CHERRY_PRIORITY_JUDGMENT_2026-08-10.md`.
 
 #### Secure-intake / recovery boundary
 
@@ -50,29 +52,30 @@ No structural/test result can authorize confidential intake or production releas
 
 ### Tested
 
-**Yes for the owner-rationale implementation baseline.** Exact head `7cd9dd034437f28b478e51e730e5ec706e471e07` passed GitHub Actions run `31406188276` / #606 across the complete mandatory mobile/security/Phase 2–5/release/visual chain.
+**Latest fully verified exact repository baseline before the priority slice:** `c0414e4077bf4af49db2b16305c0eaf07afd4bc1`, GitHub Actions run `31406557743` / #608 PASS across the complete mandatory mobile/security/Phase 2–5/release/visual chain.
 
-The exact run included successful `test:mobile`, device checks, Phase 2 SQL/staging, Discovery Phase 3, Phase 4 including the updated Owner Summary test, Phase 5, release/security/privacy and visual evidence.
+The previously completed owner-rationale projection is therefore documented → implemented → tested → preview-deployed at that exact baseline.
 
-Focused owner-rationale coverage verifies:
-- default `Needs context` projection on clean local demo state;
-- same-session reflection after the existing item `01` rationale changes to `Ready`;
-- identical allowlisted rationale across Next Owner Action, inline Owner Handoff, and full Owner Handoff dialog;
-- invalid rationale values and arbitrary private/authority-looking fields never render;
+**Current deterministic priority slice:** exact-current-head verification is required after this roadmap reconciliation commit. Until the final current-head workflow passes, the priority slice is documented + implemented only and must not be described as tested.
+
+Priority coverage requires:
+- clean local demo state selects item `01` as `Needs Cherry · Needs context`;
+- same-session rationale changes update the displayed priority reason;
+- mixed state `01 Prepared`, `02 Parked`, `03 Needs Cherry` selects item `03`;
+- invalid rationale values fail closed to `Needs context`;
+- injected private/authority-looking fields never render;
 - zero POST/PUT/PATCH/DELETE requests;
-- existing phone-width, safe navigation, focus restoration, Escape/close, follow-up and privacy boundaries remain intact.
-
-This roadmap reconciliation commit is documentation-only; the exact-current-head post-reconciliation run remains the final repository-head proof and is recorded in PR #1 once resolved.
+- existing mobile width, owner handoff, focus, routing and privacy protections remain intact.
 
 ### Preview deployed
 
-**Yes for the owner-rationale implementation baseline.** Vercel preview `dpl_CYC2UDb95MiobSSauxVF8D7VeZnz` is READY, Git-sourced from exact implementation head `7cd9dd034437f28b478e51e730e5ec706e471e07`, and non-production (`target: null`).
+**Latest fully verified exact preview before the priority slice:** `dpl_DBWZWCcZhiqhAJfXC3TXeWnPK76G`, READY, Git-sourced from `c0414e4077bf4af49db2b16305c0eaf07afd4bc1`, non-production (`target: null`).
 
-Preview READY is deployability/provenance evidence only. The documentation-only reconciliation head receives its own automatic preview; exact-final-head preview evidence is recorded in PR #1.
+The deterministic priority slice requires its own exact-source READY preview proof after the final head is established.
 
 ### Live staging
 
-**No.** The exact #606 staging-readiness artifact remained intentionally `BLOCKED`; its internal `source_sha` matched `7cd9dd034437f28b478e51e730e5ec706e471e07`. No real WorldStage staging PostgreSQL/Supabase, authentication, abuse-control, incident-management, notification, signed-user RLS, provider backup/restore, or live kill-switch environment is bound or proven.
+**No.** The #608 staging-readiness artifact was inspected directly and remained intentionally `BLOCKED` with exact `source_sha = c0414e4077bf4af49db2b16305c0eaf07afd4bc1`. No real WorldStage staging PostgreSQL/Supabase, authentication, abuse-control, incident-management, notification, signed-user RLS, provider backup/restore, or live kill-switch environment is bound or proven.
 
 ### Production verified / released for this line
 
@@ -80,15 +83,15 @@ Preview READY is deployability/provenance evidence only. The documentation-only 
 
 ## Done
 
-The **read-only fixed-rationale projection into Cherry Owner Summary / Owner Handoff** is documented, implemented, tested on its exact implementation head, and preview-deployed on that same exact source. It adds practical owner context without expanding the data or authority surface.
+The read-only fixed-rationale projection remains fully verified at exact baseline `c0414e4…` / run #608 / preview `dpl_DBW…`.
 
-Run #606 produced:
-- staging-readiness artifact `9069772871`, digest `sha256:dfa2848414e091a4d1b3ab06baf2db41b81ba40c7f4878842834448d81907457`;
-- mobile evidence artifact `9069773355`, digest `sha256:1657464fe0bddc7188801ffb4288ba0800cef5a89728bd05dbc166416c9f9ba9`.
+At the documented + implemented level, the new **deterministic priority judgment** is complete. It reduces Cherry's phone summary to one obvious synthetic judgment item without introducing a scoring model or new data/authority surface.
 
 ## In progress
 
-- automatic exact-current-head CI/preview proof for this documentation-only roadmap reconciliation;
+- exact-current-head CI verification for the priority slice + roadmap head;
+- exact-source READY preview verification;
+- exact staging-readiness artifact inspection;
 - PR #1 exact-head evidence reconciliation after those proofs resolve.
 
 ## Hard blockers / gates intentionally not crossed
@@ -105,15 +108,15 @@ Run #606 produced:
 ## Risks
 
 - A polished synthetic workflow may look operational; all product-facing state therefore remains explicitly local/demo-only.
-- Fixed rationale enums are owner-interface scaffolding, not source evidence, legal reasoning, approvals, commitments, instructions to staff, or real client records.
-- Showing a rationale beside the next action does not mean the system has independently derived a reason; it is a read-only projection of Cherry Daily's allowlisted local demo enum for fixed item `01`.
+- The priority card is a deterministic UI ordering rule, not a risk score, AI recommendation, urgency assessment, legal/commercial judgment, or source-derived importance claim.
+- Fixed rationale enums are owner-interface scaffolding, not evidence, approvals, commitments, instructions to staff, or real client records.
 - Browser-local persistence is not a production database or audit trail.
 - Provider-neutral/synthetic tests cannot substitute for live authorization, security, recovery, or operations proof.
 - Preview READY does not imply live staging or production suitability.
 
 ## Next autonomous action
 
-After final exact-head proof closes, continue product-facing work rather than adding more evidence infrastructure: make the Owner Summary prioritize the single highest-value synthetic Cherry judgment item in one phone view, using only the existing fixed local demo state and fixed rationale vocabulary. Do not add free text, real client data, external writes, spending, provider bindings, or release authority.
+After exact-head verification, use the deterministic priority item to create one compact **Review now** owner card that opens only the existing local-demo judgment context on the same phone surface. Keep it synthetic/local-only and do not add free text, real client data, provider writes, spending, missing credentials or release authority.
 
 ## Explicit non-claims
 
