@@ -6,7 +6,7 @@ function makeAdapter({ existing = null, failAudit = false } = {}) {
   const calls = [];
   const state = { calls };
   const tx = {
-    async findIdempotency(key) { calls.push(['findIdempotency', key]); return existing; },
+    async findIdempotency(key, actorScope) { calls.push(['findIdempotency', key, actorScope]); return existing?.actor_scope === actorScope ? existing : null; },
     async insertIntake(record) { calls.push(['insertIntake', record]); return { id: 'intake-1' }; },
     async insertIdempotency(record) { calls.push(['insertIdempotency', record]); },
     async insertAudit(record) { calls.push(['insertAudit', record]); if (failAudit) throw new Error('audit_failed'); },
@@ -31,9 +31,14 @@ const body = {
 const base = {
   idempotencyKey: '0123456789abcdef',
   body,
-  actor: { id: 'user-1' },
+  actor: { id: 'user-1', type: 'user' },
   correlationId: 'req-1',
 };
+
+test('actor identity is required before persistence', async () => {
+  const { adapter } = makeAdapter();
+  await assert.rejects(() => persistValidatedIntake({ adapter, ...base, actor: null }), /actor_identity_required/);
+});
 
 test('new intake commits only after intake, idempotency, and audit records succeed', async () => {
   const { adapter, state } = makeAdapter();
@@ -44,6 +49,8 @@ test('new intake commits only after intake, idempotency, and audit records succe
   assert.deepEqual(state.calls.map(([name]) => name), [
     'begin', 'findIdempotency', 'insertIntake', 'insertIdempotency', 'insertAudit', 'commit'
   ]);
+  const idempotency = state.calls.find(([name]) => name === 'insertIdempotency')[1];
+  assert.equal(idempotency.actor_scope, 'user:user-1');
 });
 
 test('audit failure rolls the transaction back and never commits', async () => {
@@ -54,7 +61,7 @@ test('audit failure rolls the transaction back and never commits', async () => {
   assert.equal(names.at(-1), 'rollback');
 });
 
-test('same idempotency key and same body returns existing receipt without new writes', async () => {
+test('same actor + idempotency key + same body returns existing receipt without new writes', async () => {
   const first = makeAdapter();
   const created = await persistValidatedIntake({ adapter: first.adapter, ...base });
   const idempotency = first.state.calls.find(([name]) => name === 'insertIdempotency')[1];
@@ -66,7 +73,7 @@ test('same idempotency key and same body returns existing receipt without new wr
   assert.deepEqual(second.state.calls.map(([name]) => name), ['begin', 'findIdempotency', 'rollback']);
 });
 
-test('same idempotency key with different body fails closed and rolls back', async () => {
+test('same actor and key with different body fails closed and rolls back', async () => {
   const first = makeAdapter();
   await persistValidatedIntake({ adapter: first.adapter, ...base });
   const idempotency = first.state.calls.find(([name]) => name === 'insertIdempotency')[1];
@@ -77,6 +84,24 @@ test('same idempotency key with different body fails closed and rolls back', asy
     (error) => error.code === 'idempotency_conflict'
   );
   assert.equal(second.state.calls.at(-1)[0], 'rollback');
+});
+
+test('same idempotency key used by a different actor does not reveal the first receipt', async () => {
+  const first = makeAdapter();
+  const created = await persistValidatedIntake({ adapter: first.adapter, ...base });
+  const idempotency = first.state.calls.find(([name]) => name === 'insertIdempotency')[1];
+
+  const second = makeAdapter({ existing: idempotency });
+  const differentActor = await persistValidatedIntake({
+    adapter: second.adapter,
+    ...base,
+    actor: { id: 'user-2', type: 'user' },
+    correlationId: 'req-2',
+  });
+  assert.equal(differentActor.status, 'created');
+  assert.notEqual(differentActor.receipt_code, created.receipt_code);
+  const lookup = second.state.calls.find(([name]) => name === 'findIdempotency');
+  assert.equal(lookup[2], 'user:user-2');
 });
 
 test('audit change summary contains no submitted narrative or contact body', async () => {
