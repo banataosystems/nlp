@@ -71,29 +71,28 @@ Signed-user live-test proof contract:
 - source drift, preview/production deployment collapse, real-person/confidential data use, production access, activation requests and production-release authority fail closed;
 - per-case proof digests, session-context digest, database-policy trace digest, test-runner artifact digest and cleanup verification are mandatory.
 
-### Tested
+### Tested — latest verified implementation milestone
 
-Latest fully verified baseline before the signed-user contract implementation:
-- exact source head: `69859d2e5f30a76891f14b178a80ab800aa7c86c`;
-- GitHub Actions run: `31363828707` (#451);
+Latest fully verified implementation baseline:
+- exact source head: `d4b46ebe0ea3d174c2eb2df4a029fb4db6ae1b29`;
+- GitHub Actions run: `31367758319` (#463);
 - conclusion: **PASS**;
-- Phase 2 staging-readiness artifact: `9053410959`, digest `sha256:055906566d4d964f22a396592bbb5ce2018e39617bcb02bc895df58c0a464b3f`;
-- mobile visual artifact: `9053411202`, digest `sha256:4225665a9a3f4216f3d903aee2723af6fcc1b2ef63042bf95762a7ea9b240262`.
+- Phase 2 staging-readiness artifact: `9054876124`, digest `sha256:fffdde1d87492e5f48fdd54869eda89581f763e555c9e58d7906f03af3a66675`;
+- mobile visual artifact: `9054876675`, digest `sha256:f94ff22e7c37f76def61b4579c1df77b88d63ad2a07cd771ae8f551e28d32e56`.
 
-The #451 staging-readiness ZIP was directly inspected and contains exact `source_sha = 69859d2e5f30a76891f14b178a80ab800aa7c86c`, `readiness = BLOCKED`, confidential intake disabled, intake activation false, persistence unselected, adapter binding false, no staging/production project IDs and only `OWNER_SECURITY_DECISIONS_OPEN` for D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18.
+Run #463 passed owner/security decision-evidence enforcement, the mandatory secure-intake runtime/security suite including rollback, staging-handoff, synthetic backup/restore, deployment isolation, environment binding and the signed-user live-test proof contract, plus fail-closed staging preflight, six-width mobile checks, iPhone/WebKit and Pixel/Chromium checks, Phase 2 SQL/staging, Discovery Phase 3, Cherry OS Phase 4, Transformation Record Phase 5, release/security/privacy, visual evidence and exact-head staging-evidence regeneration/upload.
 
-The newer signed-user live-test contract is **implemented** and included in the mandatory `test:intake-runtime` gate. Exact-current-head CI evidence must pass before that newer work is promoted from implemented to tested. Exact run/artifact evidence is maintained in PR #1 after each verification cycle to avoid conflating implementation with test proof.
+The #463 staging-readiness ZIP was directly inspected and contains exact `source_sha = d4b46ebe0ea3d174c2eb2df4a029fb4db6ae1b29`, `readiness = BLOCKED`, confidential intake disabled, anonymous intake denied, file uploads/private AI/private analytics disabled, production release blocked, both intake activation flags false, persistence unselected, adapter binding false, no staging/production project IDs, no bound Phase 2 persistence paths and only `OWNER_SECURITY_DECISIONS_OPEN` for D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18.
 
-### Preview deployed
+This BLOCKED result is intentional fail-closed proof before live staging, not a test failure.
 
-Latest verified baseline before the signed-user contract implementation:
-- Vercel preview `dpl_9o5afUiGrHMUyLLEgoiMhVZE46q6`;
-- state READY;
-- source Git;
-- `target: null`;
-- exact Git SHA `69859d2e5f30a76891f14b178a80ab800aa7c86c`.
+The current branch head after this file update is documentation-only relative to the verified `d4b46ebe…` implementation milestone. Exact-current-head CI/deployment proof is maintained in PR #1 so documentation reconciliation is not mistaken for a source-code change.
 
-A newer READY preview does not upgrade the signed-user contract to deployed until exact-source provenance and exact-head test proof are both verified.
+### Preview deployed — latest verified implementation milestone
+
+Vercel preview `dpl_DHKtLQjkmT2YvWXRxjhxQYWtzaY3` is READY, source Git, `target: null`, and records exact Git SHA `d4b46ebe0ea3d174c2eb2df4a029fb4db6ae1b29`.
+
+This is preview evidence only, not live staging or production-release evidence.
 
 ### Live staging
 
@@ -126,12 +125,11 @@ The preserved production baseline remains `dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1`, RE
 
 ## Current safe next autonomous actions
 
-1. Run and verify the exact-current-head mandatory CI chain with the signed-user live-test contract included.
-2. Verify exact-head non-production Vercel preview provenance and preserved production isolation.
+1. Verify the documentation-only current head through the mandatory CI chain and exact-head non-production preview provenance.
+2. Prepare a provider-neutral live-staging evidence aggregator that requires environment-binding, signed-user policy, backup/restore and kill-switch proof as one exact-source package while still refusing credentials, activation and production authority.
 3. Continue non-live provider-boundary, rollback/recovery and security-evidence hardening without binding a real provider.
 4. Keep public receipt lookup absent and confidential intake fail-closed until owner/security/auth/privacy gates are resolved.
-5. Prepare the next provider-neutral live-staging evidence aggregator that can combine environment-binding, signed-user policy, backup/restore and kill-switch proof without credentials and without granting activation.
-6. Do not create billable staging, bind confidential data, apply real migrations, make legal/public commitments or promote production without separate hard gates.
+5. Do not create billable staging, bind confidential data, apply real migrations, make legal/public commitments or promote production without separate hard gates.
 
 ## Explicit non-claims
 
