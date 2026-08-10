@@ -24,6 +24,13 @@ test('3-minute owner review advances through each unseen deterministic priority 
       '03': 'needs-context',
       privateReason: 'must not appear',
     }));
+    localStorage.setItem('worldstage.synthetic.engagement.flow.v1', JSON.stringify({
+      version: 1,
+      discoveryPrepared: true,
+      ownerReviewed: true,
+      recordPrepared: false,
+      privateClientContext: 'must not appear',
+    }));
   });
   await page.reload();
 
@@ -51,10 +58,25 @@ test('3-minute owner review advances through each unseen deterministic priority 
   await expect(session).toContainText('Three of three reviewed.');
   await expect(page.locator('[data-cherry-review-session-progress]')).toHaveText('Progress: 3 of 3. Local demo session complete.');
   await expect(page).toHaveURL(/#\/cockpit$/);
-  expect(networkWrites).toEqual([]);
+
+  const recap = page.locator('[data-cherry-owner-review-recap]');
+  await expect(recap).toBeVisible();
+  await expect(recap).toContainText('OWNER REVIEW RECAP · READ ONLY · SYNTHETIC');
+  await expect(recap.locator('[data-cherry-owner-review-recap-item="01"]')).toContainText('Parked');
+  await expect(recap.locator('[data-cherry-owner-review-recap-item="02"]')).toContainText('Prepared');
+  await expect(recap.locator('[data-cherry-owner-review-recap-item="03"]')).toContainText('Prepared');
+  await expect(recap).not.toContainText('must not appear');
+  await expect(recap).not.toContainText('privateClientContext');
+  await expect(recap.locator('[data-cherry-owner-review-recap-next]')).toContainText('Transformation Record');
+  await expect(recap.locator('[data-cherry-owner-review-recap-route="client"]')).toHaveText('Open synthetic Transformation Record →');
 
   const sizes = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth }));
   expect(sizes.sw).toBeLessThanOrEqual(sizes.cw + 1);
+  expect(networkWrites).toEqual([]);
+
+  await recap.locator('[data-cherry-owner-review-recap-route="client"]').click();
+  await expect(page).toHaveURL(/#\/client$/);
+  expect(networkWrites).toEqual([]);
 });
 
 test('3-minute owner review stays fixed-vocabulary, restartable, and non-authoritative', async ({ page }) => {
@@ -77,6 +99,13 @@ test('3-minute owner review stays fixed-vocabulary, restartable, and non-authori
       '03': 'secret reason',
       releaseAuthority: 'yes',
     }));
+    localStorage.setItem('worldstage.synthetic.engagement.flow.v1', JSON.stringify({
+      version: 999,
+      discoveryPrepared: true,
+      ownerReviewed: true,
+      recordPrepared: true,
+      releaseAuthority: 'yes',
+    }));
   });
   await page.reload();
 
@@ -94,8 +123,19 @@ test('3-minute owner review stays fixed-vocabulary, restartable, and non-authori
     await page.locator(`[data-cherry-decision-state="${id}"] [data-cherry-daily-set="prepared"]`).click();
   }
   await expect(session).toContainText('Three of three reviewed.');
+
+  const recap = page.locator('[data-cherry-owner-review-recap]');
+  await expect(recap).toBeVisible();
+  await expect(recap.locator('[data-cherry-owner-review-recap-item]')).toHaveCount(3);
+  await expect(recap).not.toContainText('secret reason');
+  await expect(recap).not.toContainText('releaseAuthority');
+  await expect(recap).not.toContainText('productionRelease');
+  await expect(recap.locator('[data-cherry-owner-review-recap-route="discovery"]')).toHaveText('Continue with synthetic Discovery →');
+
   await page.locator('[data-cherry-review-session-restart]').click();
+  await expect(page.locator('[data-cherry-owner-review-session-item]')).toHaveCount(0);
   await expect(page.locator('[data-cherry-review-session-item]')).toHaveText('Item 01');
   await expect(page.locator('[data-cherry-review-session-progress]')).toContainText('Progress: 0 of 3 reviewed');
+  await expect(page.locator('[data-cherry-owner-review-recap]')).toHaveCount(0);
   expect(networkWrites).toEqual([]);
 });
