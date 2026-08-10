@@ -88,6 +88,11 @@ test('synthetic engagement loop connects Discovery, Cherry judgment, and Transfo
   });
   await page.reload();
 
+  const safetyGate = page.locator('[data-prototype-safety-gate]');
+  await expect(safetyGate).toBeVisible();
+  await safetyGate.getByRole('button', { name: /continue with non-confidential Discovery/i }).click();
+  await expect(safetyGate).toHaveCount(0);
+
   const discoveryFlow = page.locator('[data-synthetic-engagement-flow]');
   await expect(discoveryFlow).toBeVisible();
   await expect(discoveryFlow).toContainText('SYNTHETIC ENGAGEMENT LOOP');
