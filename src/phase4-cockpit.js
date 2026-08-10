@@ -3,6 +3,9 @@
 
 let cockpitReturnFocus = null;
 
+const CHERRY_DAILY_DEMO_KEY = 'worldstage.cherry.daily.demo.v1';
+const cherryDailyAllowedStates = new Set(['needs-cherry', 'prepared', 'parked']);
+
 const sourceItems = [
   ['Relationship timeline', 'DEMO DATA', 'Future production evidence should preserve the source system, record owner, timestamp, confidence, and access restriction.'],
   ['Program / engagement record', 'DEMO DATA', 'A real record must be tied to an approved engagement and must not be reconstructed from memory or generated text.'],
@@ -19,6 +22,121 @@ const roomItems = [
 
 function phase4CloseIcon() {
   return '<span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></span>';
+}
+
+function readCherryDailyDemoState() {
+  const fallback = { '01': 'needs-cherry', '02': 'needs-cherry', '03': 'needs-cherry' };
+  try {
+    const parsed = JSON.parse(localStorage.getItem(CHERRY_DAILY_DEMO_KEY) || '{}');
+    return Object.fromEntries(Object.entries(fallback).map(([id, initial]) => {
+      const candidate = parsed?.[id];
+      return [id, cherryDailyAllowedStates.has(candidate) ? candidate : initial];
+    }));
+  } catch {
+    return fallback;
+  }
+}
+
+function writeCherryDailyDemoState(state) {
+  try {
+    localStorage.setItem(CHERRY_DAILY_DEMO_KEY, JSON.stringify(state));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function cherryDailyLabel(state) {
+  if (state === 'prepared') return 'Prepared';
+  if (state === 'parked') return 'Parked';
+  return 'Needs Cherry';
+}
+
+function cherryDailySummaryMarkup() {
+  return `<section class="cherry-daily" data-cherry-daily aria-labelledby="cherry-daily-title">
+    <div class="cherry-daily__top">
+      <div><span>CHERRY DAILY · LOCAL DEMO</span><h2 id="cherry-daily-title">Make the next decision obvious.</h2></div>
+      <button type="button" data-cherry-daily-reset>Reset demo states</button>
+    </div>
+    <p class="cherry-daily__lede">This is the owner workflow pattern: see only what needs judgment, prepare what is ready, and park what can wait. These states stay in this browser only. Nothing is sent to a client, CRM, email, calendar, or production system.</p>
+    <div class="cherry-daily__metrics" aria-label="Demo judgment state summary">
+      <article><strong data-cherry-daily-count="needs-cherry">3</strong><span>Need Cherry</span></article>
+      <article><strong data-cherry-daily-count="prepared">0</strong><span>Prepared</span></article>
+      <article><strong data-cherry-daily-count="parked">0</strong><span>Parked</span></article>
+    </div>
+    <div class="cherry-daily__notice" data-cherry-daily-status aria-live="polite">Demo state is stored only on this device.</div>
+  </section>`;
+}
+
+function updateCherryDailyUI(message = '') {
+  const state = readCherryDailyDemoState();
+  const counts = { 'needs-cherry': 0, prepared: 0, parked: 0 };
+  Object.values(state).forEach((value) => { counts[value] += 1; });
+
+  Object.entries(counts).forEach(([name, count]) => {
+    const node = document.querySelector(`[data-cherry-daily-count="${name}"]`);
+    if (node) node.textContent = String(count);
+  });
+
+  document.querySelectorAll('[data-cherry-decision-state]').forEach((node) => {
+    const id = node.dataset.cherryDecisionState;
+    const value = state[id] || 'needs-cherry';
+    const label = node.querySelector('[data-cherry-decision-label]');
+    if (label) label.textContent = cherryDailyLabel(value);
+    node.querySelectorAll('[data-cherry-daily-set]').forEach((button) => {
+      const isCurrent = button.dataset.cherryDailySet === value;
+      button.classList.toggle('is-current', isCurrent);
+      button.setAttribute('aria-pressed', String(isCurrent));
+    });
+  });
+
+  const status = document.querySelector('[data-cherry-daily-status]');
+  if (status && message) status.textContent = message;
+}
+
+function enhanceCherryDaily() {
+  const shell = document.querySelector('.cockpit-shell');
+  if (!shell) return;
+
+  if (!shell.querySelector('[data-cherry-daily]')) {
+    const header = shell.querySelector('.cockpit-header');
+    header?.insertAdjacentHTML('afterend', cherryDailySummaryMarkup());
+    shell.querySelector('[data-cherry-daily-reset]')?.addEventListener('click', () => {
+      try { localStorage.removeItem(CHERRY_DAILY_DEMO_KEY); } catch { /* local demo remains best-effort */ }
+      updateCherryDailyUI('Demo states reset. No external system was changed.');
+    });
+  }
+
+  shell.querySelectorAll('.judgment-card').forEach((card, index) => {
+    const id = String(index + 1).padStart(2, '0');
+    if (card.querySelector('[data-cherry-decision-state]')) return;
+    const actions = card.querySelector('.judgment-card__actions');
+    if (!actions) return;
+
+    const controls = document.createElement('div');
+    controls.className = 'cherry-decision-state';
+    controls.dataset.cherryDecisionState = id;
+    controls.innerHTML = `<div class="cherry-decision-state__meta"><span>DEMO DECISION STATE</span><strong data-cherry-decision-label>Needs Cherry</strong></div>
+      <div class="cherry-decision-state__actions" role="group" aria-label="Demo decision state for item ${id}">
+        <button type="button" data-cherry-daily-set="needs-cherry" aria-pressed="false">Needs me</button>
+        <button type="button" data-cherry-daily-set="prepared" aria-pressed="false">Prepared</button>
+        <button type="button" data-cherry-daily-set="parked" aria-pressed="false">Park</button>
+      </div>`;
+    actions.before(controls);
+
+    controls.querySelectorAll('[data-cherry-daily-set]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const state = readCherryDailyDemoState();
+        state[id] = button.dataset.cherryDailySet;
+        const saved = writeCherryDailyDemoState(state);
+        updateCherryDailyUI(saved
+          ? `${id} marked ${cherryDailyLabel(state[id]).toLowerCase()} on this device only.`
+          : `${id} changed for this view, but local browser storage was unavailable.`);
+      });
+    });
+  });
+
+  updateCherryDailyUI();
 }
 
 function getActiveCardSnapshot() {
@@ -122,6 +240,11 @@ function decorateCockpitActions() {
   });
 }
 
+function enhanceCockpit() {
+  decorateCockpitActions();
+  enhanceCherryDaily();
+}
+
 function trapCockpitFocus(event) {
   if (event.key !== 'Tab') return;
   const dialog = document.querySelector('.cockpit-drawer');
@@ -138,12 +261,12 @@ function trapCockpitFocus(event) {
   }
 }
 
-new MutationObserver(() => queueMicrotask(decorateCockpitActions)).observe(document.getElementById('app'), { childList: true, subtree: true });
-window.addEventListener('hashchange', () => { closeCockpitDrawer({ restoreFocus: false }); queueMicrotask(decorateCockpitActions); });
+new MutationObserver(() => queueMicrotask(enhanceCockpit)).observe(document.getElementById('app'), { childList: true, subtree: true });
+window.addEventListener('hashchange', () => { closeCockpitDrawer({ restoreFocus: false }); queueMicrotask(enhanceCockpit); });
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape' && document.querySelector('.cockpit-overlay')) {
     event.preventDefault(); closeCockpitDrawer(); return;
   }
   trapCockpitFocus(event);
 });
-decorateCockpitActions();
+enhanceCockpit();
