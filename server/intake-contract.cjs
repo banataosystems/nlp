@@ -28,6 +28,10 @@ function persistenceConfigured(env = process.env) {
   return env.WORLDSTAGE_SECURE_INTAKE_PERSISTENCE === 'staging';
 }
 
+function adapterBound(env = process.env) {
+  return env.WORLDSTAGE_SECURE_INTAKE_ADAPTER === 'bound';
+}
+
 function hasForbiddenKey(value) {
   if (!value || typeof value !== 'object') return false;
   if (Array.isArray(value)) return value.some(hasForbiddenKey);
@@ -90,6 +94,7 @@ function evaluateRequest({ method, headers = {}, rawBody = '', parsedBody, env =
   if (method !== 'POST') return json(405, 'method_not_allowed', 'Method not allowed.');
   if (!enabled(env)) return json(503, 'intake_disabled', 'Secure intake is not available yet.');
   if (!persistenceConfigured(env)) return json(503, 'persistence_not_configured', 'Secure intake is not available yet.');
+  if (!adapterBound(env)) return json(503, 'persistence_adapter_not_bound', 'Secure intake is not available yet.');
 
   const contentType = String(headers['content-type'] || headers['Content-Type'] || '').toLowerCase();
   if (!contentType.startsWith('application/json')) return json(415, 'unsupported_content_type', 'Content-Type must be application/json.');
