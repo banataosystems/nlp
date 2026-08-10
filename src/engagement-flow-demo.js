@@ -30,11 +30,14 @@ let syntheticFlowFallback = defaultSyntheticFlowState();
 
 function sanitizeSyntheticFlowState(value) {
   if (!value || value.version !== SYNTHETIC_FLOW_VERSION) return defaultSyntheticFlowState();
+  const discoveryPrepared = value.discoveryPrepared === true;
+  const ownerReviewed = discoveryPrepared && value.ownerReviewed === true;
+  const recordPrepared = ownerReviewed && value.recordPrepared === true;
   return {
     version: SYNTHETIC_FLOW_VERSION,
-    discoveryPrepared: value.discoveryPrepared === true,
-    ownerReviewed: value.ownerReviewed === true,
-    recordPrepared: value.recordPrepared === true,
+    discoveryPrepared,
+    ownerReviewed,
+    recordPrepared,
   };
 }
 
