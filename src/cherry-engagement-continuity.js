@@ -10,6 +10,11 @@ const CHERRY_CONTINUITY_STAGES = Object.freeze([
   { id: 'review', label: 'Cherry review', route: 'cockpit' },
   { id: 'record', label: 'Transformation Record', route: 'client' },
 ]);
+const CHERRY_CONTINUITY_PREVIOUS = Object.freeze({
+  none: 'None',
+  discovery: 'Discovery',
+  review: 'Cherry review',
+});
 
 let cherryContinuityRefreshQueued = false;
 
@@ -31,6 +36,12 @@ function cherryContinuityFlowState() {
   const ownerReviewed = discoveryPrepared && stored.ownerReviewed === true;
   const recordPrepared = ownerReviewed && stored.recordPrepared === true;
   return { discoveryPrepared, ownerReviewed, recordPrepared };
+}
+
+function cherryContinuityPrevious(flow) {
+  if (!flow.discoveryPrepared) return { id: 'none', label: CHERRY_CONTINUITY_PREVIOUS.none };
+  if (!flow.ownerReviewed) return { id: 'discovery', label: CHERRY_CONTINUITY_PREVIOUS.discovery };
+  return { id: 'review', label: CHERRY_CONTINUITY_PREVIOUS.review };
 }
 
 function cherryContinuityCurrent(flow) {
@@ -79,23 +90,25 @@ function cherryContinuityStepStatus(index, currentIndex, flow) {
   return 'upcoming';
 }
 
-function cherryContinuitySignature(flow, current) {
+function cherryContinuitySignature(flow, current, previous) {
   return [
     flow.discoveryPrepared ? 'd1' : 'd0',
     flow.ownerReviewed ? 'o1' : 'o0',
     flow.recordPrepared ? 'r1' : 'r0',
     current.id,
+    previous.id,
   ].join(':');
 }
 
-function cherryContinuityMarkup(flow, current, signature) {
-  return `<section class="cherry-engagement-continuity" data-cherry-engagement-continuity data-cherry-engagement-continuity-signature="${signature}" data-cherry-engagement-continuity-stage="${current.id}" aria-label="Synthetic engagement continuity">
+function cherryContinuityMarkup(flow, current, previous, signature) {
+  return `<section class="cherry-engagement-continuity" data-cherry-engagement-continuity data-cherry-engagement-continuity-signature="${signature}" data-cherry-engagement-continuity-stage="${current.id}" data-cherry-engagement-continuity-previous="${previous.id}" aria-label="Synthetic engagement continuity">
     <div class="cherry-engagement-continuity__copy">
       <span>ENGAGEMENT CONTINUITY · LOCAL SYNTHETIC DEMO</span>
       <strong data-cherry-engagement-continuity-current>${current.label}</strong>
       <p>${current.detail}</p>
       <div class="cherry-engagement-continuity__handoff" data-cherry-engagement-continuity-handoff aria-label="Synthetic engagement handoff cue">
         <span>HANDOFF CUE · READ ONLY</span>
+        <p data-cherry-engagement-continuity-previous-label>Previous stage: ${previous.label}.</p>
         <p data-cherry-engagement-continuity-prepared>${current.prepared}</p>
         <p data-cherry-engagement-continuity-next>${current.next}</p>
       </div>
@@ -149,11 +162,12 @@ function enhanceCherryEngagementContinuity() {
 
   const flow = cherryContinuityFlowState();
   const current = cherryContinuityCurrent(flow);
-  const signature = cherryContinuitySignature(flow, current);
+  const previous = cherryContinuityPrevious(flow);
+  const signature = cherryContinuitySignature(flow, current, previous);
   if (existing?.dataset.cherryEngagementContinuitySignature === signature && existing.parentElement === summary) return;
 
   const wrapper = document.createElement('div');
-  wrapper.innerHTML = cherryContinuityMarkup(flow, current, signature);
+  wrapper.innerHTML = cherryContinuityMarkup(flow, current, previous, signature);
   const strip = wrapper.firstElementChild;
   if (!(strip instanceof HTMLElement)) return;
 
