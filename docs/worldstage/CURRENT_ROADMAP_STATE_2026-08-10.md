@@ -12,46 +12,45 @@
 
 The highest-value autonomous line remains Cherry-facing operating value using synthetic/local demo state while real provider/data boundaries stay fail-closed.
 
-## Latest completed product milestone — fixed owner attention cue
+## Latest completed product milestone — fixed owner attention reason
 
-Cherry's existing phone-first synthetic owner action card now includes one compact fixed-vocabulary attention cue derived only from the same sanitized engagement stage.
+Cherry's existing phone-first synthetic owner action card now explains the fixed owner-attention cue with one deterministic read-only reason derived only from the sanitized current stage.
 
-The cue:
-- shows exactly `Needs Cherry now` when the sanitized current stage is `Cherry review`;
-- shows exactly `Continue prepared flow` for `Discovery` and `Transformation Record` stages;
-- is deterministic stage context only, not an urgency score, ranking, recommendation, prediction or inference;
-- remains read-only and adds no button or independent action;
+The reason:
+- shows exactly `Current stage requires Cherry review` when the sanitized current stage is `Cherry review`;
+- shows exactly `Current stage can continue through prepared synthetic flow` for `Discovery` and `Transformation Record` stages;
+- is fixed stage context only, not urgency scoring, ranking, recommendation, prediction or inference;
+- appears directly beneath the existing fixed attention label inside the owner action card;
 - keeps exactly one allowlisted `Resume →` control inside the owner action card;
-- preserves the existing previous-stage, prepared-state and next-action handoff cues;
-- keeps completed-engagement `Start a new synthetic engagement →` outside the owner card behind the existing two-step reset confirmation;
+- preserves previous-stage, prepared-state, next-action, completion and reset-confirmation behavior;
 - derives displayed state only from the sanitized version-1 `discoveryPrepared`, `ownerReviewed`, and `recordPrepared` booleans;
-- fails closed to Discovery / `Continue prepared flow` on malformed or wrong-version state;
-- ignores injected attention, private-client, previous-stage, arbitrary-route and production-looking fields;
+- fails closed to Discovery / prepared-flow reason on malformed or wrong-version state;
+- ignores injected attention-reason, private-client and production-looking fields;
 - creates no storage key, free text, score, analytics event, task, message, private-source lookup, CRM/email/calendar/database/provider write, staging action, spending or production authority.
 
 Implementation/test surfaces:
 - `src/cherry-engagement-continuity.js`;
 - `src/cherry-engagement-continuity.css`;
-- `tests/cherry-engagement-continuity.spec.mjs`;
-- existing mandatory Phase 4 owner-action-card/completion/reset regression coverage.
+- `tests/cherry-engagement-attention-reason.spec.mjs`;
+- `package.json` mandatory Phase 4 gate.
 
 ## Proof-state separation
 
 ### Documented
 
-**Yes.** This roadmap records the fixed owner-attention-cue milestone separately from the prior verified synthetic owner action card. The prior owner-action-card exact source `7ccf9dc2af321d5e3bca97f59e59712b61b11261`, run #702 and associated artifacts/deployments remain preserved in history.
+**Yes.** This roadmap records the fixed owner-attention-reason milestone separately from the prior verified owner-attention cue. The prior cue exact source `00c4f3386cabce5d9f3bf7fc3bb900ab8945496d`, run #708 and associated artifacts/deployments remain preserved in history.
 
 ### Implemented
 
-**Yes for exact product/test source `00c4f3386cabce5d9f3bf7fc3bb900ab8945496d`.**
+**Yes for exact product/test source `f43fe720e70ebd3e32cfdcb0bde6b050954cb180`.**
 
-The implementation is additive to the existing continuity card and uses a fixed mapping from sanitized stage to one of two allowlisted labels. It does not add mutable attention state or change the engagement-flow contract.
+The implementation extends only the existing synthetic owner action card and its Phase 4 regression gate. It adds no mutable attention state and does not change the engagement-flow storage contract.
 
 ### Tested
 
-**Yes for exact source `00c4f3386cabce5d9f3bf7fc3bb900ab8945496d`.** GitHub Actions run `31456766075` / **#708 completed SUCCESS** across the complete mandatory chain.
+**Yes for exact source `f43fe720e70ebd3e32cfdcb0bde6b050954cb180`.** GitHub Actions run `31459793246` / **#716 completed SUCCESS** across the complete mandatory chain.
 
-Run #708 passed:
+Run #716 passed:
 - owner/security decision-evidence enforcement;
 - fail-closed secure-intake runtime;
 - fail-closed staging preflight;
@@ -59,41 +58,40 @@ Run #708 passed:
 - iPhone/WebKit and Pixel/Chromium device-class checks;
 - Phase 2 SQL/staging;
 - Discovery Phase 3;
-- Cherry OS Phase 4 including the updated owner-attention-cue tests plus existing owner-card/completion/reset regressions;
+- Cherry OS Phase 4 including the new fixed-attention-reason tests plus existing owner-card/completion/reset regressions;
 - Transformation Record Phase 5;
 - release/security/privacy checks;
 - visual evidence;
 - exact-head staging-readiness regeneration and both evidence uploads.
 
 Focused Phase 4 coverage proves:
-- Discovery renders `Continue prepared flow`;
-- Cherry review renders `Needs Cherry now`;
-- Transformation Record preparation and completed-record review render `Continue prepared flow`;
-- cue rendering does not mutate the existing synthetic engagement-flow storage value;
+- Discovery renders `Current stage can continue through prepared synthetic flow`;
+- Cherry review renders `Current stage requires Cherry review`;
+- Transformation Record renders the prepared-flow reason;
+- injected attention-reason/private/production-looking fields are not displayed;
+- malformed/wrong-version flow state fails closed to Discovery and the prepared-flow reason;
+- reason rendering does not mutate the existing synthetic engagement-flow storage value;
 - the owner action card still exposes exactly one Resume button;
-- Resume remains navigation/focus only and does not mutate flow state;
-- malformed/wrong-version flow state fails closed to Discovery and `Continue prepared flow`;
-- injected attention/private/production-looking fields do not become displayed cue content or authority;
 - zero POST/PUT/PATCH/DELETE requests occur;
 - the 390px phone surface remains within horizontal bounds.
 
-Run #708 artifacts:
-- staging-readiness artifact `9088384574`, digest `sha256:638ba8fdb41ac57efd5ca9e03ac0b22c7257e0b9824809e82d9ababcfd68d523`;
-- mobile visual artifact `9088385018`, digest `sha256:f9f165785f13f1f78e76a6481b6e5b4ae1376ba84e2b6258b61c05dc4540b9b2`.
+Run #716 artifacts:
+- staging-readiness artifact `9089405683`, digest `sha256:585e8e31ba5a5e900fa91ff3279513e96e95e536ee4f2cd29219a567c05293b0`;
+- mobile visual artifact `9089405912`, digest `sha256:7763ce7c408bbf6a3785bad15cca19268c0ab37458fb721f9f31112a98604da6`.
 
-The exact #708 staging-readiness ZIP was downloaded and inspected directly. Its internal `source_sha` exactly matches `00c4f3386cabce5d9f3bf7fc3bb900ab8945496d`; `readiness = BLOCKED`; confidential intake is disabled; anonymous intake denied; file uploads/private AI/private analytics disabled; production release blocked; persistence is unselected; adapter binding is false; no staging or production project IDs are bound; and D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 remain OPEN.
+The exact #716 staging-readiness ZIP was downloaded and inspected directly. Its internal `source_sha` exactly matches `f43fe720e70ebd3e32cfdcb0bde6b050954cb180`; `readiness = BLOCKED`; confidential intake is disabled; anonymous intake denied; file uploads/private AI/private analytics disabled; production release blocked; persistence is unselected; adapter binding is false; no staging or production project IDs are bound; and D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 remain OPEN.
 
 ### Preview deployed
 
-**Yes for exact tested source `00c4f3386cabce5d9f3bf7fc3bb900ab8945496d`.** Vercel preview `dpl_9Vfzs5it5mQc36Te59jWxR9kjLTQ` is READY, Git-sourced from the exact source SHA and non-production (`target: null`).
+**Yes for exact tested source `f43fe720e70ebd3e32cfdcb0bde6b050954cb180`.** Vercel preview `dpl_3ozYgNMoTAf6LvWi59cdiRZA4CuF` is READY, Git-sourced from the exact source SHA and non-production (`target: null`).
 
-CI evidence-only child `06e6330a7cc2763b591c74465b486e8115ffed1f` changes only `docs/worldstage/evidence/WORLDSTAGE_MOBILE_V2_VISUAL_EVIDENCE.pdf`; it does not change product/test source and must not inherit test attribution as if it were the tested SHA.
+CI evidence-only child `cd880fd9e37abf8a0087da0f1cab8a9cfdbe6a19` changes only `docs/worldstage/evidence/WORLDSTAGE_MOBILE_V2_VISUAL_EVIDENCE.pdf`; it does not change product/test source and must not inherit test attribution as if it were the tested SHA.
 
 Preview READY is deployability/provenance evidence only. It is not live-staging or production proof.
 
 ### Live staging
 
-**No.** No real WorldStage staging PostgreSQL/Supabase, authentication, signed-user RLS, provider backup/restore or live kill-switch environment is bound or proven. The exact #708 staging-readiness evidence intentionally remains fail-closed.
+**No.** No real WorldStage staging PostgreSQL/Supabase, authentication, signed-user RLS, provider backup/restore or live kill-switch environment is bound or proven. The exact #716 staging-readiness evidence intentionally remains fail-closed.
 
 ### Production verified / released for this line
 
@@ -101,13 +99,13 @@ Preview READY is deployability/provenance evidence only. It is not live-staging 
 
 ## Done
 
-The **fixed owner attention cue** is now **documented → implemented → tested → preview-deployed** for exact source `00c4f3386cabce5d9f3bf7fc3bb900ab8945496d`, run #708 and preview `dpl_9Vfzs5it5mQc36Te59jWxR9kjLTQ`.
+The **fixed owner attention reason** is now **documented → implemented → tested → preview-deployed** for exact source `f43fe720e70ebd3e32cfdcb0bde6b050954cb180`, run #716 and preview `dpl_3ozYgNMoTAf6LvWi59cdiRZA4CuF`.
 
-Cherry's local synthetic owner card can now distinguish the stage where her direct demo judgment is the current step from stages where she can continue the already-prepared synthetic flow, without introducing urgency scoring or a second action path.
+Cherry's local synthetic owner card now states not only whether her attention is required, but the fixed reason for that label, without introducing urgency inference or a second action path.
 
 ## In progress
 
-This roadmap reconciliation is documentation-only and uses `[skip ci]`; it may create a newer repository/Vercel documentation head after exact tested source `00c4f338...`. Test proof remains attributed to exact tested product/test source `00c4f338...` rather than being falsely transferred to a documentation-only child.
+This roadmap reconciliation is documentation-only and uses `[skip ci]`; it may create a newer repository/Vercel documentation head after exact tested source `f43fe720...`. Test proof remains attributed to exact tested product/test source `f43fe720...` rather than being falsely transferred to a documentation-only child.
 
 ## Hard blockers / gates intentionally not crossed
 
@@ -123,15 +121,14 @@ This roadmap reconciliation is documentation-only and uses `[skip ci]`; it may c
 ## Risks
 
 - A polished synthetic owner action card can look operational even though it is not connected to real WorldStage records; all card state remains explicitly local synthetic/demo state.
-- `Needs Cherry now` means only that the sanitized synthetic current stage is the fixed Cherry-review stage. It is not urgency, importance, SLA, risk, commercial priority, approval or a claim that a real client needs immediate action.
-- `Continue prepared flow`, `Prepared`, `Previous stage`, and `Next` are deterministic labels from sanitized local booleans; they are not an audit trail, recommendation, client fact or proof that real-world work occurred.
-- `Start a new synthetic engagement` and its confirmation concern only browser-local demo state; they are not deletion, cancellation, archival, consent withdrawal or any business/legal action for a real client.
+- `Needs Cherry now` and `Current stage requires Cherry review` mean only that the sanitized synthetic current stage is the fixed Cherry-review stage. They are not urgency, importance, SLA, risk, commercial priority, approval or a claim that a real client needs immediate action.
+- `Continue prepared flow` and its reason are deterministic labels from sanitized local booleans; they are not an audit trail, recommendation, client fact or proof that real-world work occurred.
 - Provider-neutral/synthetic tests cannot substitute for live authorization, security, recovery, operational proof or Cherry's physical-device acceptance.
 - Preview READY does not imply live staging or production suitability.
 
 ## Next autonomous action
 
-Add a single fixed **attention reason** directly under the cue so the phone view explains why the label is shown: `Current stage requires Cherry review` for `Needs Cherry now`, otherwise `Current stage can continue through prepared synthetic flow`. Derive it from the same sanitized stage only; add no scoring, timestamps, free text, new persistence, external actions, provider binding, spending or production authority.
+Add one compact, fixed **Resume consequence** line beneath the single Resume control so Cherry can see before tapping that Resume only navigates/focuses the current synthetic stage and does not submit, send, approve, persist or release anything. Keep the text derived only from the allowlisted current route; add no new action, persistence, analytics, provider binding, spending or production authority.
 
 ## Explicit non-claims
 
