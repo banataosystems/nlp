@@ -23,9 +23,12 @@ async function expectOrientation(page, expected) {
   const orderedIds = await steps.evaluateAll((nodes) => nodes.map((node) => node.dataset.cherryEngagementContinuityStep));
   expect(orderedIds).toEqual(['discovery', 'review', 'record']);
 
+  const expectedPositions = { discovery: '1', review: '2', record: '3' };
   for (const [id, config] of Object.entries(expected)) {
     const step = strip.locator(`[data-cherry-engagement-continuity-step="${id}"]`);
     await expect(step).toHaveAttribute('role', 'listitem');
+    await expect(step).toHaveAttribute('aria-posinset', expectedPositions[id]);
+    await expect(step).toHaveAttribute('aria-setsize', '3');
     await expect(step).toHaveAttribute('data-cherry-engagement-step-orientation', config.status);
     await expect(step).toHaveAttribute('aria-label', config.label);
     if (config.status === 'current') await expect(step).toHaveAttribute('aria-current', 'step');
@@ -51,7 +54,7 @@ const RECORD_ORIENTATION = {
   record: { status: 'current', label: 'Transformation Record. Current synthetic step.' },
 };
 
-test('semantic continuity exposes one ordered synthetic stage list with exactly one aria-current step', async ({ page }) => {
+test('semantic continuity exposes one ordered synthetic stage list with deterministic positions and one aria-current step', async ({ page }) => {
   const networkWrites = [];
   page.on('request', (request) => {
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method())) {
@@ -66,6 +69,8 @@ test('semantic continuity exposes one ordered synthetic stage list with exactly 
     ownerReviewed: false,
     recordPrepared: false,
     ariaCurrent: 'production',
+    ariaPosinset: '99',
+    ariaSetsize: '99',
     privateClientName: 'must not appear',
   });
   await expectOrientation(page, DISCOVERY_ORIENTATION);
@@ -76,6 +81,8 @@ test('semantic continuity exposes one ordered synthetic stage list with exactly 
     ownerReviewed: false,
     recordPrepared: true,
     currentStep: 'production',
+    position: 88,
+    setSize: 88,
     releaseAuthority: 'yes',
   });
   await expectOrientation(page, REVIEW_ORIENTATION);
@@ -107,6 +114,8 @@ test('semantic continuity exposes one ordered synthetic stage list with exactly 
     const stageList = document.querySelector('[data-cherry-engagement-continuity]');
     const unexpectedStep = document.createElement('span');
     unexpectedStep.dataset.cherryEngagementContinuityStep = 'production';
+    unexpectedStep.setAttribute('aria-posinset', '4');
+    unexpectedStep.setAttribute('aria-setsize', '4');
     stageList?.appendChild(unexpectedStep);
   });
   await expect(strip).not.toHaveAttribute('role', /.+/);
@@ -114,6 +123,8 @@ test('semantic continuity exposes one ordered synthetic stage list with exactly 
   await expect(strip).not.toHaveAttribute('data-cherry-engagement-step-list', /.+/);
   await expect(strip.locator('[role="listitem"]')).toHaveCount(0);
   await expect(strip.locator('[aria-current="step"]')).toHaveCount(0);
+  await expect(strip.locator('[aria-posinset]')).toHaveCount(0);
+  await expect(strip.locator('[aria-setsize]')).toHaveCount(0);
 
   const persisted = await page.evaluate(() => localStorage.getItem('worldstage.synthetic.engagement.flow.v1'));
   expect(JSON.parse(persisted)).toMatchObject({
@@ -135,7 +146,7 @@ test('semantic continuity exposes one ordered synthetic stage list with exactly 
   expect(sizes.sw).toBeLessThanOrEqual(sizes.cw + 1);
 });
 
-test('malformed flow fails closed to sanitized Discovery list semantics and leaving cockpit removes the synthetic step surface', async ({ page }) => {
+test('malformed flow fails closed to sanitized Discovery list positions and leaving cockpit removes the synthetic step surface', async ({ page }) => {
   const networkWrites = [];
   page.on('request', (request) => {
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method())) networkWrites.push(request.url());
@@ -148,6 +159,8 @@ test('malformed flow fails closed to sanitized Discovery list semantics and leav
     ownerReviewed: true,
     recordPrepared: true,
     currentStep: 'Production release',
+    ariaPosinset: '99',
+    ariaSetsize: '99',
     privateClientContext: 'secret',
   });
 
@@ -160,5 +173,7 @@ test('malformed flow fails closed to sanitized Discovery list semantics and leav
   await expect(page.locator('[data-cherry-engagement-continuity]')).toHaveCount(0);
   await expect(page.locator('[role="list"][data-cherry-engagement-step-list="synthetic"]')).toHaveCount(0);
   await expect(page.locator('[aria-current="step"]')).toHaveCount(0);
+  await expect(page.locator('[aria-posinset]')).toHaveCount(0);
+  await expect(page.locator('[aria-setsize]')).toHaveCount(0);
   expect(networkWrites).toEqual([]);
 });
