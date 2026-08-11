@@ -10,7 +10,7 @@ async function openCockpitWithFlow(page, value) {
   await page.reload();
 }
 
-test('The Room availability, readiness, and boundary cues appear only for sanitized Cherry review and remain read-only', async ({ page }) => {
+test('The Room source status, availability, readiness, and boundary cues appear only for sanitized Cherry review and remain read-only', async ({ page }) => {
   const networkWrites = [];
   page.on('request', (request) => {
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method())) {
@@ -23,14 +23,17 @@ test('The Room availability, readiness, and boundary cues appear only for saniti
     discoveryPrepared: false,
     ownerReviewed: false,
     recordPrepared: false,
+    roomSourceStatus: 'Verified private sources connected',
     roomAvailability: 'Expose private client briefing',
     roomBoundary: 'Contact participants now',
   });
 
   let card = page.locator('[data-cherry-engagement-owner-action]');
   await expect(card.locator('[data-cherry-engagement-room-availability]')).toHaveCount(0);
+  await expect(card.locator('[data-cherry-engagement-room-source-status]')).toHaveCount(0);
   await expect(card.locator('[data-cherry-engagement-room-readiness]')).toHaveCount(0);
   await expect(card.locator('[data-cherry-engagement-room-boundary]')).toHaveCount(0);
+  await expect(card).not.toContainText('Verified private sources connected');
   await expect(card).not.toContainText('Expose private client briefing');
   await expect(card).not.toContainText('Contact participants now');
 
@@ -39,6 +42,7 @@ test('The Room availability, readiness, and boundary cues appear only for saniti
     discoveryPrepared: true,
     ownerReviewed: false,
     recordPrepared: true,
+    roomSourceStatus: 'Sources · production private systems connected',
     roomAvailability: 'Production room approved',
     privateClientContext: 'must not appear',
     readiness: ['Private sources connected', 'Automated approval enabled'],
@@ -48,13 +52,17 @@ test('The Room availability, readiness, and boundary cues appear only for saniti
 
   card = page.locator('[data-cherry-engagement-owner-action]');
   const roomCue = card.locator('[data-cherry-engagement-room-availability="review"]');
+  const sourceStatus = roomCue.locator('[data-cherry-engagement-room-source-status]');
   const readiness = roomCue.locator('[data-cherry-engagement-room-readiness]');
   const boundary = roomCue.locator('[data-cherry-engagement-room-boundary]');
   await expect(card.locator('[data-cherry-engagement-continuity-current]')).toHaveText('Cherry review');
   await expect(roomCue).toHaveCount(1);
   await expect(roomCue).toContainText('THE ROOM · DEMO BRIEFING PATTERN · READ ONLY');
-  await expect(roomCue.locator('p').first()).toHaveText('The Room briefing pattern is available from the active judgment card. Demo-only structure; no verified private client facts are connected.');
-  await expect(roomCue).toHaveAttribute('aria-label', 'The Room briefing pattern availability, readiness, and boundary, read only');
+  await expect(sourceStatus).toHaveCount(1);
+  await expect(sourceStatus).toHaveAttribute('aria-label', 'The Room source status, read only');
+  await expect(sourceStatus).toHaveText('Sources · synthetic demo only');
+  await expect(roomCue.locator('p:not([data-cherry-engagement-room-source-status])').first()).toHaveText('The Room briefing pattern is available from the active judgment card. Demo-only structure; no verified private client facts are connected.');
+  await expect(roomCue).toHaveAttribute('aria-label', 'The Room briefing pattern source status, availability, readiness, and boundary, read only');
   await expect(readiness).toHaveAttribute('aria-label', 'The Room readiness, read only');
   await expect(readiness.locator('li')).toHaveText([
     'Briefing structure available',
@@ -64,6 +72,7 @@ test('The Room availability, readiness, and boundary cues appear only for saniti
   await expect(boundary).toHaveCount(1);
   await expect(boundary).toHaveAttribute('aria-label', 'The Room boundary, read only');
   await expect(boundary).toHaveText('Synthetic organization only. The Room cannot contact participants, access private systems, make commitments, approve outcomes, publish, or send anything.');
+  await expect(card).not.toContainText('Sources · production private systems connected');
   await expect(card).not.toContainText('Production room approved');
   await expect(card).not.toContainText('must not appear');
   await expect(card).not.toContainText('Private sources connected');
@@ -88,6 +97,7 @@ test('The Room availability, readiness, and boundary cues appear only for saniti
 
   card = page.locator('[data-cherry-engagement-owner-action]');
   await expect(card.locator('[data-cherry-engagement-room-availability]')).toHaveCount(0);
+  await expect(card.locator('[data-cherry-engagement-room-source-status]')).toHaveCount(0);
   await expect(card.locator('[data-cherry-engagement-room-readiness]')).toHaveCount(0);
   await expect(card.locator('[data-cherry-engagement-room-boundary]')).toHaveCount(0);
 
@@ -99,7 +109,7 @@ test('The Room availability, readiness, and boundary cues appear only for saniti
   expect(networkWrites).toEqual([]);
 });
 
-test('malformed state and unexpected Resume route fail closed without manufacturing The Room readiness or boundary', async ({ page }) => {
+test('malformed state and unexpected Resume route fail closed without manufacturing The Room source status, readiness, or boundary', async ({ page }) => {
   const networkWrites = [];
   page.on('request', (request) => {
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method())) networkWrites.push(request.url());
@@ -110,6 +120,7 @@ test('malformed state and unexpected Resume route fail closed without manufactur
     discoveryPrepared: true,
     ownerReviewed: false,
     recordPrepared: true,
+    roomSourceStatus: 'Verified production systems connected',
     roomAvailability: 'Real client room is ready',
     releaseAuthority: 'yes',
     readiness: ['Production release allowed'],
@@ -120,8 +131,10 @@ test('malformed state and unexpected Resume route fail closed without manufactur
   let card = strip.locator('[data-cherry-engagement-owner-action]');
   await expect(strip).toHaveAttribute('data-cherry-engagement-continuity-stage', 'discovery');
   await expect(card.locator('[data-cherry-engagement-room-availability]')).toHaveCount(0);
+  await expect(card.locator('[data-cherry-engagement-room-source-status]')).toHaveCount(0);
   await expect(card.locator('[data-cherry-engagement-room-readiness]')).toHaveCount(0);
   await expect(card.locator('[data-cherry-engagement-room-boundary]')).toHaveCount(0);
+  await expect(card).not.toContainText('Verified production systems connected');
   await expect(card).not.toContainText('Real client room is ready');
   await expect(card).not.toContainText('Production release allowed');
   await expect(card).not.toContainText('External systems connected');
@@ -138,6 +151,7 @@ test('malformed state and unexpected Resume route fail closed without manufactur
   card = strip.locator('[data-cherry-engagement-owner-action]');
   const resume = card.locator('[data-cherry-engagement-continuity-resume]');
   await expect(card.locator('[data-cherry-engagement-room-availability="review"]')).toHaveCount(1);
+  await expect(card.locator('[data-cherry-engagement-room-source-status]')).toHaveText('Sources · synthetic demo only');
   await expect(card.locator('[data-cherry-engagement-room-readiness] li')).toHaveCount(3);
   await expect(card.locator('[data-cherry-engagement-room-boundary]')).toHaveCount(1);
 
@@ -146,6 +160,7 @@ test('malformed state and unexpected Resume route fail closed without manufactur
   });
 
   await expect(card.locator('[data-cherry-engagement-room-availability]')).toHaveCount(0);
+  await expect(card.locator('[data-cherry-engagement-room-source-status]')).toHaveCount(0);
   await expect(card.locator('[data-cherry-engagement-room-readiness]')).toHaveCount(0);
   await expect(card.locator('[data-cherry-engagement-room-boundary]')).toHaveCount(0);
   expect(networkWrites).toEqual([]);
