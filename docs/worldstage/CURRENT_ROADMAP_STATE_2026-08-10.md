@@ -12,25 +12,22 @@
 
 The active autonomous line continues to improve Cherry-facing owner usability using sanitized synthetic/local-demo state while real provider/data boundaries remain fail-closed.
 
-## Latest completed product milestone — semantic current-step orientation
+## Latest completed product milestone — semantic ordered-stage list
 
-The three-stage synthetic engagement continuity indicator now provides deterministic screen-reader orientation without changing visible workflow behavior.
+The three-stage synthetic engagement continuity indicator now exposes one coherent accessibility list while preserving the existing semantic current-step contract.
 
-Exactly one sanitized stage exposes `aria-current="step"`:
-- `Discovery` → current; Cherry review and Transformation Record → upcoming.
-- `Cherry review` → current; Discovery → completed; Transformation Record → upcoming.
-- `Transformation Record` → current; Discovery and Cherry review → completed.
+For the fixed sanitized order `Discovery → Cherry review → Transformation Record`:
+- the continuity container exposes `role="list"` with fixed `aria-label="Synthetic engagement stages"`;
+- each fixed stage exposes `role="listitem"`;
+- exactly one stage continues to expose `aria-current="step"`;
+- fixed `Current synthetic step`, `Completed synthetic step`, and `Upcoming synthetic step` wording remains unchanged.
 
-Each step receives fixed accessibility wording only:
-- `Current synthetic step`
-- `Completed synthetic step`
-- `Upcoming synthetic step`
+The implementation validates the exact fixed three-step sequence before assigning list semantics. If an unexpected step is injected into the rendered continuity surface, the list/listitem/current-step semantic attributes are removed rather than extending authority to unrecognized content. Malformed/wrong-version stored flow still fails closed through the existing sanitizer to the fixed Discovery state.
 
-The implementation derives solely from the existing sanitized continuity stage, validates the fixed three-step allowlist, fails closed by removing semantic-current attributes if an unexpected stage/step set appears, and adds no focus movement, new action, persistence, analytics, provider access, private data, inference, scoring, spending, staging authority or production authority.
+The milestone derives solely from the existing sanitized continuity state and adds no visible action, focus movement, persistence, analytics, provider access, source lookup, private data, inference, scoring, spending, staging authority or production authority.
 
 Implementation/test surfaces:
 - `src/cherry-engagement-step-orientation.js`
-- `index.html`
 - `tests/cherry-engagement-step-orientation.spec.mjs`
 - mandatory `package.json` Phase 4 test gate
 
@@ -38,66 +35,73 @@ Implementation/test surfaces:
 
 ### Documented
 
-**Yes.** This record documents the semantic-current-step milestone and preserves exact implementation, CI, preview and gate provenance below.
+**Yes.** This record documents the semantic ordered-stage-list milestone and preserves exact implementation, CI, preview and gate provenance below.
 
 ### Implemented
 
-**Yes for exact product/test source `b32e6b0ff05ecf0622a424c30d3700327b9db72f`.**
+**Yes for exact product/test source `827a1ca17dedbd619aa511a5be8f4bf810bb8277`.**
 
-The runtime module is wired into `index.html` immediately after the existing sanitized continuity module. It augments only semantic attributes on the already-rendered fixed three-stage indicator.
+Compared with prior documentation head `014d8f0d9f04ea806b137b412b592a4c2cf50f0d`, the exact product/test source is two commits ahead and changes only:
+- `src/cherry-engagement-step-orientation.js`;
+- `tests/cherry-engagement-step-orientation.spec.mjs`.
+
+No provider/database/configuration/production file changed for this milestone.
 
 ### Tested
 
-**Yes for exact source `b32e6b0ff05ecf0622a424c30d3700327b9db72f`.** GitHub Actions run `31493764618` / **#744 completed SUCCESS** across the complete mandatory chain.
+**Yes for exact source `827a1ca17dedbd619aa511a5be8f4bf810bb8277`.** GitHub Actions run `31498404755` / **#746 completed SUCCESS** across the complete mandatory chain.
 
-Run #744 passed:
+Run #746 passed:
 - owner/security decision-evidence enforcement;
 - fail-closed secure-intake runtime and staging-readiness generation;
 - six-width mobile contract;
 - iPhone/WebKit and Pixel/Chromium device-class checks;
 - Phase 2 SQL/staging checks;
 - Discovery Phase 3;
-- Cherry OS Phase 4 including the new semantic-current-step regression and all existing continuity/attention/Resume/The Room/completion/reset accessibility regressions;
+- Cherry OS Phase 4 including the updated semantic orientation/list regression and all existing continuity/attention/Resume/The Room/completion/reset accessibility regressions;
 - Transformation Record Phase 5;
 - release/security/privacy checks;
 - visual verification;
 - exact-head staging-readiness regeneration;
 - both evidence uploads.
 
-Focused semantic-orientation coverage proves:
-- exactly one of the three sanitized continuity steps has `aria-current="step"`;
-- completed/upcoming stages never expose `aria-current`;
-- fixed stage/status wording is used for Discovery, Cherry review and Transformation Record;
-- malformed/wrong-version flow state fails closed to sanitized Discovery orientation;
-- injected production/private/release-looking values do not become accessibility content or authority;
-- leaving the cockpit removes the synthetic continuity surface/current-step marker;
+Focused stage-list coverage proves:
+- exactly one sanitized continuity container exposes the fixed list label;
+- exactly three fixed steps expose `role="listitem"` in exact `discovery`, `review`, `record` DOM order;
+- exactly one step exposes `aria-current="step"` for each sanitized stage;
+- completed/upcoming steps remain non-current;
+- fixed sanitized labels/status wording are preserved;
+- injected production/private/release-looking stored values do not become accessibility content or authority;
+- an unexpected rendered step causes the semantic list/listitem/current-step attributes to fail closed instead of recognizing the unexpected step;
+- malformed/wrong-version flow fails closed to the sanitized Discovery list state;
+- leaving the cockpit removes the synthetic continuity/list/current-step surface;
 - rendering does not hijack focus;
 - the 390px phone surface stays within horizontal bounds;
 - zero POST/PUT/PATCH/DELETE requests occur.
 
-Run #744 artifacts:
-- staging-readiness artifact `9102170462`, digest `sha256:83769012ecb174faa1f8310dbb5c5b7d7c609291c6a2698080d1639c166cff38`;
-- mobile visual artifact `9102170915`, digest `sha256:3a528efe6471d0fba2ebd02ad2694f955fde69c02efb85de321a2936d288b0ff`.
+Run #746 artifacts:
+- staging-readiness artifact `9104048727`, digest `sha256:6ba424d233d25f8180308ee985fc6f90f70e6ad0ab96ed9af9bdcfc053726912`;
+- mobile visual artifact `9104049873`, digest `sha256:ee706b80f98abe65f510ae679e4154747780fe1fa9bc8de7c223d261cf3c4deb`.
 
-The exact staging-readiness ZIP was downloaded and inspected directly. Its internal `source_sha` is exactly `b32e6b0ff05ecf0622a424c30d3700327b9db72f`; `readiness = BLOCKED`; confidential intake is disabled; anonymous intake is denied; file uploads/private AI/private analytics are disabled; production release is blocked; persistence remains unselected; adapter binding is false; no staging/production project IDs are bound; and D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 remain OPEN. This is intentional fail-closed evidence, not a test failure.
+The exact staging-readiness ZIP was downloaded and inspected directly. Its internal `source_sha` is exactly `827a1ca17dedbd619aa511a5be8f4bf810bb8277`; `readiness = BLOCKED`; confidential intake is disabled; anonymous intake is denied; file uploads/private AI/private analytics are disabled; production release is blocked; persistence remains unselected; adapter binding is false; no staging/production project IDs are bound; and D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 remain OPEN. This is intentional fail-closed evidence, not a test failure.
 
 ### Preview deployed
 
-**Yes for exact tested source `b32e6b0ff05ecf0622a424c30d3700327b9db72f`.** Vercel deployment `dpl_B5bVJjDFWyg1aj9FbufMA9MTzKgt` is READY, Git-sourced from that exact SHA, attached to `redesign/mobile-first-v2` / PR #1, and non-production (`target: null`). Build logs prove Vercel cloned commit `b32e6b0`, installed dependencies, completed the build and deployed the outputs successfully.
+**Yes for exact tested source `827a1ca17dedbd619aa511a5be8f4bf810bb8277`.** Vercel deployment `dpl_CrCNcH2SZodbSKA794sXYGYCBrPW` is READY, Git-sourced from that exact SHA, attached to `redesign/mobile-first-v2` / PR #1, and non-production (`target: null`). Build logs prove Vercel cloned commit `827a1ca`, installed dependencies, completed the build and deployed outputs successfully.
 
-Fresh project runtime-error aggregation found no runtime errors in the checked 24-hour window. Preview READY/runtime health is deployability evidence only; it is not live-staging or production proof.
+Fresh preview runtime-log lookup found no error/fatal logs in the checked 24-hour window. Preview READY/runtime health is deployability evidence only; it is not live-staging or production proof.
 
 ### Live staging
 
-**No.** No real WorldStage staging PostgreSQL/Supabase, authentication, signed-user RLS, provider backup/restore or live kill-switch environment is bound or proven. Run #744 remains intentionally fail-closed for live-staging creation.
+**No.** No real WorldStage staging PostgreSQL/Supabase, authentication, signed-user RLS, provider backup/restore or live kill-switch environment is bound or proven. Run #746 remains intentionally fail-closed for live-staging creation.
 
 ### Production verified / released for this line
 
-**No.** The active mobile-v2 line has not been promoted. The separate preserved production baseline `dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1` was rechecked READY with `target: production`, source `redeploy`, and original deployment `dpl_DsM6JwHMZbmiuzSwXNswvhqwhF5s`. It remains untouched by this milestone.
+**No.** The active mobile-v2 line has not been promoted. The separate preserved production baseline `dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1` was freshly rechecked READY with `target: production`, source `redeploy`, and original deployment `dpl_DsM6JwHMZbmiuzSwXNswvhqwhF5s`. It remains untouched by this milestone.
 
 ## Done
 
-The **semantic current-step orientation** milestone is **documented → implemented → tested → preview-deployed** for exact runtime/test source `b32e6b0ff05ecf0622a424c30d3700327b9db72f`, run #744, and exact-source Vercel preview `dpl_B5bVJjDFWyg1aj9FbufMA9MTzKgt`.
+The **semantic ordered-stage list** milestone is **documented → implemented → tested → preview-deployed** for exact runtime/test source `827a1ca17dedbd619aa511a5be8f4bf810bb8277`, run #746, and exact-source Vercel preview `dpl_CrCNcH2SZodbSKA794sXYGYCBrPW`.
 
 ## In progress
 
@@ -112,18 +116,18 @@ No provider, database, live-staging, production or destructive operation is in p
 5. Physical-device/Cherry acceptance remains separate from automated browser/device tests.
 6. Authentic owner-approved Cherry/program/client content and rights evidence remain separate gates.
 7. Production release remains separately unauthorized and fail-closed.
-8. Pandora Memory health/search is operational, but fresh WorldStage-specific retrieval did not return a current canonical operational-state record for this exact source/run/deployment evidence. The exposed Pandora surface provides health/search but no canonical WorldStage write/promotion action, so this newer state cannot be synchronized from this run. GitHub/CI/Vercel remain the durable evidence fallback; no Pandora synchronization is claimed.
+8. Pandora Memory health/search is operational, but the exposed WorldStage-relevant Memory surface currently provides retrieval only and no canonical WorldStage write/promotion operation. New operational evidence must therefore remain durably preserved in GitHub/CI/Vercel until canonical Memory promotion becomes available; no synchronization is claimed without exact Memory evidence.
 
 ## Risks
 
 - The polished continuity indicator remains synthetic/local-demo UI and must not be mistaken for a real client workflow state.
-- `aria-current="step"` communicates navigation/orientation semantics only; it is not approval, urgency, legal significance, completion proof or authority.
+- `role="list"`, `role="listitem"` and `aria-current="step"` communicate accessibility structure/orientation only; they are not approval, urgency, legal significance, completion proof or authority.
 - Preview READY does not imply live staging or production suitability.
 - Automated browser/device verification does not replace Cherry's physical-device acceptance.
 
 ## Next autonomous action
 
-Add fixed list semantics to the three-stage synthetic continuity indicator so assistive technology receives one coherent ordered-stage group (`role="list"` with fixed `role="listitem"` steps) while preserving the current `aria-current="step"` contract. Keep the mapping derived only from the sanitized fixed stage set, fail closed on malformed state, avoid focus changes, and add no visible action, persistence, provider access, private data, spending or production authority.
+Add fixed positional accessibility metadata to the same sanitized three-stage list: each recognized step should expose deterministic `aria-posinset` values `1`, `2`, `3` and fixed `aria-setsize="3"`, derived only from the allowlisted sequence and cleared together with list/current-step semantics on an unexpected rendered step. Preserve the no-focus/no-write/no-provider/no-private-data/no-spending/no-production-authority boundaries.
 
 ## Explicit non-claims
 
