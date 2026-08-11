@@ -175,7 +175,7 @@ function enhanceCherryStepOrientation() {
     return;
   }
 
-  strip.setAttribute('role', 'list');
+  if (strip.getAttribute('role') !== 'list') strip.setAttribute('role', 'list');
   strip.setAttribute('aria-label', CHERRY_STEP_LIST_LABEL);
   strip.dataset.cherryEngagementStepList = 'synthetic';
   ensureCherryStepBoundary(strip);
@@ -187,7 +187,7 @@ function enhanceCherryStepOrientation() {
     const label = CHERRY_STEP_LABELS[id];
     const statusLabel = CHERRY_STEP_STATUS_LABELS[status];
 
-    step.setAttribute('role', 'listitem');
+    if (step.getAttribute('role') !== 'listitem') step.setAttribute('role', 'listitem');
     step.setAttribute('aria-posinset', String(index + 1));
     step.setAttribute('aria-setsize', CHERRY_STEP_SET_SIZE);
     step.dataset.cherryEngagementStepOrientation = status;
