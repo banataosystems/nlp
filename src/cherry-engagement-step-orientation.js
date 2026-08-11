@@ -3,7 +3,8 @@
    Exactly one allowlisted step is current. The fixed three-step sequence is exposed as one semantic list
    with deterministic position metadata, a fixed accessibility-only demo-status boundary description,
    and enforced passive keyboard/non-interactive semantics even if tabindex, contenteditable, draggable,
-   inert, or intrinsic interactive stage-marker elements are injected into the synthetic stage surface.
+   inert, intrinsic interactive stage-marker elements, or intrinsic interactive descendants are injected
+   into the synthetic stage surface.
    No focus movement, persistence, provider access, analytics, scoring, private data, spending, or release authority. */
 
 const CHERRY_STEP_ORIENTATION = Object.freeze({
@@ -60,11 +61,25 @@ function enforceCherryStepNodePassivity(node) {
   }
 }
 
+function enforceCherryStepDescendantPassivity(step) {
+  if (!(step instanceof HTMLElement) || step.tagName !== CHERRY_STEP_TRUSTED_ELEMENT) return;
+
+  step.querySelectorAll('*').forEach((node) => {
+    stripCherryStepInteractiveAttributes(node);
+    if (node.matches(CHERRY_STEP_INTRINSIC_ACTION_SELECTOR) && !node.hasAttribute('inert')) {
+      node.setAttribute('inert', '');
+    }
+  });
+}
+
 function enforceCherryStepPassivity(strip) {
   stripCherryStepInteractiveAttributes(strip);
   strip.removeAttribute('inert');
   strip.querySelectorAll('[data-cherry-engagement-continuity-step], [data-cherry-engagement-step-boundary]').forEach((node) => {
     enforceCherryStepNodePassivity(node);
+    if (node.matches('[data-cherry-engagement-continuity-step]')) {
+      enforceCherryStepDescendantPassivity(node);
+    }
   });
 }
 
