@@ -52,7 +52,7 @@ function cherryContinuityCurrent(flow) {
       id: 'discovery',
       label: 'Discovery',
       route: 'discovery',
-      detail: 'Resume the fixed synthetic Discovery brief. No client form values are read into this strip.',
+      detail: 'Resume the fixed synthetic Discovery brief. No client form values are read into this card.',
       prepared: 'Prepared: owner cockpit shell and fixed synthetic engagement flow only.',
       next: 'Next: prepare the fixed synthetic Discovery brief.',
     };
@@ -106,20 +106,25 @@ function cherryContinuityMarkup(flow, current, previous, signature) {
     ? '<p data-cherry-engagement-continuity-completion>Completed local-demo state is preserved until Start a new synthetic engagement is deliberately tapped.</p>'
     : '';
   const startNew = flow.recordPrepared
-    ? '<button type="button" data-cherry-engagement-continuity-start-new>Start a new synthetic engagement →</button>'
+    ? '<div class="cherry-engagement-continuity__completion-actions"><button type="button" data-cherry-engagement-continuity-start-new>Start a new synthetic engagement →</button></div>'
     : '';
 
   return `<section class="cherry-engagement-continuity" data-cherry-engagement-continuity data-cherry-engagement-continuity-signature="${signature}" data-cherry-engagement-continuity-stage="${current.id}" data-cherry-engagement-continuity-previous="${previous.id}"${flow.recordPrepared ? ' data-cherry-engagement-continuity-complete="true"' : ''} aria-label="Synthetic engagement continuity">
-    <div class="cherry-engagement-continuity__copy">
-      <span>ENGAGEMENT CONTINUITY · LOCAL SYNTHETIC DEMO</span>
-      <strong data-cherry-engagement-continuity-current>${current.label}</strong>
-      <p>${current.detail}</p>
-      <div class="cherry-engagement-continuity__handoff" data-cherry-engagement-continuity-handoff aria-label="Synthetic engagement handoff cue">
-        <span>HANDOFF CUE · READ ONLY</span>
-        <p data-cherry-engagement-continuity-previous-label>Previous stage: ${previous.label}.</p>
-        <p data-cherry-engagement-continuity-prepared>${current.prepared}</p>
-        <p data-cherry-engagement-continuity-next>${current.next}</p>
-        ${completionCue}
+    <div class="cherry-engagement-continuity__owner-action" data-cherry-engagement-owner-action aria-label="Synthetic owner action card">
+      <div class="cherry-engagement-continuity__copy">
+        <span>OWNER ACTION · LOCAL SYNTHETIC DEMO</span>
+        <strong data-cherry-engagement-continuity-current>${current.label}</strong>
+        <p>${current.detail}</p>
+        <div class="cherry-engagement-continuity__handoff" data-cherry-engagement-continuity-handoff aria-label="Synthetic engagement handoff cue">
+          <span>WHAT'S READY / WHAT'S NEXT · READ ONLY</span>
+          <p data-cherry-engagement-continuity-previous-label>Previous stage: ${previous.label}.</p>
+          <p data-cherry-engagement-continuity-prepared>${current.prepared}</p>
+          <p data-cherry-engagement-continuity-next>${current.next}</p>
+          ${completionCue}
+        </div>
+      </div>
+      <div class="cherry-engagement-continuity__actions">
+        <button type="button" data-cherry-engagement-continuity-resume="${current.route}" aria-label="Resume ${current.label}">Resume →</button>
       </div>
     </div>
     <div class="cherry-engagement-continuity__steps" aria-label="Discovery, Cherry review, Transformation Record">
@@ -131,10 +136,7 @@ function cherryContinuityMarkup(flow, current, previous, signature) {
         </article>`;
       }).join('')}
     </div>
-    <div class="cherry-engagement-continuity__actions">
-      <button type="button" data-cherry-engagement-continuity-resume="${current.route}" aria-label="Resume ${current.label}">Resume →</button>
-      ${startNew}
-    </div>
+    ${startNew}
   </section>`;
 }
 
