@@ -25,15 +25,20 @@ test('owner continuity derives only the three fixed synthetic stages and consoli
     recordPrepared: false,
     privateClientContext: 'must not appear',
     productionRelease: true,
+    attentionCue: 'Release production now',
   });
 
   let strip = page.locator('[data-cherry-engagement-continuity]');
   let ownerAction = strip.locator('[data-cherry-engagement-owner-action]');
+  let attention = ownerAction.locator('[data-cherry-engagement-continuity-attention-cue]');
   await expect(strip).toBeVisible();
   await expect(ownerAction).toBeVisible();
   await expect(strip).toHaveAttribute('data-cherry-engagement-continuity-stage', 'discovery');
   await expect(strip).toHaveAttribute('data-cherry-engagement-continuity-previous', 'none');
+  await expect(strip).toHaveAttribute('data-cherry-engagement-continuity-attention', 'prepared-flow');
   await expect(ownerAction.locator('[data-cherry-engagement-continuity-current]')).toHaveText('Discovery');
+  await expect(attention).toHaveAttribute('data-cherry-engagement-continuity-attention-cue', 'prepared-flow');
+  await expect(attention).toContainText('Continue prepared flow');
   await expect(ownerAction.locator('[data-cherry-engagement-continuity-previous-label]')).toHaveText('Previous stage: None.');
   await expect(ownerAction.locator('[data-cherry-engagement-continuity-prepared]')).toHaveText('Prepared: owner cockpit shell and fixed synthetic engagement flow only.');
   await expect(ownerAction.locator('[data-cherry-engagement-continuity-next]')).toHaveText('Next: prepare the fixed synthetic Discovery brief.');
@@ -44,6 +49,7 @@ test('owner continuity derives only the three fixed synthetic stages and consoli
   await expect(strip.locator('[data-cherry-engagement-continuity-step="record"]')).toHaveAttribute('data-cherry-engagement-continuity-status', 'upcoming');
   await expect(strip).not.toContainText('must not appear');
   await expect(strip).not.toContainText('productionRelease');
+  await expect(strip).not.toContainText('Release production now');
   await ownerAction.locator('[data-cherry-engagement-continuity-resume="discovery"]').click();
   await expect(page).toHaveURL(/#\/discovery$/);
 
@@ -58,9 +64,13 @@ test('owner continuity derives only the three fixed synthetic stages and consoli
 
   strip = page.locator('[data-cherry-engagement-continuity]');
   ownerAction = strip.locator('[data-cherry-engagement-owner-action]');
+  attention = ownerAction.locator('[data-cherry-engagement-continuity-attention-cue]');
   await expect(strip).toHaveAttribute('data-cherry-engagement-continuity-stage', 'review');
   await expect(strip).toHaveAttribute('data-cherry-engagement-continuity-previous', 'discovery');
+  await expect(strip).toHaveAttribute('data-cherry-engagement-continuity-attention', 'needs-cherry');
   await expect(ownerAction.locator('[data-cherry-engagement-continuity-current]')).toHaveText('Cherry review');
+  await expect(attention).toHaveAttribute('data-cherry-engagement-continuity-attention-cue', 'needs-cherry');
+  await expect(attention).toContainText('Needs Cherry now');
   await expect(ownerAction.locator('[data-cherry-engagement-continuity-previous-label]')).toHaveText('Previous stage: Discovery.');
   await expect(ownerAction.locator('[data-cherry-engagement-continuity-prepared]')).toHaveText('Prepared: fixed synthetic Discovery brief.');
   await expect(ownerAction.locator('[data-cherry-engagement-continuity-next]')).toHaveText('Next: complete the existing local-demo Cherry review.');
@@ -84,9 +94,13 @@ test('owner continuity derives only the three fixed synthetic stages and consoli
   });
   strip = page.locator('[data-cherry-engagement-continuity]');
   ownerAction = strip.locator('[data-cherry-engagement-owner-action]');
+  attention = ownerAction.locator('[data-cherry-engagement-continuity-attention-cue]');
   await expect(strip).toHaveAttribute('data-cherry-engagement-continuity-stage', 'record');
   await expect(strip).toHaveAttribute('data-cherry-engagement-continuity-previous', 'review');
+  await expect(strip).toHaveAttribute('data-cherry-engagement-continuity-attention', 'prepared-flow');
   await expect(ownerAction.locator('[data-cherry-engagement-continuity-current]')).toHaveText('Transformation Record');
+  await expect(attention).toHaveAttribute('data-cherry-engagement-continuity-attention-cue', 'prepared-flow');
+  await expect(attention).toContainText('Continue prepared flow');
   await expect(ownerAction.locator('[data-cherry-engagement-continuity-previous-label]')).toHaveText('Previous stage: Cherry review.');
   await expect(ownerAction.locator('[data-cherry-engagement-continuity-prepared]')).toHaveText('Prepared: Discovery brief and Cherry review.');
   await expect(ownerAction.locator('[data-cherry-engagement-continuity-next]')).toHaveText('Next: prepare the local synthetic Transformation Record.');
@@ -106,7 +120,11 @@ test('owner continuity derives only the three fixed synthetic stages and consoli
   });
   strip = page.locator('[data-cherry-engagement-continuity]');
   ownerAction = strip.locator('[data-cherry-engagement-owner-action]');
+  attention = ownerAction.locator('[data-cherry-engagement-continuity-attention-cue]');
   await expect(strip).toHaveAttribute('data-cherry-engagement-continuity-previous', 'review');
+  await expect(strip).toHaveAttribute('data-cherry-engagement-continuity-attention', 'prepared-flow');
+  await expect(attention).toHaveAttribute('data-cherry-engagement-continuity-attention-cue', 'prepared-flow');
+  await expect(attention).toContainText('Continue prepared flow');
   await expect(ownerAction.locator('[data-cherry-engagement-continuity-previous-label]')).toHaveText('Previous stage: Cherry review.');
   await expect(ownerAction.locator('[data-cherry-engagement-continuity-prepared]')).toHaveText('Prepared: Discovery brief, Cherry review, and local synthetic Transformation Record.');
   await expect(ownerAction.locator('[data-cherry-engagement-continuity-next]')).toHaveText('Next: review the existing local synthetic Transformation Record.');
@@ -123,7 +141,7 @@ test('owner continuity derives only the three fixed synthetic stages and consoli
   expect(networkWrites).toEqual([]);
 });
 
-test('owner action card is read-only until its single allowlisted Resume action is deliberately used', async ({ page }) => {
+test('owner attention cue is fixed-vocabulary and read-only until the single allowlisted Resume action is deliberately used', async ({ page }) => {
   const networkWrites = [];
   page.on('request', (request) => {
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method())) networkWrites.push(request.url());
@@ -140,8 +158,11 @@ test('owner action card is read-only until its single allowlisted Resume action 
 
   const before = await page.evaluate(() => localStorage.getItem('worldstage.synthetic.engagement.flow.v1'));
   const card = page.locator('[data-cherry-engagement-owner-action]');
+  const attention = card.locator('[data-cherry-engagement-continuity-attention-cue]');
   await expect(card).toBeVisible();
   await expect(card.locator('[data-cherry-engagement-continuity-current]')).toHaveText('Cherry review');
+  await expect(attention).toHaveAttribute('data-cherry-engagement-continuity-attention-cue', 'needs-cherry');
+  await expect(attention).toContainText('Needs Cherry now');
   await expect(card.locator('[data-cherry-engagement-continuity-prepared]')).toHaveText('Prepared: fixed synthetic Discovery brief.');
   await expect(card.locator('[data-cherry-engagement-continuity-next]')).toHaveText('Next: complete the existing local-demo Cherry review.');
   await expect(card.locator('[data-cherry-engagement-continuity-resume]')).toHaveCount(1);
@@ -158,7 +179,7 @@ test('owner action card is read-only until its single allowlisted Resume action 
   expect(networkWrites).toEqual([]);
 });
 
-test('owner action card fails closed on malformed flow state and remains phone-safe without external writes', async ({ page }) => {
+test('owner action card fails closed on malformed flow state and attention remains phone-safe without external writes', async ({ page }) => {
   const networkWrites = [];
   page.on('request', (request) => {
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method())) networkWrites.push(request.url());
@@ -173,15 +194,20 @@ test('owner action card fails closed on malformed flow state and remains phone-s
     previousStage: 'Production release',
     privateClientName: 'secret client',
     releaseAuthority: 'yes',
+    attentionCue: 'Needs immediate production release',
   });
 
   const strip = page.locator('[data-cherry-engagement-continuity]');
   const card = strip.locator('[data-cherry-engagement-owner-action]');
+  const attention = card.locator('[data-cherry-engagement-continuity-attention-cue]');
   await expect(strip).toBeVisible();
   await expect(card).toBeVisible();
   await expect(strip).toHaveAttribute('data-cherry-engagement-continuity-stage', 'discovery');
   await expect(strip).toHaveAttribute('data-cherry-engagement-continuity-previous', 'none');
+  await expect(strip).toHaveAttribute('data-cherry-engagement-continuity-attention', 'prepared-flow');
   await expect(card.locator('[data-cherry-engagement-continuity-current]')).toHaveText('Discovery');
+  await expect(attention).toHaveAttribute('data-cherry-engagement-continuity-attention-cue', 'prepared-flow');
+  await expect(attention).toContainText('Continue prepared flow');
   await expect(card.locator('[data-cherry-engagement-continuity-previous-label]')).toHaveText('Previous stage: None.');
   await expect(card.locator('[data-cherry-engagement-continuity-prepared]')).toHaveText('Prepared: owner cockpit shell and fixed synthetic engagement flow only.');
   await expect(card.locator('[data-cherry-engagement-continuity-next]')).toHaveText('Next: prepare the fixed synthetic Discovery brief.');
@@ -191,6 +217,7 @@ test('owner action card fails closed on malformed flow state and remains phone-s
   await expect(strip).not.toContainText('Production release');
   await expect(strip).not.toContainText('secret client');
   await expect(strip).not.toContainText('releaseAuthority');
+  await expect(strip).not.toContainText('Needs immediate production release');
 
   const sizes = await page.evaluate(() => ({
     sw: document.documentElement.scrollWidth,
