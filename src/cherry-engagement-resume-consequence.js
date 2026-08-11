@@ -2,6 +2,7 @@
    Derived only from the existing allowlisted Resume route. Navigation/focus semantics stay owned by
    cherry-engagement-continuity.js. No persistence, provider writes, analytics, scoring or authority. */
 
+const CHERRY_RESUME_CONSEQUENCE_ID = 'cherry-engagement-resume-consequence';
 const CHERRY_RESUME_CONSEQUENCE = Object.freeze({
   discovery: 'Resume only opens the existing synthetic Discovery step. It does not submit, send, approve, persist, or release anything.',
   cockpit: 'Resume only focuses the existing synthetic Cherry review step. It does not submit, send, approve, persist, or release anything.',
@@ -33,17 +34,22 @@ function enhanceCherryResumeConsequence() {
   const route = resume.dataset.cherryEngagementContinuityResume;
   const text = cherryResumeConsequenceText(route);
   if (!text) {
+    resume.removeAttribute('aria-describedby');
     existing?.remove();
     return;
   }
 
+  resume.setAttribute('aria-describedby', CHERRY_RESUME_CONSEQUENCE_ID);
+
   if (existing instanceof HTMLElement
     && existing.parentElement === actions
     && existing.dataset.cherryEngagementResumeConsequence === route
+    && existing.id === CHERRY_RESUME_CONSEQUENCE_ID
     && existing.textContent === text) return;
 
   existing?.remove();
   const cue = document.createElement('small');
+  cue.id = CHERRY_RESUME_CONSEQUENCE_ID;
   cue.className = 'cherry-engagement-continuity__resume-consequence';
   cue.dataset.cherryEngagementResumeConsequence = route;
   cue.setAttribute('aria-label', 'Resume consequence, read only');
