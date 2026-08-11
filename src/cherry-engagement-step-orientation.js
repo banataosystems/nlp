@@ -1,7 +1,8 @@
 /* WorldStage / Cherry — accessibility-only semantic orientation for the fixed synthetic continuity steps.
    Derives solely from the sanitized continuity stage emitted by cherry-engagement-continuity.js.
    Exactly one allowlisted step is current. The fixed three-step sequence is exposed as one semantic list
-   with deterministic position metadata and a fixed accessibility-only demo-status boundary description.
+   with deterministic position metadata, a fixed accessibility-only demo-status boundary description,
+   and enforced passive keyboard semantics even if tabindex is injected into the synthetic stage surface.
    No focus movement, persistence, provider access, analytics, scoring, private data, spending, or release authority. */
 
 const CHERRY_STEP_ORIENTATION = Object.freeze({
@@ -42,6 +43,13 @@ const CHERRY_STEP_BOUNDARY_TEXT = 'Synthetic demo stages only. Not a verified re
 
 let cherryStepOrientationQueued = false;
 
+function enforceCherryStepPassivity(strip) {
+  strip.removeAttribute('tabindex');
+  strip.querySelectorAll('[data-cherry-engagement-continuity-step], [data-cherry-engagement-step-boundary]').forEach((node) => {
+    node.removeAttribute('tabindex');
+  });
+}
+
 function clearCherryStepBoundary(strip) {
   strip.removeAttribute('aria-describedby');
   strip.querySelectorAll('[data-cherry-engagement-step-boundary]').forEach((node) => node.remove());
@@ -60,11 +68,13 @@ function ensureCherryStepBoundary(strip) {
 
   description.id = CHERRY_STEP_BOUNDARY_ID;
   description.hidden = true;
+  description.removeAttribute('tabindex');
   description.textContent = CHERRY_STEP_BOUNDARY_TEXT;
   strip.setAttribute('aria-describedby', CHERRY_STEP_BOUNDARY_ID);
 }
 
 function clearCherryStepOrientation(strip) {
+  enforceCherryStepPassivity(strip);
   strip.removeAttribute('role');
   strip.removeAttribute('aria-label');
   strip.removeAttribute('data-cherry-engagement-step-list');
@@ -85,6 +95,8 @@ function enhanceCherryStepOrientation() {
   const strip = document.querySelector('[data-cherry-engagement-continuity]');
   if (!(strip instanceof HTMLElement)) return;
 
+  enforceCherryStepPassivity(strip);
+
   const stage = strip.dataset.cherryEngagementContinuityStage;
   const orientation = Object.prototype.hasOwnProperty.call(CHERRY_STEP_ORIENTATION, stage)
     ? CHERRY_STEP_ORIENTATION[stage]
@@ -104,6 +116,7 @@ function enhanceCherryStepOrientation() {
   strip.setAttribute('aria-label', CHERRY_STEP_LIST_LABEL);
   strip.dataset.cherryEngagementStepList = 'synthetic';
   ensureCherryStepBoundary(strip);
+  enforceCherryStepPassivity(strip);
 
   steps.forEach((step, index) => {
     const id = step.dataset.cherryEngagementContinuityStep;
@@ -133,7 +146,7 @@ if (cherryStepOrientationApp) {
     childList: true,
     subtree: true,
     attributes: true,
-    attributeFilter: ['data-cherry-engagement-continuity-stage'],
+    attributeFilter: ['data-cherry-engagement-continuity-stage', 'tabindex'],
   });
 }
 window.addEventListener('hashchange', scheduleCherryStepOrientation);
