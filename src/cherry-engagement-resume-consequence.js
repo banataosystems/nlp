@@ -2,8 +2,9 @@
    Derived only from the existing allowlisted Resume route. Navigation/focus semantics stay owned by
    cherry-engagement-continuity.js. Also surfaces a read-only The Room availability cue only for the
    sanitized Cherry-review stage, with a fixed synthetic source status, source-connection boundary,
-   readiness mini-check and non-authority boundary note. No persistence, provider writes, analytics,
-   scoring or authority. */
+   readiness mini-check and non-authority boundary note. A persistent accessibility-only live region
+   announces sanitized stage/attention changes while the cockpit remains active. No persistence,
+   provider writes, analytics, scoring or authority. */
 
 const CHERRY_RESUME_CONSEQUENCE_ID = 'cherry-engagement-resume-consequence';
 const CHERRY_RESUME_CONSEQUENCE = Object.freeze({
@@ -20,13 +21,99 @@ const CHERRY_ROOM_READINESS_ITEMS = Object.freeze([
   'Human review required',
 ]);
 const CHERRY_ROOM_BOUNDARY_TEXT = 'Synthetic organization only. The Room cannot contact participants, access private systems, make commitments, approve outcomes, publish, or send anything.';
+const CHERRY_OWNER_LIVE_REGION_ID = 'cherry-engagement-owner-live-region';
+const CHERRY_OWNER_LIVE_REGION_STATE = Object.freeze({
+  discovery: Object.freeze({
+    route: 'discovery',
+    attentionId: 'prepared-flow',
+    message: 'Synthetic engagement stage changed to Discovery. Owner attention: Continue prepared flow.',
+  }),
+  review: Object.freeze({
+    route: 'cockpit',
+    attentionId: 'needs-cherry',
+    message: 'Synthetic engagement stage changed to Cherry review. Owner attention: Needs Cherry now.',
+  }),
+  record: Object.freeze({
+    route: 'client',
+    attentionId: 'prepared-flow',
+    message: 'Synthetic engagement stage changed to Transformation Record. Owner attention: Continue prepared flow.',
+  }),
+});
 
 let cherryResumeConsequenceQueued = false;
+let cherryOwnerLiveRegionState = null;
 
 function cherryResumeConsequenceText(route) {
   return Object.prototype.hasOwnProperty.call(CHERRY_RESUME_CONSEQUENCE, route)
     ? CHERRY_RESUME_CONSEQUENCE[route]
     : null;
+}
+
+function clearCherryOwnerLiveRegion() {
+  document.getElementById(CHERRY_OWNER_LIVE_REGION_ID)?.remove();
+  cherryOwnerLiveRegionState = null;
+}
+
+function ensureCherryOwnerLiveRegion() {
+  const current = document.getElementById(CHERRY_OWNER_LIVE_REGION_ID);
+  if (current instanceof HTMLElement) return current;
+
+  const region = document.createElement('span');
+  region.id = CHERRY_OWNER_LIVE_REGION_ID;
+  region.dataset.cherryEngagementOwnerLiveRegion = '';
+  region.setAttribute('role', 'status');
+  region.setAttribute('aria-live', 'polite');
+  region.setAttribute('aria-atomic', 'true');
+  region.setAttribute('aria-label', 'Synthetic engagement stage and owner attention updates');
+  Object.assign(region.style, {
+    position: 'absolute',
+    width: '1px',
+    height: '1px',
+    padding: '0',
+    margin: '-1px',
+    overflow: 'hidden',
+    clip: 'rect(0, 0, 0, 0)',
+    whiteSpace: 'nowrap',
+    border: '0',
+  });
+  document.body.append(region);
+  return region;
+}
+
+function syncCherryOwnerLiveRegion(card, route) {
+  const strip = card.closest('[data-cherry-engagement-continuity]');
+  const stage = strip?.dataset.cherryEngagementContinuityStage;
+  const config = Object.prototype.hasOwnProperty.call(CHERRY_OWNER_LIVE_REGION_STATE, stage)
+    ? CHERRY_OWNER_LIVE_REGION_STATE[stage]
+    : null;
+
+  if (!config || route !== config.route) {
+    clearCherryOwnerLiveRegion();
+    return;
+  }
+
+  const key = `${stage}:${config.attentionId}`;
+  const region = ensureCherryOwnerLiveRegion();
+
+  if (cherryOwnerLiveRegionState === null) {
+    cherryOwnerLiveRegionState = key;
+    region.dataset.cherryEngagementOwnerLiveRegionState = key;
+    region.textContent = '';
+    return;
+  }
+
+  if (cherryOwnerLiveRegionState === key) return;
+
+  cherryOwnerLiveRegionState = key;
+  region.dataset.cherryEngagementOwnerLiveRegionState = key;
+  region.textContent = '';
+  requestAnimationFrame(() => {
+    const current = document.getElementById(CHERRY_OWNER_LIVE_REGION_ID);
+    if (current instanceof HTMLElement
+      && current.dataset.cherryEngagementOwnerLiveRegionState === key) {
+      current.textContent = config.message;
+    }
+  });
 }
 
 function syncCherryRoomAvailability(card, route) {
@@ -79,6 +166,7 @@ function enhanceCherryResumeConsequence() {
     || !(resume instanceof HTMLButtonElement)) {
     existing?.remove();
     existingRoom?.remove();
+    clearCherryOwnerLiveRegion();
     return;
   }
 
@@ -87,10 +175,12 @@ function enhanceCherryResumeConsequence() {
   if (!text) {
     resume.removeAttribute('aria-describedby');
     existing?.remove();
+    syncCherryOwnerLiveRegion(card, route);
     syncCherryRoomAvailability(card, route);
     return;
   }
 
+  syncCherryOwnerLiveRegion(card, route);
   syncCherryRoomAvailability(card, route);
   resume.setAttribute('aria-describedby', CHERRY_RESUME_CONSEQUENCE_ID);
 
