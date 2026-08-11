@@ -10,7 +10,7 @@ async function openCockpitWithFlow(page, value) {
   await page.reload();
 }
 
-test('The Room availability cue appears only for sanitized Cherry review and remains read-only', async ({ page }) => {
+test('The Room availability and readiness cues appear only for sanitized Cherry review and remain read-only', async ({ page }) => {
   const networkWrites = [];
   page.on('request', (request) => {
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method())) {
@@ -28,6 +28,7 @@ test('The Room availability cue appears only for sanitized Cherry review and rem
 
   let card = page.locator('[data-cherry-engagement-owner-action]');
   await expect(card.locator('[data-cherry-engagement-room-availability]')).toHaveCount(0);
+  await expect(card.locator('[data-cherry-engagement-room-readiness]')).toHaveCount(0);
   await expect(card).not.toContainText('Expose private client briefing');
 
   await openCockpitWithFlow(page, {
@@ -37,17 +38,27 @@ test('The Room availability cue appears only for sanitized Cherry review and rem
     recordPrepared: true,
     roomAvailability: 'Production room approved',
     privateClientContext: 'must not appear',
+    readiness: ['Private sources connected', 'Automated approval enabled'],
   });
 
   card = page.locator('[data-cherry-engagement-owner-action]');
   const roomCue = card.locator('[data-cherry-engagement-room-availability="review"]');
+  const readiness = roomCue.locator('[data-cherry-engagement-room-readiness]');
   await expect(card.locator('[data-cherry-engagement-continuity-current]')).toHaveText('Cherry review');
   await expect(roomCue).toHaveCount(1);
   await expect(roomCue).toContainText('THE ROOM · DEMO BRIEFING PATTERN · READ ONLY');
   await expect(roomCue.locator('p')).toHaveText('The Room briefing pattern is available from the active judgment card. Demo-only structure; no verified private client facts are connected.');
-  await expect(roomCue).toHaveAttribute('aria-label', 'The Room briefing pattern availability, read only');
+  await expect(roomCue).toHaveAttribute('aria-label', 'The Room briefing pattern availability and readiness, read only');
+  await expect(readiness).toHaveAttribute('aria-label', 'The Room readiness, read only');
+  await expect(readiness.locator('li')).toHaveText([
+    'Briefing structure available',
+    'Verified private sources not connected',
+    'Human review required',
+  ]);
   await expect(card).not.toContainText('Production room approved');
   await expect(card).not.toContainText('must not appear');
+  await expect(card).not.toContainText('Private sources connected');
+  await expect(card).not.toContainText('Automated approval enabled');
   await expect(card.locator('button')).toHaveCount(1);
   await expect(page.locator('.judgment-card.is-active [data-cockpit-room]')).toHaveCount(1);
 
@@ -66,6 +77,7 @@ test('The Room availability cue appears only for sanitized Cherry review and rem
 
   card = page.locator('[data-cherry-engagement-owner-action]');
   await expect(card.locator('[data-cherry-engagement-room-availability]')).toHaveCount(0);
+  await expect(card.locator('[data-cherry-engagement-room-readiness]')).toHaveCount(0);
 
   const sizes = await page.evaluate(() => ({
     sw: document.documentElement.scrollWidth,
@@ -75,7 +87,7 @@ test('The Room availability cue appears only for sanitized Cherry review and rem
   expect(networkWrites).toEqual([]);
 });
 
-test('malformed state and unexpected Resume route fail closed without manufacturing The Room availability', async ({ page }) => {
+test('malformed state and unexpected Resume route fail closed without manufacturing The Room readiness', async ({ page }) => {
   const networkWrites = [];
   page.on('request', (request) => {
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method())) networkWrites.push(request.url());
@@ -88,13 +100,16 @@ test('malformed state and unexpected Resume route fail closed without manufactur
     recordPrepared: true,
     roomAvailability: 'Real client room is ready',
     releaseAuthority: 'yes',
+    readiness: ['Production release allowed'],
   });
 
   let strip = page.locator('[data-cherry-engagement-continuity]');
   let card = strip.locator('[data-cherry-engagement-owner-action]');
   await expect(strip).toHaveAttribute('data-cherry-engagement-continuity-stage', 'discovery');
   await expect(card.locator('[data-cherry-engagement-room-availability]')).toHaveCount(0);
+  await expect(card.locator('[data-cherry-engagement-room-readiness]')).toHaveCount(0);
   await expect(card).not.toContainText('Real client room is ready');
+  await expect(card).not.toContainText('Production release allowed');
   await expect(card).not.toContainText('releaseAuthority');
 
   await openCockpitWithFlow(page, {
@@ -108,11 +123,13 @@ test('malformed state and unexpected Resume route fail closed without manufactur
   card = strip.locator('[data-cherry-engagement-owner-action]');
   const resume = card.locator('[data-cherry-engagement-continuity-resume]');
   await expect(card.locator('[data-cherry-engagement-room-availability="review"]')).toHaveCount(1);
+  await expect(card.locator('[data-cherry-engagement-room-readiness] li')).toHaveCount(3);
 
   await resume.evaluate((button) => {
     button.dataset.cherryEngagementContinuityResume = 'production';
   });
 
   await expect(card.locator('[data-cherry-engagement-room-availability]')).toHaveCount(0);
+  await expect(card.locator('[data-cherry-engagement-room-readiness]')).toHaveCount(0);
   expect(networkWrites).toEqual([]);
 });
