@@ -1,6 +1,7 @@
 /* WorldStage / Cherry — fixed pre-resume consequence cue for the synthetic owner action card.
    Derived only from the existing allowlisted Resume route. Navigation/focus semantics stay owned by
-   cherry-engagement-continuity.js. No persistence, provider writes, analytics, scoring or authority. */
+   cherry-engagement-continuity.js. Also surfaces a read-only The Room availability cue only for the
+   sanitized Cherry-review stage. No persistence, provider writes, analytics, scoring or authority. */
 
 const CHERRY_RESUME_CONSEQUENCE_ID = 'cherry-engagement-resume-consequence';
 const CHERRY_RESUME_CONSEQUENCE = Object.freeze({
@@ -8,6 +9,7 @@ const CHERRY_RESUME_CONSEQUENCE = Object.freeze({
   cockpit: 'Resume only focuses the existing synthetic Cherry review step. It does not submit, send, approve, persist, or release anything.',
   client: 'Resume only opens the existing synthetic Transformation Record step. It does not submit, send, approve, persist, or release anything.',
 });
+const CHERRY_ROOM_AVAILABILITY_TEXT = 'The Room briefing pattern is available from the active judgment card. Demo-only structure; no verified private client facts are connected.';
 
 let cherryResumeConsequenceQueued = false;
 
@@ -17,9 +19,39 @@ function cherryResumeConsequenceText(route) {
     : null;
 }
 
+function syncCherryRoomAvailability(card, route) {
+  const existing = card.querySelector('[data-cherry-engagement-room-availability]');
+  const strip = card.closest('[data-cherry-engagement-continuity]');
+  const stage = strip?.dataset.cherryEngagementContinuityStage;
+  const copy = card.querySelector('.cherry-engagement-continuity__copy');
+  const available = stage === 'review' && route === 'cockpit';
+
+  if (!available || !(copy instanceof HTMLElement)) {
+    existing?.remove();
+    return;
+  }
+
+  if (existing instanceof HTMLElement
+    && existing.parentElement === copy
+    && existing.dataset.cherryEngagementRoomAvailability === 'review'
+    && existing.querySelector('p')?.textContent === CHERRY_ROOM_AVAILABILITY_TEXT) return;
+
+  existing?.remove();
+  const cue = document.createElement('div');
+  cue.className = 'cherry-engagement-continuity__handoff cherry-engagement-continuity__room-availability';
+  cue.dataset.cherryEngagementRoomAvailability = 'review';
+  cue.setAttribute('aria-label', 'The Room briefing pattern availability, read only');
+  cue.innerHTML = `<span>THE ROOM · DEMO BRIEFING PATTERN · READ ONLY</span><p>${CHERRY_ROOM_AVAILABILITY_TEXT}</p>`;
+
+  const attention = copy.querySelector('[data-cherry-engagement-continuity-attention-cue]');
+  if (attention instanceof HTMLElement) attention.insertAdjacentElement('afterend', cue);
+  else copy.append(cue);
+}
+
 function enhanceCherryResumeConsequence() {
   cherryResumeConsequenceQueued = false;
   const existing = document.querySelector('[data-cherry-engagement-resume-consequence]');
+  const existingRoom = document.querySelector('[data-cherry-engagement-room-availability]');
   const card = document.querySelector('[data-cherry-engagement-owner-action]');
   const actions = card?.querySelector('.cherry-engagement-continuity__actions');
   const resume = actions?.querySelector('[data-cherry-engagement-continuity-resume]');
@@ -28,6 +60,7 @@ function enhanceCherryResumeConsequence() {
     || !(actions instanceof HTMLElement)
     || !(resume instanceof HTMLButtonElement)) {
     existing?.remove();
+    existingRoom?.remove();
     return;
   }
 
@@ -36,9 +69,11 @@ function enhanceCherryResumeConsequence() {
   if (!text) {
     resume.removeAttribute('aria-describedby');
     existing?.remove();
+    syncCherryRoomAvailability(card, route);
     return;
   }
 
+  syncCherryRoomAvailability(card, route);
   resume.setAttribute('aria-describedby', CHERRY_RESUME_CONSEQUENCE_ID);
 
   if (existing instanceof HTMLElement
@@ -69,7 +104,7 @@ if (cherryResumeConsequenceApp) {
     childList: true,
     subtree: true,
     attributes: true,
-    attributeFilter: ['data-cherry-engagement-continuity-resume'],
+    attributeFilter: ['data-cherry-engagement-continuity-resume', 'data-cherry-engagement-continuity-stage'],
   });
 }
 window.addEventListener('hashchange', scheduleCherryResumeConsequence);
