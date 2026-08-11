@@ -13,11 +13,19 @@ async function expectOrientation(page, expected) {
   const strip = page.locator('[data-cherry-engagement-continuity]');
   const steps = strip.locator('[data-cherry-engagement-continuity-step]');
   await expect(strip).toBeVisible();
+  await expect(strip).toHaveAttribute('role', 'list');
+  await expect(strip).toHaveAttribute('aria-label', 'Synthetic engagement stages');
+  await expect(strip).toHaveAttribute('data-cherry-engagement-step-list', 'synthetic');
   await expect(steps).toHaveCount(3);
+  await expect(strip.locator('[data-cherry-engagement-continuity-step][role="listitem"]')).toHaveCount(3);
   await expect(strip.locator('[data-cherry-engagement-continuity-step][aria-current="step"]')).toHaveCount(1);
+
+  const orderedIds = await steps.evaluateAll((nodes) => nodes.map((node) => node.dataset.cherryEngagementContinuityStep));
+  expect(orderedIds).toEqual(['discovery', 'review', 'record']);
 
   for (const [id, config] of Object.entries(expected)) {
     const step = strip.locator(`[data-cherry-engagement-continuity-step="${id}"]`);
+    await expect(step).toHaveAttribute('role', 'listitem');
     await expect(step).toHaveAttribute('data-cherry-engagement-step-orientation', config.status);
     await expect(step).toHaveAttribute('aria-label', config.label);
     if (config.status === 'current') await expect(step).toHaveAttribute('aria-current', 'step');
@@ -43,7 +51,7 @@ const RECORD_ORIENTATION = {
   record: { status: 'current', label: 'Transformation Record. Current synthetic step.' },
 };
 
-test('semantic continuity exposes exactly one aria-current step with fixed sanitized status wording', async ({ page }) => {
+test('semantic continuity exposes one ordered synthetic stage list with exactly one aria-current step', async ({ page }) => {
   const networkWrites = [];
   page.on('request', (request) => {
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method())) {
@@ -95,6 +103,18 @@ test('semantic continuity exposes exactly one aria-current step with fixed sanit
   await expect(strip).not.toContainText('production');
   await expect(strip).not.toContainText('released');
 
+  await page.evaluate(() => {
+    const stageList = document.querySelector('[data-cherry-engagement-continuity]');
+    const unexpectedStep = document.createElement('span');
+    unexpectedStep.dataset.cherryEngagementContinuityStep = 'production';
+    stageList?.appendChild(unexpectedStep);
+  });
+  await expect(strip).not.toHaveAttribute('role', /.+/);
+  await expect(strip).not.toHaveAttribute('aria-label', /.+/);
+  await expect(strip).not.toHaveAttribute('data-cherry-engagement-step-list', /.+/);
+  await expect(strip.locator('[role="listitem"]')).toHaveCount(0);
+  await expect(strip.locator('[aria-current="step"]')).toHaveCount(0);
+
   const persisted = await page.evaluate(() => localStorage.getItem('worldstage.synthetic.engagement.flow.v1'));
   expect(JSON.parse(persisted)).toMatchObject({
     version: 1,
@@ -115,7 +135,7 @@ test('semantic continuity exposes exactly one aria-current step with fixed sanit
   expect(sizes.sw).toBeLessThanOrEqual(sizes.cw + 1);
 });
 
-test('malformed flow fails closed to Discovery orientation and leaving cockpit removes the synthetic step surface', async ({ page }) => {
+test('malformed flow fails closed to sanitized Discovery list semantics and leaving cockpit removes the synthetic step surface', async ({ page }) => {
   const networkWrites = [];
   page.on('request', (request) => {
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method())) networkWrites.push(request.url());
@@ -138,6 +158,7 @@ test('malformed flow fails closed to Discovery orientation and leaving cockpit r
 
   await page.goto('http://127.0.0.1:4173/#/home');
   await expect(page.locator('[data-cherry-engagement-continuity]')).toHaveCount(0);
+  await expect(page.locator('[role="list"][data-cherry-engagement-step-list="synthetic"]')).toHaveCount(0);
   await expect(page.locator('[aria-current="step"]')).toHaveCount(0);
   expect(networkWrites).toEqual([]);
 });
