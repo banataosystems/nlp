@@ -4,7 +4,8 @@
    with deterministic position metadata, a fixed accessibility-only demo-status boundary description,
    and enforced passive keyboard/non-interactive semantics even if tabindex, contenteditable, draggable,
    inert, intrinsic interactive stage-marker elements, intrinsic interactive descendants, action-like
-   semantic roles, or spoofed accessibility names/action states are injected into the synthetic stage surface.
+   semantic roles, spoofed accessibility names/action states, or direct canonical list/stage ARIA tampering
+   is injected into the synthetic stage surface. Trusted canonical semantics are deterministically repaired.
    No focus movement, persistence, provider access, analytics, scoring, private data, spending, or release authority. */
 
 const CHERRY_STEP_ORIENTATION = Object.freeze({
@@ -80,6 +81,13 @@ const CHERRY_STEP_SPOOFED_ARIA_ATTRIBUTES = Object.freeze([
   'aria-valuenow',
   'aria-valuetext',
 ]);
+const CHERRY_STEP_CANONICAL_ARIA_ATTRIBUTES = Object.freeze([
+  ...CHERRY_STEP_SPOOFED_ARIA_ATTRIBUTES,
+  'aria-posinset',
+  'aria-setsize',
+]);
+const CHERRY_STEP_LIST_ALLOWED_ARIA_ATTRIBUTES = new Set(['aria-label', 'aria-describedby']);
+const CHERRY_STEP_ITEM_ALLOWED_ARIA_ATTRIBUTES = new Set(['aria-label', 'aria-current', 'aria-posinset', 'aria-setsize']);
 const CHERRY_STEP_LIST_LABEL = 'Synthetic engagement stages';
 const CHERRY_STEP_SET_SIZE = String(CHERRY_STEP_SEQUENCE.length);
 const CHERRY_STEP_BOUNDARY_ID = 'cherry-engagement-step-boundary-description';
@@ -109,6 +117,13 @@ function stripCherryStepSpoofedAriaAttributes(node) {
     stripped = true;
   });
   return stripped;
+}
+
+function stripCherryStepCanonicalAriaTampering(node, allowedAttributes = new Set()) {
+  CHERRY_STEP_CANONICAL_ARIA_ATTRIBUTES.forEach((attribute) => {
+    if (allowedAttributes.has(attribute) || !node.hasAttribute(attribute)) return;
+    node.removeAttribute(attribute);
+  });
 }
 
 function enforceCherryStepNodePassivity(node) {
@@ -171,12 +186,14 @@ function ensureCherryStepBoundary(strip) {
 
 function clearCherryStepOrientation(strip) {
   enforceCherryStepPassivity(strip);
+  stripCherryStepCanonicalAriaTampering(strip);
   strip.removeAttribute('role');
   strip.removeAttribute('aria-label');
   strip.removeAttribute('data-cherry-engagement-step-list');
   clearCherryStepBoundary(strip);
 
   strip.querySelectorAll('[data-cherry-engagement-continuity-step]').forEach((step) => {
+    stripCherryStepCanonicalAriaTampering(step);
     step.removeAttribute('role');
     step.removeAttribute('aria-current');
     step.removeAttribute('aria-label');
@@ -209,6 +226,7 @@ function enhanceCherryStepOrientation() {
     return;
   }
 
+  stripCherryStepCanonicalAriaTampering(strip, CHERRY_STEP_LIST_ALLOWED_ARIA_ATTRIBUTES);
   if (strip.getAttribute('role') !== 'list') strip.setAttribute('role', 'list');
   if (strip.getAttribute('aria-label') !== CHERRY_STEP_LIST_LABEL) strip.setAttribute('aria-label', CHERRY_STEP_LIST_LABEL);
   strip.dataset.cherryEngagementStepList = 'synthetic';
@@ -222,9 +240,10 @@ function enhanceCherryStepOrientation() {
     const statusLabel = CHERRY_STEP_STATUS_LABELS[status];
     const accessibleLabel = `${label}. ${statusLabel}.`;
 
+    stripCherryStepCanonicalAriaTampering(step, CHERRY_STEP_ITEM_ALLOWED_ARIA_ATTRIBUTES);
     if (step.getAttribute('role') !== 'listitem') step.setAttribute('role', 'listitem');
-    step.setAttribute('aria-posinset', String(index + 1));
-    step.setAttribute('aria-setsize', CHERRY_STEP_SET_SIZE);
+    if (step.getAttribute('aria-posinset') !== String(index + 1)) step.setAttribute('aria-posinset', String(index + 1));
+    if (step.getAttribute('aria-setsize') !== CHERRY_STEP_SET_SIZE) step.setAttribute('aria-setsize', CHERRY_STEP_SET_SIZE);
     step.dataset.cherryEngagementStepOrientation = status;
     if (step.getAttribute('aria-label') !== accessibleLabel) step.setAttribute('aria-label', accessibleLabel);
     if (status === 'current') {
@@ -254,7 +273,7 @@ if (cherryStepOrientationApp) {
       'draggable',
       'inert',
       'role',
-      ...CHERRY_STEP_SPOOFED_ARIA_ATTRIBUTES,
+      ...CHERRY_STEP_CANONICAL_ARIA_ATTRIBUTES,
     ],
   });
 }
