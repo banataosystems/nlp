@@ -1,5 +1,6 @@
 /* WorldStage / Cherry — compact synthetic engagement continuity strip.
    Reads only the existing allowlisted local demo engagement-flow state and performs navigation/focus only.
+   The completion boundary delegates only to the existing local synthetic reset control.
    No free text, new persistence, private-source access, scoring, provider writes, or release authority. */
 
 const CHERRY_CONTINUITY_FLOW_KEY = 'worldstage.synthetic.engagement.flow.v1';
@@ -101,7 +102,14 @@ function cherryContinuitySignature(flow, current, previous) {
 }
 
 function cherryContinuityMarkup(flow, current, previous, signature) {
-  return `<section class="cherry-engagement-continuity" data-cherry-engagement-continuity data-cherry-engagement-continuity-signature="${signature}" data-cherry-engagement-continuity-stage="${current.id}" data-cherry-engagement-continuity-previous="${previous.id}" aria-label="Synthetic engagement continuity">
+  const completionCue = flow.recordPrepared
+    ? '<p data-cherry-engagement-continuity-completion>Completed local-demo state is preserved until Start a new synthetic engagement is deliberately tapped.</p>'
+    : '';
+  const startNew = flow.recordPrepared
+    ? '<button type="button" data-cherry-engagement-continuity-start-new>Start a new synthetic engagement →</button>'
+    : '';
+
+  return `<section class="cherry-engagement-continuity" data-cherry-engagement-continuity data-cherry-engagement-continuity-signature="${signature}" data-cherry-engagement-continuity-stage="${current.id}" data-cherry-engagement-continuity-previous="${previous.id}"${flow.recordPrepared ? ' data-cherry-engagement-continuity-complete="true"' : ''} aria-label="Synthetic engagement continuity">
     <div class="cherry-engagement-continuity__copy">
       <span>ENGAGEMENT CONTINUITY · LOCAL SYNTHETIC DEMO</span>
       <strong data-cherry-engagement-continuity-current>${current.label}</strong>
@@ -111,6 +119,7 @@ function cherryContinuityMarkup(flow, current, previous, signature) {
         <p data-cherry-engagement-continuity-previous-label>Previous stage: ${previous.label}.</p>
         <p data-cherry-engagement-continuity-prepared>${current.prepared}</p>
         <p data-cherry-engagement-continuity-next>${current.next}</p>
+        ${completionCue}
       </div>
     </div>
     <div class="cherry-engagement-continuity__steps" aria-label="Discovery, Cherry review, Transformation Record">
@@ -122,7 +131,10 @@ function cherryContinuityMarkup(flow, current, previous, signature) {
         </article>`;
       }).join('')}
     </div>
-    <button type="button" data-cherry-engagement-continuity-resume="${current.route}" aria-label="Resume ${current.label}">Resume →</button>
+    <div class="cherry-engagement-continuity__actions">
+      <button type="button" data-cherry-engagement-continuity-resume="${current.route}" aria-label="Resume ${current.label}">Resume →</button>
+      ${startNew}
+    </div>
   </section>`;
 }
 
@@ -143,6 +155,13 @@ function cherryContinuityResume(route) {
   }
 
   location.hash = `#/${route}`;
+}
+
+function cherryContinuityStartNewSynthetic() {
+  const reset = document.querySelector('[data-synthetic-flow-reset]');
+  if (!(reset instanceof HTMLButtonElement)) return false;
+  reset.click();
+  return true;
 }
 
 function enhanceCherryEngagementContinuity() {
@@ -175,6 +194,11 @@ function enhanceCherryEngagementContinuity() {
     const button = event.currentTarget;
     if (!(button instanceof HTMLButtonElement)) return;
     cherryContinuityResume(button.dataset.cherryEngagementContinuityResume);
+  });
+
+  strip.querySelector('[data-cherry-engagement-continuity-start-new]')?.addEventListener('click', () => {
+    if (!cherryContinuityFlowState().recordPrepared) return;
+    cherryContinuityStartNewSynthetic();
   });
 
   if (existing) existing.replaceWith(strip);
