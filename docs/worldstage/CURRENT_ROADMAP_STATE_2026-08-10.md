@@ -84,11 +84,13 @@ Run #740 artifacts:
 
 The exact #740 staging-readiness ZIP was downloaded and inspected directly. Its internal `source_sha` exactly matches `11ef480e1e2200cdd4d75faf0b72da10ffa305de`; `readiness = BLOCKED`; confidential intake is disabled; anonymous intake denied; file uploads/private AI/private analytics disabled; production release blocked; secure-intake persistence is unselected; adapter binding is false; no staging or production project IDs are bound; and D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 remain OPEN.
 
-The #740 visual-PDF preservation step was skipped because there was no qualifying visual evidence change to commit, so `11ef480...` remains the exact product/test source for the successful run.
+Run #740 also produced CI visual-evidence child `a26bd3da320c619e50e12910f4fb1c0190652ead`. Exact compare from `11ef480...` proves the child is one commit ahead and modifies only `docs/worldstage/evidence/WORLDSTAGE_MOBILE_V2_VISUAL_EVIDENCE.pdf`; runtime and test source remain exactly `11ef480...`.
 
 ### Preview deployed
 
 **Yes for exact tested source `11ef480e1e2200cdd4d75faf0b72da10ffa305de`.** Vercel preview `dpl_3iGcNajGoT3YN3fPMUBm8n7Fmbao` is READY, Git-sourced from that exact SHA, bound to PR #1 / branch `redesign/mobile-first-v2`, and non-production (`target: null`). Its build log proves exact clone `11ef480`, dependency installation, successful Vercel build and deployment completion.
+
+The visual-evidence-only child `a26bd3da...` also has READY non-production preview `dpl_122D9E9w3Hv4BaKfD53YaGngpUHR`. This preserves source/deployment provenance without changing which source is treated as product/test proof.
 
 Fresh Vercel runtime-error aggregation for the `cherrypua` project found no runtime errors in the checked 24-hour window. Preview READY/runtime health is deployability evidence only; it is not live-staging or production proof. Direct unauthenticated application fetch remains behind Vercel Deployment Protection, so no public application-level preview claim is made from that protected URL.
 
@@ -108,7 +110,7 @@ Cherry's screen-reader experience can now receive deterministic stage/attention 
 
 ## In progress
 
-This roadmap reconciliation is documentation-only and uses `[skip ci]`; it creates a newer repository/Vercel documentation head after the exact tested source. Exact runtime/test proof remains attributed to `11ef480...`.
+This roadmap reconciliation is documentation-only and uses `[skip ci]`; it creates a newer repository/Vercel documentation head after the exact tested source and visual-evidence child. Exact runtime/test proof remains attributed to `11ef480...`.
 
 ## Hard blockers / gates intentionally not crossed
 
