@@ -3,8 +3,8 @@
    Exactly one allowlisted step is current. The fixed three-step sequence is exposed as one semantic list
    with deterministic position metadata, a fixed accessibility-only demo-status boundary description,
    and enforced passive keyboard/non-interactive semantics even if tabindex, contenteditable, draggable,
-   inert, intrinsic interactive stage-marker elements, or intrinsic interactive descendants are injected
-   into the synthetic stage surface.
+   inert, intrinsic interactive stage-marker elements, intrinsic interactive descendants, or action-like
+   semantic roles are injected into the synthetic stage surface.
    No focus movement, persistence, provider access, analytics, scoring, private data, spending, or release authority. */
 
 const CHERRY_STEP_ORIENTATION = Object.freeze({
@@ -40,6 +40,25 @@ const CHERRY_STEP_STATUS_LABELS = Object.freeze({
 const CHERRY_STEP_SEQUENCE = Object.freeze(['discovery', 'review', 'record']);
 const CHERRY_STEP_TRUSTED_ELEMENT = 'ARTICLE';
 const CHERRY_STEP_INTRINSIC_ACTION_SELECTOR = 'button, input, select, textarea, summary, a, audio, video, iframe';
+const CHERRY_STEP_ACTION_ROLES = new Set([
+  'button',
+  'checkbox',
+  'combobox',
+  'link',
+  'menuitem',
+  'menuitemcheckbox',
+  'menuitemradio',
+  'option',
+  'radio',
+  'scrollbar',
+  'searchbox',
+  'slider',
+  'spinbutton',
+  'switch',
+  'tab',
+  'textbox',
+  'treeitem',
+]);
 const CHERRY_STEP_LIST_LABEL = 'Synthetic engagement stages';
 const CHERRY_STEP_SET_SIZE = String(CHERRY_STEP_SEQUENCE.length);
 const CHERRY_STEP_BOUNDARY_ID = 'cherry-engagement-step-boundary-description';
@@ -50,6 +69,15 @@ let cherryStepOrientationQueued = false;
 
 function stripCherryStepInteractiveAttributes(node) {
   CHERRY_STEP_PASSIVE_ATTRIBUTES.forEach((attribute) => node.removeAttribute(attribute));
+}
+
+function stripCherryStepActionRole(node) {
+  const role = node.getAttribute('role');
+  if (!role) return false;
+  const tokens = role.toLowerCase().trim().split(/\s+/).filter(Boolean);
+  if (!tokens.some((token) => CHERRY_STEP_ACTION_ROLES.has(token))) return false;
+  node.removeAttribute('role');
+  return true;
 }
 
 function enforceCherryStepNodePassivity(node) {
@@ -66,7 +94,8 @@ function enforceCherryStepDescendantPassivity(step) {
 
   step.querySelectorAll('*').forEach((node) => {
     stripCherryStepInteractiveAttributes(node);
-    if (node.matches(CHERRY_STEP_INTRINSIC_ACTION_SELECTOR) && !node.hasAttribute('inert')) {
+    const spoofedActionRole = stripCherryStepActionRole(node);
+    if ((spoofedActionRole || node.matches(CHERRY_STEP_INTRINSIC_ACTION_SELECTOR)) && !node.hasAttribute('inert')) {
       node.setAttribute('inert', '');
     }
   });
@@ -186,6 +215,7 @@ if (cherryStepOrientationApp) {
       'contenteditable',
       'draggable',
       'inert',
+      'role',
     ],
   });
 }
