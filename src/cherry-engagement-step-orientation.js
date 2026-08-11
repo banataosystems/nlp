@@ -3,8 +3,8 @@
    Exactly one allowlisted step is current. The fixed three-step sequence is exposed as one semantic list
    with deterministic position metadata, a fixed accessibility-only demo-status boundary description,
    and enforced passive keyboard/non-interactive semantics even if tabindex, contenteditable, draggable,
-   inert, intrinsic interactive stage-marker elements, intrinsic interactive descendants, or action-like
-   semantic roles are injected into the synthetic stage surface.
+   inert, intrinsic interactive stage-marker elements, intrinsic interactive descendants, action-like
+   semantic roles, or spoofed accessibility names/action states are injected into the synthetic stage surface.
    No focus movement, persistence, provider access, analytics, scoring, private data, spending, or release authority. */
 
 const CHERRY_STEP_ORIENTATION = Object.freeze({
@@ -59,6 +59,27 @@ const CHERRY_STEP_ACTION_ROLES = new Set([
   'textbox',
   'treeitem',
 ]);
+const CHERRY_STEP_SPOOFED_ARIA_ATTRIBUTES = Object.freeze([
+  'aria-label',
+  'aria-labelledby',
+  'aria-describedby',
+  'aria-activedescendant',
+  'aria-controls',
+  'aria-checked',
+  'aria-current',
+  'aria-disabled',
+  'aria-expanded',
+  'aria-haspopup',
+  'aria-pressed',
+  'aria-selected',
+  'aria-autocomplete',
+  'aria-readonly',
+  'aria-required',
+  'aria-valuemax',
+  'aria-valuemin',
+  'aria-valuenow',
+  'aria-valuetext',
+]);
 const CHERRY_STEP_LIST_LABEL = 'Synthetic engagement stages';
 const CHERRY_STEP_SET_SIZE = String(CHERRY_STEP_SEQUENCE.length);
 const CHERRY_STEP_BOUNDARY_ID = 'cherry-engagement-step-boundary-description';
@@ -80,6 +101,16 @@ function stripCherryStepActionRole(node) {
   return true;
 }
 
+function stripCherryStepSpoofedAriaAttributes(node) {
+  let stripped = false;
+  CHERRY_STEP_SPOOFED_ARIA_ATTRIBUTES.forEach((attribute) => {
+    if (!node.hasAttribute(attribute)) return;
+    node.removeAttribute(attribute);
+    stripped = true;
+  });
+  return stripped;
+}
+
 function enforceCherryStepNodePassivity(node) {
   stripCherryStepInteractiveAttributes(node);
   if (node.matches(CHERRY_STEP_INTRINSIC_ACTION_SELECTOR)) {
@@ -95,7 +126,8 @@ function enforceCherryStepDescendantPassivity(step) {
   step.querySelectorAll('*').forEach((node) => {
     stripCherryStepInteractiveAttributes(node);
     const spoofedActionRole = stripCherryStepActionRole(node);
-    if ((spoofedActionRole || node.matches(CHERRY_STEP_INTRINSIC_ACTION_SELECTOR)) && !node.hasAttribute('inert')) {
+    const spoofedAriaState = stripCherryStepSpoofedAriaAttributes(node);
+    if ((spoofedActionRole || spoofedAriaState || node.matches(CHERRY_STEP_INTRINSIC_ACTION_SELECTOR)) && !node.hasAttribute('inert')) {
       node.setAttribute('inert', '');
     }
   });
@@ -132,7 +164,9 @@ function ensureCherryStepBoundary(strip) {
   description.hidden = true;
   enforceCherryStepNodePassivity(description);
   description.textContent = CHERRY_STEP_BOUNDARY_TEXT;
-  strip.setAttribute('aria-describedby', CHERRY_STEP_BOUNDARY_ID);
+  if (strip.getAttribute('aria-describedby') !== CHERRY_STEP_BOUNDARY_ID) {
+    strip.setAttribute('aria-describedby', CHERRY_STEP_BOUNDARY_ID);
+  }
 }
 
 function clearCherryStepOrientation(strip) {
@@ -176,7 +210,7 @@ function enhanceCherryStepOrientation() {
   }
 
   if (strip.getAttribute('role') !== 'list') strip.setAttribute('role', 'list');
-  strip.setAttribute('aria-label', CHERRY_STEP_LIST_LABEL);
+  if (strip.getAttribute('aria-label') !== CHERRY_STEP_LIST_LABEL) strip.setAttribute('aria-label', CHERRY_STEP_LIST_LABEL);
   strip.dataset.cherryEngagementStepList = 'synthetic';
   ensureCherryStepBoundary(strip);
   enforceCherryStepPassivity(strip);
@@ -186,12 +220,13 @@ function enhanceCherryStepOrientation() {
     const status = orientation[id];
     const label = CHERRY_STEP_LABELS[id];
     const statusLabel = CHERRY_STEP_STATUS_LABELS[status];
+    const accessibleLabel = `${label}. ${statusLabel}.`;
 
     if (step.getAttribute('role') !== 'listitem') step.setAttribute('role', 'listitem');
     step.setAttribute('aria-posinset', String(index + 1));
     step.setAttribute('aria-setsize', CHERRY_STEP_SET_SIZE);
     step.dataset.cherryEngagementStepOrientation = status;
-    step.setAttribute('aria-label', `${label}. ${statusLabel}.`);
+    if (step.getAttribute('aria-label') !== accessibleLabel) step.setAttribute('aria-label', accessibleLabel);
     if (status === 'current') step.setAttribute('aria-current', 'step');
     else step.removeAttribute('aria-current');
   });
@@ -216,6 +251,7 @@ if (cherryStepOrientationApp) {
       'draggable',
       'inert',
       'role',
+      ...CHERRY_STEP_SPOOFED_ARIA_ATTRIBUTES,
     ],
   });
 }
