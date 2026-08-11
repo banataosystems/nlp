@@ -101,7 +101,7 @@ test('synthetic stage semantics stay out of sequential keyboard focus while the 
   expect(sizes.sw).toBeLessThanOrEqual(sizes.cw + 1);
 });
 
-test('fail-closed semantic removal cannot create a keyboard trap or displace the Resume owner action', async ({ page }) => {
+test('tabindex injection is stripped from the synthetic stage surface and fail-closed unexpected steps cannot enter keyboard order', async ({ page }) => {
   const networkWrites = [];
   page.on('request', (request) => {
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method())) networkWrites.push(request.url());
@@ -117,8 +117,23 @@ test('fail-closed semantic removal cannot create a keyboard trap or displace the
   });
 
   const strip = page.locator('[data-cherry-engagement-continuity]');
+  const reviewStep = strip.locator('[data-cherry-engagement-continuity-step="review"]');
+  const boundary = strip.locator('[data-cherry-engagement-step-boundary]');
   const resume = page.locator('[data-cherry-engagement-owner-action] [data-cherry-engagement-continuity-resume]');
   await expectPassiveStageSurface(page);
+
+  await page.evaluate(() => {
+    const stageList = document.querySelector('[data-cherry-engagement-continuity]');
+    stageList?.setAttribute('tabindex', '0');
+    stageList?.querySelector('[data-cherry-engagement-continuity-step="review"]')?.setAttribute('tabindex', '0');
+    stageList?.querySelector('[data-cherry-engagement-step-boundary]')?.setAttribute('tabindex', '0');
+  });
+
+  await expect(strip).not.toHaveAttribute('tabindex', /.+/);
+  await expect(reviewStep).not.toHaveAttribute('tabindex', /.+/);
+  await expect(boundary).not.toHaveAttribute('tabindex', /.+/);
+  await expect(strip).toHaveAttribute('role', 'list');
+  await expect(strip).toHaveAttribute('aria-describedby', 'cherry-engagement-step-boundary-description');
 
   await page.evaluate(() => {
     const stageList = document.querySelector('[data-cherry-engagement-continuity]');
@@ -128,6 +143,9 @@ test('fail-closed semantic removal cannot create a keyboard trap or displace the
     stageList?.appendChild(unexpectedStep);
   });
 
+  const unexpectedStep = strip.locator('[data-cherry-engagement-continuity-step="production"]');
+  await expect(unexpectedStep).toHaveCount(1);
+  await expect(unexpectedStep).not.toHaveAttribute('tabindex', /.+/);
   await expect(strip).not.toHaveAttribute('role', /.+/);
   await expect(strip).not.toHaveAttribute('aria-describedby', /.+/);
   await expect(strip.locator('[data-cherry-engagement-step-boundary]')).toHaveCount(0);
@@ -135,18 +153,19 @@ test('fail-closed semantic removal cannot create a keyboard trap or displace the
   await expect(resume).toBeEnabled();
   expect(await resume.evaluate((button) => button.tabIndex)).toBe(0);
 
-  const recognizedStepPassivity = await strip.locator('[data-cherry-engagement-continuity-step="discovery"], [data-cherry-engagement-continuity-step="review"], [data-cherry-engagement-continuity-step="record"]').evaluateAll((nodes) => nodes.map((node) => ({
+  const renderedStepPassivity = await strip.locator('[data-cherry-engagement-continuity-step]').evaluateAll((nodes) => nodes.map((node) => ({
+    id: node.getAttribute('data-cherry-engagement-continuity-step'),
     tabIndex: node.tabIndex,
     hasTabIndex: node.hasAttribute('tabindex'),
   })));
-  expect(recognizedStepPassivity).toEqual([
-    { tabIndex: -1, hasTabIndex: false },
-    { tabIndex: -1, hasTabIndex: false },
-    { tabIndex: -1, hasTabIndex: false },
+  expect(renderedStepPassivity).toEqual([
+    { id: 'discovery', tabIndex: -1, hasTabIndex: false },
+    { id: 'review', tabIndex: -1, hasTabIndex: false },
+    { id: 'record', tabIndex: -1, hasTabIndex: false },
+    { id: 'production', tabIndex: -1, hasTabIndex: false },
   ]);
 
   await page.evaluate(() => {
-    document.querySelector('[data-cherry-engagement-continuity-step="production"]')?.remove();
     if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
   });
 
