@@ -16,6 +16,10 @@ const CHERRY_CONTINUITY_PREVIOUS = Object.freeze({
   discovery: 'Discovery',
   review: 'Cherry review',
 });
+const CHERRY_CONTINUITY_ATTENTION = Object.freeze({
+  needsCherry: Object.freeze({ id: 'needs-cherry', label: 'Needs Cherry now' }),
+  preparedFlow: Object.freeze({ id: 'prepared-flow', label: 'Continue prepared flow' }),
+});
 
 let cherryContinuityRefreshQueued = false;
 
@@ -85,23 +89,30 @@ function cherryContinuityCurrent(flow) {
   };
 }
 
+function cherryContinuityAttention(current) {
+  return current.id === 'review'
+    ? CHERRY_CONTINUITY_ATTENTION.needsCherry
+    : CHERRY_CONTINUITY_ATTENTION.preparedFlow;
+}
+
 function cherryContinuityStepStatus(index, currentIndex, flow) {
   if (index < currentIndex) return 'complete';
   if (index === currentIndex) return flow.recordPrepared && index === 2 ? 'complete-current' : 'current';
   return 'upcoming';
 }
 
-function cherryContinuitySignature(flow, current, previous) {
+function cherryContinuitySignature(flow, current, previous, attention) {
   return [
     flow.discoveryPrepared ? 'd1' : 'd0',
     flow.ownerReviewed ? 'o1' : 'o0',
     flow.recordPrepared ? 'r1' : 'r0',
     current.id,
     previous.id,
+    attention.id,
   ].join(':');
 }
 
-function cherryContinuityMarkup(flow, current, previous, signature) {
+function cherryContinuityMarkup(flow, current, previous, attention, signature) {
   const completionCue = flow.recordPrepared
     ? '<p data-cherry-engagement-continuity-completion>Completed local-demo state is preserved until Start a new synthetic engagement is deliberately tapped.</p>'
     : '';
@@ -109,11 +120,15 @@ function cherryContinuityMarkup(flow, current, previous, signature) {
     ? '<div class="cherry-engagement-continuity__completion-actions"><button type="button" data-cherry-engagement-continuity-start-new>Start a new synthetic engagement →</button></div>'
     : '';
 
-  return `<section class="cherry-engagement-continuity" data-cherry-engagement-continuity data-cherry-engagement-continuity-signature="${signature}" data-cherry-engagement-continuity-stage="${current.id}" data-cherry-engagement-continuity-previous="${previous.id}"${flow.recordPrepared ? ' data-cherry-engagement-continuity-complete="true"' : ''} aria-label="Synthetic engagement continuity">
+  return `<section class="cherry-engagement-continuity" data-cherry-engagement-continuity data-cherry-engagement-continuity-signature="${signature}" data-cherry-engagement-continuity-stage="${current.id}" data-cherry-engagement-continuity-previous="${previous.id}" data-cherry-engagement-continuity-attention="${attention.id}"${flow.recordPrepared ? ' data-cherry-engagement-continuity-complete="true"' : ''} aria-label="Synthetic engagement continuity">
     <div class="cherry-engagement-continuity__owner-action" data-cherry-engagement-owner-action aria-label="Synthetic owner action card">
       <div class="cherry-engagement-continuity__copy">
         <span>OWNER ACTION · LOCAL SYNTHETIC DEMO</span>
         <strong data-cherry-engagement-continuity-current>${current.label}</strong>
+        <div class="cherry-engagement-continuity__attention" data-cherry-engagement-continuity-attention-cue="${attention.id}" aria-label="Fixed synthetic owner attention cue">
+          <span>OWNER ATTENTION · READ ONLY</span>
+          <strong>${attention.label}</strong>
+        </div>
         <p>${current.detail}</p>
         <div class="cherry-engagement-continuity__handoff" data-cherry-engagement-continuity-handoff aria-label="Synthetic engagement handoff cue">
           <span>WHAT'S READY / WHAT'S NEXT · READ ONLY</span>
@@ -184,11 +199,12 @@ function enhanceCherryEngagementContinuity() {
   const flow = cherryContinuityFlowState();
   const current = cherryContinuityCurrent(flow);
   const previous = cherryContinuityPrevious(flow);
-  const signature = cherryContinuitySignature(flow, current, previous);
+  const attention = cherryContinuityAttention(current);
+  const signature = cherryContinuitySignature(flow, current, previous, attention);
   if (existing?.dataset.cherryEngagementContinuitySignature === signature && existing.parentElement === summary) return;
 
   const wrapper = document.createElement('div');
-  wrapper.innerHTML = cherryContinuityMarkup(flow, current, previous, signature);
+  wrapper.innerHTML = cherryContinuityMarkup(flow, current, previous, attention, signature);
   const strip = wrapper.firstElementChild;
   if (!(strip instanceof HTMLElement)) return;
 
