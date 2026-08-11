@@ -4,6 +4,7 @@
 
 const CHERRY_RESET_CONFIRM_FLOW_KEY = 'worldstage.synthetic.engagement.flow.v1';
 const CHERRY_RESET_CONFIRM_FLOW_VERSION = 1;
+const CHERRY_RESET_CONFIRM_ACTIONS_SELECTOR = '.cherry-engagement-continuity__completion-actions, .cherry-engagement-continuity__actions';
 
 function cherryResetConfirmSafeJson(key) {
   try {
@@ -32,10 +33,16 @@ function cherryResetConfirmMarkup() {
   </div>`;
 }
 
+function cherryResetConfirmActions(node) {
+  if (!(node instanceof Element)) return null;
+  const actions = node.closest(CHERRY_RESET_CONFIRM_ACTIONS_SELECTOR);
+  return actions instanceof HTMLElement ? actions : null;
+}
+
 function cherryResetConfirmOpen(startButton) {
   if (!(startButton instanceof HTMLButtonElement) || !cherryResetConfirmIsCompleted()) return;
   const strip = startButton.closest('[data-cherry-engagement-continuity]');
-  const actions = startButton.closest('.cherry-engagement-continuity__actions');
+  const actions = cherryResetConfirmActions(startButton);
   if (!(strip instanceof HTMLElement) || !(actions instanceof HTMLElement)) return;
 
   const existing = actions.querySelector('[data-cherry-engagement-reset-confirmation]');
@@ -57,7 +64,7 @@ function cherryResetConfirmOpen(startButton) {
 
 function cherryResetConfirmClose(confirmation) {
   if (!(confirmation instanceof HTMLElement)) return;
-  const actions = confirmation.closest('.cherry-engagement-continuity__actions');
+  const actions = cherryResetConfirmActions(confirmation);
   const startButton = actions?.querySelector('[data-cherry-engagement-continuity-start-new]');
   confirmation.remove();
   if (startButton instanceof HTMLButtonElement) {
