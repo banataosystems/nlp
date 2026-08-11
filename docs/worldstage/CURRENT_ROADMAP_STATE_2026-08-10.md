@@ -1,6 +1,6 @@
 # WorldStage / Cherry — current roadmap and proof state
 
-**Date:** 2026-08-11  
+**Date:** 2026-08-12  
 **Project:** WorldStage International / Cherry Africa business-adaptive operating system  
 **Repository:** `banataosystems/nlp`  
 **Active line:** `redesign/mobile-first-v2` / PR #1  
@@ -12,80 +12,85 @@
 
 The active autonomous line continues to improve Cherry-facing owner usability and accessibility using sanitized synthetic/local-demo state while real provider/data boundaries remain fail-closed.
 
-## Latest completed product milestone — enforced non-interactive stage boundary
+## Latest completed product milestone — intrinsic-action fail-closed stage boundary
 
-The fixed synthetic `Discovery → Cherry review → Transformation Record` continuity surface is now actively protected against local DOM attempts to turn its semantic context into owner actions through `contenteditable` or `draggable`, while retaining the earlier passive-keyboard boundary.
+The fixed synthetic `Discovery → Cherry review → Transformation Record` continuity surface now rejects intrinsic interactive stage-marker elements as trusted stage semantics while preserving the existing accessibility contract for the canonical three `ARTICLE` steps.
 
 The implementation:
-- removes `tabindex`, `contenteditable`, and `draggable` from the synthetic continuity list, all recognized stage items, and the hidden synthetic-demo boundary description;
-- observes later mutations of all three attributes and self-corrects without changing visible UI or moving focus;
-- applies the passive/non-interactive boundary before and after semantic enhancement and when the recognized stage set fails closed;
-- applies the same attribute stripping to an injected unexpected stage such as `production`, while trusted list/current-step/position/boundary semantics fail closed;
-- preserves the existing single Resume owner action as the reachable interactive control;
-- creates no persistence, analytics event, provider call, credential request, private-data access, scoring/inference, client communication, spending, staging action or production authority.
+- requires the recognized three-step semantic set to be the exact ordered `Discovery / Cherry review / Transformation Record` IDs rendered as canonical `ARTICLE` elements;
+- treats intrinsic stage-marker elements such as `button`, `input`, `select`, `textarea`, `summary`, `a`, `audio`, `video`, or `iframe` as untrusted interactive substitutions;
+- applies native `inert` to such intrinsic stage-marker elements and repairs later attempts to remove that guard;
+- removes injected `inert` from the parent continuity strip so the legitimate Resume owner action cannot be accidentally disabled;
+- fails trusted list/current-step/position/boundary semantics closed when an intrinsic element replaces a recognized stage;
+- leaves canonical `ARTICLE` steps non-inert so the established list/current-step accessibility semantics remain available;
+- preserves the existing single Resume owner action as the reachable stage-related control;
+- adds no visible workflow, persistence, analytics event, provider call, credential request, private-data access, scoring/inference, client communication, spending, staging activation or production authority.
 
-The existing accessibility contract remains intact for a valid sanitized sequence: one `role="list"`, three fixed `role="listitem"` entries, deterministic `aria-posinset="1"/"2"/"3"`, fixed `aria-setsize="3"`, exactly one `aria-current="step"`, and fixed `aria-describedby="cherry-engagement-step-boundary-description"` text: `Synthetic demo stages only. Not a verified real-client engagement status.`
+The existing valid-sequence accessibility contract remains intact: one `role="list"`, three fixed `role="listitem"` entries, deterministic `aria-posinset="1"/"2"/"3"`, fixed `aria-setsize="3"`, exactly one `aria-current="step"`, and fixed `aria-describedby="cherry-engagement-step-boundary-description"` text: `Synthetic demo stages only. Not a verified real-client engagement status.`
 
 Implementation/test surfaces:
 - `src/cherry-engagement-step-orientation.js`
+- `tests/cherry-engagement-intrinsic-action-boundary.spec.mjs`
 - `tests/cherry-engagement-passive-keyboard.spec.mjs`
-- existing mandatory `package.json` Phase 4 test gate
+- mandatory `package.json` Phase 4 test gate
 
 ## Proof-state separation
 
 ### Documented
 
-**Yes.** This record documents the enforced non-interactive stage boundary and preserves exact implementation, CI, preview and gate provenance below.
+**Yes.** This record documents the intrinsic-action fail-closed milestone and preserves exact implementation, CI, preview and gate provenance below.
 
 ### Implemented
 
-**Yes for exact product/test source `cc3c3e932f04c50e79bfb9fd6abd0f1f47dedcf4`.**
+**Yes for exact product/test source `f7be83f8601569bae4ef194e8bec584139e93775`.**
 
-The runtime hardening is isolated to the synthetic semantic-orientation module and its dedicated passive/non-interactive regression. No provider, database, credential, production configuration or production data changed.
+The runtime change is isolated to the synthetic semantic-orientation module, its dedicated regression, and the Phase 4 test manifest. No provider, database, credential, production configuration or production data changed.
 
 ### Tested
 
-**Yes for exact source `cc3c3e932f04c50e79bfb9fd6abd0f1f47dedcf4`.** GitHub Actions run `31509642634` / **#762 completed SUCCESS** across the complete mandatory chain.
+**Yes for exact source `f7be83f8601569bae4ef194e8bec584139e93775`.** GitHub Actions run `31514914216` / **#764 completed SUCCESS** across the complete mandatory chain.
 
-Run #762 passed:
+Run #764 passed:
 - owner/security decision-evidence enforcement;
 - fail-closed secure-intake runtime and staging-readiness generation;
 - six-width mobile contract;
 - iPhone/WebKit and Pixel/Chromium device-class checks;
 - Phase 2 SQL/staging checks;
 - Discovery Phase 3;
-- Cherry OS Phase 4, including the expanded passive/non-interactive regression plus existing continuity/list/current-step/boundary/attention/Resume/The Room/completion/reset/accessibility coverage;
+- Cherry OS Phase 4, including the new intrinsic-action regression plus existing continuity/list/current-step/boundary/passive-keyboard/attention/Resume/The Room/completion/reset/accessibility coverage;
 - Transformation Record Phase 5;
 - release/security/privacy checks;
 - visual verification;
 - exact-head staging-readiness regeneration;
 - both evidence uploads.
 
-Focused coverage proves:
-- valid Discovery, Cherry review and Transformation Record surfaces have no `tabindex`, `contenteditable`, or `draggable` on the list, recognized list items or hidden boundary;
-- Resume remains enabled, sequential-keyboard reachable, and outside the passive semantic set;
-- direct local DOM injection of `contenteditable="true"` and `draggable="true"` into the list, recognized review step and hidden boundary is stripped while valid semantic orientation remains intact;
-- the resulting DOM properties remain non-editable and non-draggable;
-- an injected unexpected `production` stage carrying `contenteditable="true"` and `draggable="true"` is stripped and causes trusted list/boundary semantics to fail closed;
-- the earlier `tabindex` mutation/fail-closed keyboard regression remains green;
+Focused intrinsic-action coverage proves:
+- the valid canonical three-step sequence remains three non-inert `ARTICLE` elements with trusted semantics;
+- replacing the recognized Cherry review step with a `button` carrying the same synthetic-stage marker causes trusted list/boundary semantics to fail closed;
+- the injected intrinsic control is made `inert`, cannot take programmatic focus, does not receive a pointer click, and never enters sequential keyboard focus;
+- an injected `inert` attribute on the continuity parent is removed so Resume stays enabled and keyboard reachable;
+- Resume remains exactly one stage-related reachable owner action with `tabIndex = 0`;
+- local synthetic flow storage remains unchanged;
 - zero POST/PUT/PATCH/DELETE requests occur;
 - the 390px phone surface remains within horizontal bounds.
 
-Run #762 artifacts:
-- staging-readiness artifact `9108618036`, digest `sha256:b546433f2f736425d034e908d9eb0711a65c682379ad2e89a179a4efa0636ff9`;
-- mobile visual artifact `9108619196`, digest `sha256:c4cf45d35b8a5852ab54517e0ad14bdf57f5e370736efd5e0221aed2489779cd`.
+Run #764 artifacts:
+- staging-readiness artifact `9110728320`, digest `sha256:a446da536b41c97d649ac198b3e8a28131785b65154698a9495f74c73ea233ff`;
+- mobile visual artifact `9110729047`, digest `sha256:38af734c85a84fc02478eb471e3b76752281d009b83a9df988847a3258aa512c`.
 
-The exact staging-readiness ZIP was downloaded and inspected directly. Its internal `project_key` is `worldstage-cherry`; `source_sha` is exactly `cc3c3e932f04c50e79bfb9fd6abd0f1f47dedcf4`; `readiness = BLOCKED`; confidential intake is disabled; anonymous intake is denied; file uploads/private AI/private analytics are disabled; production release is blocked; persistence remains unselected; adapter binding is false; no staging/production project IDs are bound; and D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 remain OPEN. This is intentional fail-closed evidence, not a test failure.
+The exact staging-readiness ZIP was downloaded and inspected directly. Its internal `project_key` is `worldstage-cherry`; `source_sha` is exactly `f7be83f8601569bae4ef194e8bec584139e93775`; `readiness = BLOCKED`; confidential intake is disabled; anonymous intake is denied; file uploads/private AI/private analytics are disabled; production release is blocked; persistence remains unselected; adapter binding is false; no staging/production project IDs are bound; and D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 remain OPEN. This is intentional fail-closed evidence, not a test failure.
+
+CI then produced child commit `41b8d1e79a2e0a4b87ac17b6ad93e64dfab858bd`; an exact compare against tested source `f7be83f...` proves its only changed file is `docs/worldstage/evidence/WORLDSTAGE_MOBILE_V2_VISUAL_EVIDENCE.pdf`. Runtime/test provenance therefore remains attributed to `f7be83f...`.
 
 ### Preview deployed
 
-**Yes for exact tested source `cc3c3e932f04c50e79bfb9fd6abd0f1f47dedcf4`.** Vercel deployment `dpl_9QEP7nnqzG2sfLDu6FH4Uj5iMd82` is READY, Git-sourced from exact SHA `cc3c3e9...`, attached to `redesign/mobile-first-v2` / PR #1, and non-production (`target: null`). Build logs prove Vercel cloned commit `cc3c3e9`, installed dependencies, completed the build and deployed outputs successfully. The protected preview root returned HTTP 200 and the latest exact-preview error/fatal runtime-log lookup found no matching logs in the checked one-hour window.
+**Yes for exact tested source `f7be83f8601569bae4ef194e8bec584139e93775`.** Vercel deployment `dpl_9knfASnRTWZRboMNbcCzw6dU5tnU` is READY, Git-sourced from exact SHA `f7be83f...`, attached to `redesign/mobile-first-v2` / PR #1, and non-production (`target: null`). Build logs prove Vercel cloned exact commit `f7be83f`, installed dependencies, completed the build and deployed outputs successfully. Fresh exact-preview error/fatal runtime-log lookup found no matching logs in the checked one-hour window.
 
 Preview READY/runtime health is deployability evidence only; it is not live-staging or production proof.
 
 ### Live staging
 
-**No.** No real WorldStage staging PostgreSQL/Supabase, authentication, signed-user RLS, provider backup/restore or live kill-switch environment is bound or proven. Run #762 remains intentionally fail-closed for live-staging creation.
+**No.** No real WorldStage staging PostgreSQL/Supabase, authentication, signed-user RLS, provider backup/restore or live kill-switch environment is bound or proven. Run #764 remains intentionally fail-closed for live-staging creation.
 
 ### Production verified / released for this line
 
@@ -93,7 +98,7 @@ Preview READY/runtime health is deployability evidence only; it is not live-stag
 
 ## Done
 
-The **enforced non-interactive stage boundary** milestone is **documented → implemented → tested → preview-deployed** for exact runtime/test source `cc3c3e932f04c50e79bfb9fd6abd0f1f47dedcf4`, run #762, and exact-source Vercel preview `dpl_9QEP7nnqzG2sfLDu6FH4Uj5iMd82`.
+The **intrinsic-action fail-closed stage boundary** milestone is **documented → implemented → tested → preview-deployed** for exact runtime/test source `f7be83f8601569bae4ef194e8bec584139e93775`, run #764, and exact-source Vercel preview `dpl_9knfASnRTWZRboMNbcCzw6dU5tnU`.
 
 ## In progress
 
@@ -113,14 +118,14 @@ No provider, database, live-staging, production or destructive operation is in p
 ## Risks
 
 - The continuity indicator remains synthetic/local-demo UI and must not be mistaken for a real client workflow state.
-- Attribute hardening is a defensive UI invariant for accidental/local DOM mutation; it is not an authorization or security boundary against arbitrary hostile script execution.
-- Removing `contenteditable`/`draggable` from the fixed synthetic nodes does not itself prove that every possible injected intrinsic HTML element is non-interactive; that broader intrinsic-action census remains separate work.
+- The intrinsic-action guard is a defensive UI invariant for accidental/local DOM mutation; it is not an authorization or security boundary against arbitrary hostile script execution.
+- This milestone protects intrinsic elements that themselves carry a stage marker. Interactive descendants injected inside an otherwise canonical `ARTICLE` stage are a separate boundary and are not claimed as covered here.
 - Preview READY does not imply live staging or production suitability.
 - Automated browser/device verification does not replace Cherry's physical-device acceptance.
 
 ## Next autonomous action
 
-Add an intrinsic-action fail-closed regression and runtime boundary for the synthetic stage surface: prove that an unexpected interactive element (for example a `button` carrying a synthetic stage marker) cannot become a second owner action or enter sequential keyboard order, while preserving Resume as the only stage-related owner action. Keep the solution fixed/synthetic, reversible and inside mandatory Phase 4, with no persistence, provider access, private data, spending or production authority.
+Extend the same fail-closed boundary to **interactive descendants inside canonical synthetic stage articles**: if a button/link/input or other intrinsic action is injected beneath an otherwise valid stage item, neutralize it without hiding the canonical stage semantics from assistive technology, prove it cannot receive pointer/keyboard action, and preserve Resume as the only stage-related owner action. Keep it fixed/synthetic, reversible and inside mandatory Phase 4, with no persistence, provider access, private data, spending or production authority.
 
 ## Explicit non-claims
 
