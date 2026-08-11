@@ -1,13 +1,18 @@
 .cherry-engagement-continuity {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 10px;
+  margin: 0 18px 10px;
+}
+
+.cherry-engagement-continuity__owner-action {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 16px;
   align-items: center;
-  margin: 0 18px 10px;
-  padding: 14px 16px;
-  border: 1px solid rgba(255,255,255,.12);
+  padding: 15px 16px;
+  border: 1px solid rgba(216,184,90,.38);
   border-radius: 18px;
-  background: rgba(255,255,255,.025);
+  background: rgba(255,255,255,.035);
 }
 
 .cherry-engagement-continuity__copy {
@@ -25,7 +30,7 @@
 .cherry-engagement-continuity__copy > strong {
   display: block;
   margin-bottom: 4px;
-  font: 600 17px/1.2 'Inter', sans-serif;
+  font: 600 18px/1.2 'Inter', sans-serif;
   color: #f5f5f2;
 }
 
@@ -70,6 +75,7 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(82px, 1fr));
   gap: 6px;
+  padding: 0 2px;
 }
 
 .cherry-engagement-continuity__steps article {
@@ -77,6 +83,7 @@
   padding: 9px 10px;
   border: 1px solid rgba(255,255,255,.09);
   border-radius: 12px;
+  background: rgba(255,255,255,.018);
 }
 
 .cherry-engagement-continuity__steps article span,
@@ -113,13 +120,13 @@
   color: #f5f5f2;
 }
 
-.cherry-engagement-continuity__actions {
-  display: grid;
-  gap: 8px;
+.cherry-engagement-continuity__actions,
+.cherry-engagement-continuity__completion-actions {
   min-width: 0;
 }
 
-.cherry-engagement-continuity__actions button {
+.cherry-engagement-continuity__actions button,
+.cherry-engagement-continuity__completion-actions button {
   min-height: 44px;
   border: 1px solid #f5f5f2;
   border-radius: 999px;
@@ -131,14 +138,20 @@
   cursor: pointer;
 }
 
-.cherry-engagement-continuity__actions [data-cherry-engagement-continuity-start-new] {
+.cherry-engagement-continuity__completion-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 2px;
+}
+
+.cherry-engagement-continuity__completion-actions [data-cherry-engagement-continuity-start-new] {
   background: transparent;
   color: #f5f5f2;
   border-color: rgba(255,255,255,.28);
 }
 
 @media (max-width: 760px) {
-  .cherry-engagement-continuity {
+  .cherry-engagement-continuity__owner-action {
     grid-template-columns: 1fr;
     gap: 12px;
   }
@@ -156,7 +169,9 @@
   }
 
   .cherry-engagement-continuity__actions,
-  .cherry-engagement-continuity__actions button {
+  .cherry-engagement-continuity__actions button,
+  .cherry-engagement-continuity__completion-actions,
+  .cherry-engagement-continuity__completion-actions button {
     width: 100%;
   }
 }
@@ -165,6 +180,9 @@
   .cherry-engagement-continuity {
     margin-left: 14px;
     margin-right: 14px;
+  }
+
+  .cherry-engagement-continuity__owner-action {
     padding: 13px;
   }
 }
