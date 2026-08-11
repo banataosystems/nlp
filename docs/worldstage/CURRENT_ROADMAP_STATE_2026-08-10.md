@@ -12,74 +12,74 @@
 
 The active autonomous line continues to improve Cherry-facing owner usability and accessibility using sanitized synthetic/local-demo state while real provider/data boundaries remain fail-closed.
 
-## Latest completed product milestone — accessibility-name/action-state spoofing fail-closed boundary
+## Latest completed product milestone — canonical stage/list ARIA self-repair
 
-The fixed synthetic `Discovery → Cherry review → Transformation Record` continuity surface now neutralizes accessibility-name/reference and action-state ARIA spoofing injected into non-canonical descendants of an otherwise canonical stage `ARTICLE`, while preserving the canonical stage's fixed assistive-technology semantics and visible synthetic text.
+The fixed synthetic `Discovery → Cherry review → Transformation Record` continuity surface now repairs direct semantic tampering on the trusted continuity list and canonical stage `ARTICLE` elements. Non-allowlisted accessibility-name/reference/action/value attributes are stripped and only the fixed trusted list/stage semantics are restored.
 
 The implementation:
-- keeps the trusted three-stage sequence restricted to the exact ordered canonical `ARTICLE` elements;
-- strips injected descendant `aria-label`, `aria-labelledby`, `aria-describedby`, `aria-activedescendant`, `aria-controls`, `aria-checked`, `aria-current`, `aria-disabled`, `aria-expanded`, `aria-haspopup`, `aria-pressed`, `aria-selected`, `aria-autocomplete`, `aria-readonly`, `aria-required`, `aria-valuemax`, `aria-valuemin`, `aria-valuenow`, and `aria-valuetext`;
-- continues stripping injected action-like roles plus `tabindex`, `contenteditable`, and `draggable` attributes;
-- makes descendants that attempted intrinsic/action-role/ARIA semantic spoofing inert;
-- observes later mutations of the guarded ARIA attributes and repairs attempts to restore the spoofed semantics;
-- uses conditional writes for trusted `aria-label`, `aria-describedby`, and `aria-current` values so the broader observer does not create a mutation feedback loop;
-- preserves the canonical strip `role=list`, fixed list label and synthetic-demo boundary, and canonical stage `role=listitem`, position metadata, fixed label, and exactly one `aria-current=step`;
-- preserves Resume as the only reachable stage-related owner action;
+- keeps the trusted sequence restricted to the exact ordered canonical `ARTICLE` elements;
+- extends the guarded canonical ARIA set to include the prior 19 accessibility-name/reference/action/value attributes plus `aria-posinset` and `aria-setsize`;
+- permits only fixed list `aria-label` / `aria-describedby` semantics and fixed stage `aria-label` / `aria-current` / `aria-posinset` / `aria-setsize` semantics;
+- removes direct non-allowlisted ARIA mutations from the trusted list and canonical stage elements;
+- deterministically restores `role=list`, the fixed list label, synthetic-demo description reference, `role=listitem`, fixed stage labels, positions 1/2/3, set size 3, and exactly one `aria-current=step`;
+- continues stripping injected `tabindex`, `contenteditable`, `draggable` and inappropriate `inert` from the trusted strip/stages;
+- observes later direct `aria-posinset` / `aria-setsize` and existing guarded semantic mutations for repair;
+- preserves the hidden synthetic-demo boundary and Resume as the sole stage-related owner action;
 - adds no visible workflow, persistence, analytics event, provider call, credential request, private-data access, scoring/inference, client communication, spending, live-staging activation, or production authority.
 
 Implementation/test surfaces:
 - `src/cherry-engagement-step-orientation.js`
-- `tests/cherry-engagement-aria-spoofing-boundary.spec.mjs`
-- existing action-role, intrinsic-action, interactive-descendant, and passive-keyboard regressions
+- `tests/cherry-engagement-canonical-aria-self-repair.spec.mjs`
+- existing descendant ARIA/action-role/intrinsic-action/passive-keyboard regressions
 - mandatory `package.json` Phase 4 test gate
 
 ## Proof-state separation
 
 ### Documented
 
-**Yes.** This record documents the accessibility-name/action-state spoofing fail-closed milestone and preserves exact implementation, CI, preview and gate provenance below.
+**Yes.** This record documents the canonical stage/list ARIA self-repair milestone and preserves exact implementation, CI, preview and gate provenance below.
 
 ### Implemented
 
-**Yes for exact product/test source `b4af2b116abb046ffe77df2154873be413b04feb`.**
+**Yes for exact product/test source `45761f887913550debbf5a91a79278a5375b7f8d`.**
 
 The runtime/test change is confined to the synthetic semantic-orientation module, one dedicated regression, and the mandatory Phase 4 test manifest. No provider, database, credential, production configuration, or production data changed.
 
 ### Tested
 
-**Yes for exact source `b4af2b116abb046ffe77df2154873be413b04feb`.** GitHub Actions pull-request run `31530355704` / **#782 completed SUCCESS** across the complete mandatory chain. The parallel exact-source push run `31530350669` / **#781 also completed SUCCESS**.
+**Yes for exact source `45761f887913550debbf5a91a79278a5375b7f8d`.** GitHub Actions push run `31535212526` / **#783 completed SUCCESS** across the complete mandatory chain.
 
-Run #782 passed owner/security decision-evidence enforcement; fail-closed secure-intake runtime and readiness generation; six-width mobile; iPhone/WebKit and Pixel/Chromium device-class checks; Phase 2 SQL/staging; Discovery Phase 3; Cherry OS Phase 4 including the new ARIA-spoofing regression and all existing continuity/accessibility/owner-action regressions; Transformation Record Phase 5; release/security/privacy checks; visual verification; exact-head readiness regeneration; and both evidence uploads.
+Run #783 passed owner/security decision-evidence enforcement; fail-closed secure-intake runtime and readiness generation; six-width mobile; iPhone/WebKit and Pixel/Chromium device-class checks; Phase 2 SQL/staging; Discovery Phase 3; Cherry OS Phase 4 including the new canonical-ARIA-self-repair regression and all existing continuity/accessibility/owner-action regressions; Transformation Record Phase 5; release/security/privacy checks; visual verification; exact-head readiness regeneration; and both evidence uploads.
 
-Focused ARIA-spoofing coverage proves:
-- the canonical Cherry review stage retains `role=listitem`, `aria-current=step`, `aria-posinset=2`, `aria-setsize=3`, and the fixed accessible label;
-- the continuity list retains its fixed label and fixed `aria-describedby` synthetic-demo boundary;
-- 19 injected accessibility-name/reference/action-state/value attributes on non-canonical `span`/`div` descendants are removed, while visible synthetic text remains unchanged;
-- injected `tabindex`, `contenteditable`, and `draggable` are removed and spoofing descendants become inert;
-- later attempts to restore multiple guarded ARIA attributes, remove `inert`, and restore interactive attributes are repaired automatically;
-- representative spoofing descendants cannot take programmatic focus, receive pointer-click side effects, enter sequential keyboard focus, or alter the route;
-- Resume remains enabled, non-inert, keyboard reachable and the sole stage-related owner action;
-- local synthetic flow storage remains unchanged;
+Focused canonical self-repair coverage proves:
+- direct spoofed roles, labels, label/description references, control/action/value states, incorrect current-step state, incorrect position/set-size metadata, passive-interaction attributes and `inert` mutations on the trusted list/canonical stages are automatically repaired;
+- the continuity list returns to exact `role=list`, `aria-label="Synthetic engagement stages"` and the fixed synthetic-demo description reference;
+- Discovery / Cherry review / Transformation Record return to exact positions 1/2/3 with set size 3 and fixed labels;
+- only Cherry review is current in the review fixture;
+- the canonical stages do not become keyboard/editable/draggable/inert actions;
+- the hidden demo boundary remains fixed;
+- Resume remains enabled, non-inert and keyboard reachable while no stage node enters sequential keyboard focus;
+- local synthetic flow storage and route remain unchanged;
 - zero POST/PUT/PATCH/DELETE requests occur;
 - the 390px phone surface remains within horizontal bounds.
 
-Run #782 artifacts:
-- staging-readiness artifact `9116691978`, digest `sha256:c9352e5fcc6b055355c00e25f4fdd65ef2c1428d91f942cbf0c25b129ab688a7`;
-- mobile visual artifact `9116692403`, digest `sha256:8bd25e816691ba6940880fb84bec1e4a586d6793734dc0aef2f1f9c2d4c00d17`.
+Run #783 artifacts:
+- staging-readiness artifact `9118544611`, digest `sha256:0357502339cbb46ee9cbe18fbb3630cb1c42743b93b0a65bd7f730dd4afb85b8`;
+- mobile visual artifact `9118545609`, digest `sha256:1469a02626a9a1a6881821f8e35ab1f42800468d20abcc9ec0c9517696fa8bdd`.
 
-The exact #782 staging-readiness ZIP was downloaded and inspected directly. Its internal `project_key` is `worldstage-cherry`; `source_sha` is exactly `b4af2b116abb046ffe77df2154873be413b04feb`; `readiness = BLOCKED`; confidential intake is disabled; anonymous intake is denied; file uploads/private AI/private analytics are disabled; production release is blocked; persistence remains unselected; adapter binding is false; no staging/production project IDs are bound; and D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 remain OPEN. This is intentional fail-closed evidence, not a test failure.
+The exact #783 staging-readiness ZIP was downloaded and inspected directly. Its internal `project_key` is `worldstage-cherry`; `source_sha` is exactly `45761f887913550debbf5a91a79278a5375b7f8d`; `readiness = BLOCKED`; confidential intake is disabled; anonymous intake is denied; file uploads/private AI/private analytics are disabled; production release is blocked; persistence remains unselected; adapter binding is false; no staging/production project IDs are bound; and D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 remain OPEN. This is intentional fail-closed evidence, not a test failure.
 
-CI evidence preservation produced commit `19c692ffd189e42ba1f657b9cda33a2361daff8b`; exact comparison against tested source `b4af2b116abb046ffe77df2154873be413b04feb` proves it is one commit ahead and its only changed file is `docs/worldstage/evidence/WORLDSTAGE_MOBILE_V2_VISUAL_EVIDENCE.pdf`. Runtime/test provenance therefore remains attributed to `b4af2b116abb046ffe77df2154873be413b04feb`.
+CI evidence preservation produced commit `f5a8a6bf2b2eee1921cb2e8c9cb9efc7a6beaf48`; exact comparison against tested source `45761f887913550debbf5a91a79278a5375b7f8d` proves it is one commit ahead and its only changed file is `docs/worldstage/evidence/WORLDSTAGE_MOBILE_V2_VISUAL_EVIDENCE.pdf`. Runtime/test provenance therefore remains attributed to `45761f887913550debbf5a91a79278a5375b7f8d`.
 
 ### Preview deployed
 
-**Yes for exact tested source `b4af2b116abb046ffe77df2154873be413b04feb`.** Vercel deployment `dpl_HrdWxFMCoiBLmajMxXRiLfr1ZqHS` is READY, Git-sourced from exact SHA `b4af2b116abb046ffe77df2154873be413b04feb`, attached to `redesign/mobile-first-v2` / PR #1, and non-production (`target: null`). Build logs prove Vercel cloned exact commit `b4af2b1`, completed the build and deployed outputs successfully. Fresh exact-preview error/fatal runtime-log lookup found no matching logs in the checked one-hour window.
+**Yes for exact tested source `45761f887913550debbf5a91a79278a5375b7f8d`.** Vercel deployment `dpl_9xmKtipz8j6MoWmFLGbGMCEwSn7T` is READY, Git-sourced from exact SHA `45761f887913550debbf5a91a79278a5375b7f8d`, attached to `redesign/mobile-first-v2` / PR #1, and non-production (`target: null`). Build logs prove Vercel cloned exact commit `45761f8`, completed the build and deployed outputs successfully. Fresh exact-preview error/fatal runtime-log lookup found no matching logs in the checked one-hour window.
 
 Preview READY/runtime health is deployability evidence only; it is not live-staging or production proof.
 
 ### Live staging
 
-**No.** No real WorldStage staging PostgreSQL/Supabase, authentication, signed-user RLS, provider backup/restore or live kill-switch environment is bound or proven. Run #782 remains intentionally fail-closed for live-staging creation.
+**No.** No real WorldStage staging PostgreSQL/Supabase, authentication, signed-user RLS, provider backup/restore or live kill-switch environment is bound or proven. Run #783 remains intentionally fail-closed for live-staging creation.
 
 ### Production verified / released for this line
 
@@ -87,7 +87,7 @@ Preview READY/runtime health is deployability evidence only; it is not live-stag
 
 ## Done
 
-The **accessibility-name/action-state spoofing fail-closed boundary** milestone is **documented → implemented → tested → preview-deployed** for exact runtime/test source `b4af2b116abb046ffe77df2154873be413b04feb`, run #782, and exact-source Vercel preview `dpl_HrdWxFMCoiBLmajMxXRiLfr1ZqHS`.
+The **canonical stage/list ARIA self-repair** milestone is **documented → implemented → tested → preview-deployed** for exact runtime/test source `45761f887913550debbf5a91a79278a5375b7f8d`, run #783, and exact-source Vercel preview `dpl_9xmKtipz8j6MoWmFLGbGMCEwSn7T`.
 
 ## In progress
 
@@ -102,19 +102,19 @@ No provider, database, live-staging, production or destructive operation is in p
 5. Physical-device/Cherry acceptance remains separate from automated browser/device tests.
 6. Authentic owner-approved Cherry/program/client content and rights evidence remain separate gates.
 7. Production release remains separately unauthorized and fail-closed.
-8. Pandora Memory health/search is operational, but fresh WorldStage retrieval still returns no matching canonical operational-state record. The exposed Memory interface provides search but no canonical WorldStage write/promotion operation, so newer evidence remains durably preserved in GitHub/CI/Vercel until canonical promotion becomes available. No WorldStage synchronization is claimed without exact Memory evidence.
+8. Pandora Memory health/search is operational, but WorldStage retrieval has not yet returned a matching canonical operational-state record and the exposed Memory interface provides no canonical WorldStage write/promotion operation. Newer evidence therefore remains durably preserved in GitHub/CI/Vercel until canonical promotion becomes available. No WorldStage synchronization is claimed without exact Memory evidence.
 
 ## Risks
 
 - The continuity indicator remains synthetic/local-demo UI and must not be mistaken for a real client workflow state.
-- The ARIA-spoofing guard is a defensive UI integrity invariant for accidental/local DOM mutation; it is not an authorization or security boundary against arbitrary hostile script execution.
-- Descendant accessibility-name/action-state spoofing is now neutralized, but direct semantic tampering on the trusted continuity list or canonical stage `ARTICLE` elements remains a separate integrity boundary unless it targets fields already restored by the current fixed semantics.
+- The self-repair guard is a defensive UI integrity invariant for accidental/local DOM mutation; it is not an authorization or security boundary against arbitrary hostile script execution.
+- Direct ARIA semantic tampering is now repaired, but mutation of the canonical step identity/ordering markers remains a separate integrity boundary and should continue to fail closed rather than infer real workflow state.
 - Preview READY does not imply live staging or production suitability.
 - Automated browser/device verification does not replace Cherry's physical-device acceptance.
 
 ## Next autonomous action
 
-Harden **canonical stage/list ARIA self-repair**: remove non-allowlisted accessibility-name/reference/action-state/value attributes injected directly onto the trusted continuity list or canonical stage `ARTICLE` elements, then deterministically restore only the fixed trusted list/stage semantics (`role`, fixed labels, synthetic-demo description reference, position metadata and current-step state). Add mandatory Phase 4 regression coverage proving direct canonical-element mutations fail closed while Resume remains the sole stage-related owner action and no persistence, provider access, private data, spending or production authority is added.
+Harden **canonical step identity/ordering mutation fail-closed behavior**: cover direct mutation, duplication, removal and reordering of `data-cherry-engagement-continuity-step` markers so the trusted semantic list is cleared whenever the exact three-step identity/order contract is broken, and only returns when the canonical renderer re-emits the valid sequence. Add mandatory Phase 4 regression coverage while preserving Resume, local synthetic state, zero provider/network writes, and the same no-spend/no-production boundary.
 
 ## Explicit non-claims
 
