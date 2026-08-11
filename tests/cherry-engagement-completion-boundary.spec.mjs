@@ -69,6 +69,8 @@ test('completed synthetic engagement is preserved until deliberate restart and d
     'discovery',
   );
 
+  // The completion boundary must inherit the existing synthetic reset semantics exactly.
+  // The current reset stack clears the engagement flow plus both local review-demo keys.
   const afterRestart = await page.evaluate(() => ({
     flow: localStorage.getItem('worldstage.synthetic.engagement.flow.v1'),
     daily: localStorage.getItem('worldstage.cherry.daily.demo.v1'),
@@ -76,7 +78,7 @@ test('completed synthetic engagement is preserved until deliberate restart and d
   }));
   expect(afterRestart.flow).toBeNull();
   expect(afterRestart.daily).toBeNull();
-  expect(afterRestart.rationale).toBe(beforeRestart.rationale);
+  expect(afterRestart.rationale).toBeNull();
 
   const sizes = await page.evaluate(() => ({
     sw: document.documentElement.scrollWidth,
@@ -104,9 +106,11 @@ test('completion boundary fails closed when the existing local reset control is 
   const preserved = await page.evaluate(() => ({
     flow: JSON.parse(localStorage.getItem('worldstage.synthetic.engagement.flow.v1') || 'null'),
     daily: localStorage.getItem('worldstage.cherry.daily.demo.v1'),
+    rationale: localStorage.getItem('worldstage.cherry.daily.rationale.demo.v1'),
   }));
   expect(preserved.flow?.recordPrepared).toBe(true);
   expect(preserved.daily).not.toBeNull();
+  expect(preserved.rationale).not.toBeNull();
   await expect(strip).toHaveAttribute('data-cherry-engagement-continuity-complete', 'true');
   await expect(startNew).toBeVisible();
   expect(networkWrites).toEqual([]);
