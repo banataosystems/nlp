@@ -12,45 +12,45 @@
 
 The highest-value autonomous line remains Cherry-facing operating value using synthetic/local demo state while real provider/data boundaries stay fail-closed.
 
-## Latest completed product milestone — ephemeral reset confirmation
+## Latest completed product milestone — synthetic owner action card
 
-Cherry's completed local-demo engagement now has an explicit two-step reset boundary before the existing synthetic reset is invoked.
+Cherry's existing synthetic engagement continuity, handoff cue and Resume action are now consolidated into one compact phone-first owner action card without changing the underlying local-demo flow contract.
 
-It:
-- appears only from the existing completed synthetic-engagement `Start a new synthetic engagement →` action;
-- keeps confirmation state only in the current page DOM and creates no new browser-storage key;
-- states in fixed copy that only the local synthetic engagement and demo review state will be cleared and that no real client record, provider data or production system is changed;
-- exposes only fixed `Cancel` and `Start new synthetic engagement →` confirmation choices;
-- preserves the completed synthetic engagement unchanged while confirmation is open;
-- preserves the completed state when `Cancel` is tapped;
-- on confirmation, re-verifies the sanitized completed version-1 flow and delegates exclusively to the already-existing `[data-synthetic-flow-reset]` control;
-- fails closed and preserves completed local state if the existing reset control is unavailable;
-- ignores injected private/production-looking flow fields and creates no backend deletion, provider call, network write, analytics event, task, message, score, private-source lookup, staging action or production authority.
+The owner action card:
+- shows only the current fixed stage: `Discovery`, `Cherry review`, or `Transformation Record`;
+- keeps the existing fixed previous-stage, prepared-state and next-action cue inside the same card;
+- exposes exactly one allowlisted `Resume →` action inside the card;
+- keeps the three-stage continuity markers directly below the card;
+- keeps completed-engagement `Start a new synthetic engagement →` outside the owner action card so reset remains a separate deliberate boundary;
+- preserves the existing page-memory reset confirmation and delegates confirmed reset only to the existing local synthetic reset;
+- derives all displayed state from the same sanitized version-1 three-boolean engagement-flow record;
+- fails closed to Discovery on malformed/wrong-version state and ignores arbitrary private/production-looking fields;
+- creates no new storage key, free text, score, recommendation model, task, message, analytics event, private-source lookup, CRM/email/calendar/database/provider write, staging action or production authority.
 
 Implementation/test surfaces:
-- `src/cherry-engagement-reset-confirmation.js`;
-- `index.html`;
-- `tests/cherry-engagement-reset-confirmation.spec.mjs`;
-- `tests/cherry-engagement-completion-boundary.spec.mjs`;
-- `package.json` mandatory Phase 4 gate.
+- `src/cherry-engagement-continuity.js`;
+- `src/cherry-engagement-continuity.css`;
+- `src/cherry-engagement-reset-confirmation.js` compatibility update;
+- `tests/cherry-engagement-continuity.spec.mjs`;
+- existing Phase 4 reset-confirmation/completion-boundary regression coverage.
 
 ## Proof-state separation
 
 ### Documented
 
-**Yes.** This roadmap and PR evidence now record the reset-confirmation milestone separately from the prior completion-boundary milestone. The prior verified completion-boundary source `03f835b5263a705772d80301a2ee80dfe11b5f9c`, run #694 and associated artifacts/deployments remain preserved in history.
+**Yes.** This roadmap and PR evidence record the owner-action-card milestone separately from the prior reset-confirmation milestone. The prior verified reset-confirmation source `4703fe11874536ce65b44d8818eda8c1bf657b21`, run #698 and its associated artifacts/deployments remain preserved in history.
 
 ### Implemented
 
-**Yes for exact tested product/test source `4703fe11874536ce65b44d8818eda8c1bf657b21`.**
+**Yes for exact tested product/test source `7ccf9dc2af321d5e3bca97f59e59712b61b11261`.**
 
-The implementation is additive and local to the existing synthetic completion/reset path. It intercepts the existing start-new action only to require a page-memory confirmation; actual reset behavior remains owned by the pre-existing reset control.
+The first owner-action-card source line reached `71318be961b8f8eaec81ac554c3f8ea580bb9158`, but full regression verification exposed a compatibility break in the existing reset-confirmation DOM anchor after the completed-engagement reset action was intentionally moved outside the owner action card. The final exact source `7ccf9dc2...` adds a narrow compatibility selector accepting both the new completion-actions container and the prior actions container while preserving the same reset semantics.
 
 ### Tested
 
-**Yes for exact source `4703fe11874536ce65b44d8818eda8c1bf657b21`.** GitHub Actions run `31450771875` / **#698 completed SUCCESS** across the complete mandatory chain.
+**Yes for exact source `7ccf9dc2af321d5e3bca97f59e59712b61b11261`.** GitHub Actions run `31454022703` / **#702 completed SUCCESS** across the complete mandatory chain.
 
-Run #698 passed:
+Run #702 passed:
 - owner/security decision-evidence enforcement;
 - fail-closed secure-intake runtime;
 - fail-closed staging preflight;
@@ -58,43 +58,44 @@ Run #698 passed:
 - iPhone/WebKit and Pixel/Chromium device-class checks;
 - Phase 2 SQL/staging;
 - Discovery Phase 3;
-- Cherry OS Phase 4 including the reset-confirmation and updated completion-boundary tests;
+- Cherry OS Phase 4 including owner-action-card, completion-boundary and reset-confirmation regression coverage;
 - Transformation Record Phase 5;
 - release/security/privacy checks;
 - visual evidence;
-- exact-head staging-readiness regeneration and evidence uploads.
+- exact-head staging-readiness regeneration and both evidence uploads.
 
-Focused reset-confirmation coverage proves:
-- opening confirmation does not clear or mutate the completed synthetic engagement;
-- `Cancel` removes the confirmation and preserves the existing local flow, decision and rationale state;
-- explicit confirm delegates to the existing local reset and returns the continuity strip to Discovery;
-- the established reset clears the synthetic flow plus local demo decision/rationale keys;
-- removal of the existing reset control causes confirmation to fail closed with the completed state preserved;
-- injected reset-route/private-looking fields do not become confirmation content;
+Focused owner-action-card coverage proves:
+- Discovery, Cherry review and Transformation Record each render a single owner action card with current stage, previous stage, prepared state, next action and exactly one `Resume →` control;
+- rendering the card does not mutate the existing synthetic engagement-flow storage value;
+- Resume remains navigation/focus only and does not mutate flow state;
+- completed-engagement start-new remains outside the owner action card;
+- the existing two-step reset confirmation remains functional after that separation;
+- malformed/wrong-version flow state fails closed to Discovery;
+- injected private-client, production-release, previous-stage or arbitrary route fields do not become displayed card content or authority;
 - zero POST/PUT/PATCH/DELETE requests occur;
 - the 390px phone surface remains within horizontal bounds.
 
 ### Preserved failed verification
 
-Run `31450555274` / **#696 failed Phase 4** after the confirmation was introduced because two older completion-boundary tests still assumed the previous one-click reset behavior. The new runtime correctly stopped the direct reset and displayed confirmation, but the old assertions expected immediate Discovery and an immediately visible original start-new button. Those tests were updated to verify the new two-step confirmation contract while preserving the existing reset semantics. Run #698 then passed the complete mandatory chain. The failed run remains preserved as historical evidence rather than being rewritten as success.
+Run `31453791115` / **#700 failed Phase 4** on exact source `71318be961b8f8eaec81ac554c3f8ea580bb9158`. Mobile, device, Phase 2 and Discovery checks had already passed. Five existing completion/reset-confirmation tests failed because the reset-confirmation module still searched only the old `.cherry-engagement-continuity__actions` parent after the completed-engagement reset action had been separated into `.cherry-engagement-continuity__completion-actions`. The failure was a real regression signal, not suppressed or reclassified. Source `7ccf9dc2...` repaired that compatibility boundary without returning reset into the owner action card, and run #702 then passed the complete mandatory chain.
 
-Run #698 artifacts:
-- staging-readiness artifact `9086286099`, digest `sha256:c00616df98d0fdc6467d686f08eb0c31e79ded4c7aa2626b24ecb0e8692ed6c9`;
-- mobile visual artifact `9086286525`, digest `sha256:4193df1f7fc5623cbd6498a52eb200fdcd444f52cbae913f4b81a9793ebe0928`.
+Run #702 artifacts:
+- staging-readiness artifact `9087409838`, digest `sha256:79ceb763e3d35a5e3ecc4b1032a63f08d3a7e54f3bedbaa9f9e17933e28e1870`;
+- mobile visual artifact `9087410361`, digest `sha256:30aecf7fda808102cd3a1fef8439a6814af30a48f07d25f6162b8fb88573bb01`.
 
-The exact #698 staging-readiness ZIP was downloaded and inspected directly. Its internal `source_sha` exactly matches `4703fe11874536ce65b44d8818eda8c1bf657b21`; `readiness = BLOCKED`; confidential intake is disabled; anonymous intake denied; file uploads/private AI/private analytics disabled; production release blocked; persistence remains unselected; adapter binding false; no staging or production project IDs are bound; and D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 remain OPEN.
+The exact #702 staging-readiness ZIP was downloaded and inspected directly. Its internal `source_sha` exactly matches `7ccf9dc2af321d5e3bca97f59e59712b61b11261`; `readiness = BLOCKED`; confidential intake is disabled; anonymous intake denied; file uploads/private AI/private analytics disabled; production release blocked; persistence remains unselected; adapter binding false; no staging or production project IDs are bound; and D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 remain OPEN.
 
 ### Preview deployed
 
-**Yes for exact tested source `4703fe11874536ce65b44d8818eda8c1bf657b21`.** Vercel preview `dpl_EC3fPLoTDsGPpCH9Rdue6o14mJqp` is READY, Git-sourced from the exact source SHA and non-production (`target: null`).
+**Yes for exact tested source `7ccf9dc2af321d5e3bca97f59e59712b61b11261`.** Vercel preview `dpl_5B8Hp91mr271PYrpcsJQkWku6GtR` is READY, Git-sourced from the exact source SHA and non-production (`target: null`).
 
-CI evidence-only child `584b5688d878bd655ce714906c8332bdd100c6ea` preserves generated visual evidence and has READY non-production preview `dpl_vzZArNWsr9VdQQu79D62s9yEr5wv`.
+CI evidence-only child `34a9bc967ccb3e9fabf8df6de76279f082e7fcb7` preserves generated visual evidence. Preview/deployment evidence for the exact tested product source remains attributed to `dpl_5B8Hp...`; no production implication is inferred from evidence-only children.
 
 Preview READY is deployability/provenance evidence only. It is not live-staging or production proof.
 
 ### Live staging
 
-**No.** No real WorldStage staging PostgreSQL/Supabase, authentication, signed-user RLS, provider backup/restore or live kill-switch environment is bound or proven. The exact #698 staging-readiness evidence intentionally remains fail-closed.
+**No.** No real WorldStage staging PostgreSQL/Supabase, authentication, signed-user RLS, provider backup/restore or live kill-switch environment is bound or proven. The exact #702 staging-readiness evidence intentionally remains fail-closed.
 
 ### Production verified / released for this line
 
@@ -102,13 +103,13 @@ Preview READY is deployability/provenance evidence only. It is not live-staging 
 
 ## Done
 
-The **ephemeral reset confirmation** is now **documented → implemented → tested → preview-deployed** for exact source `4703fe11874536ce65b44d8818eda8c1bf657b21`, run #698 and preview `dpl_EC3fPLoTDsGPpCH9Rdue6o14mJqp`.
+The **synthetic owner action card** is now **documented → implemented → tested → preview-deployed** for exact source `7ccf9dc2af321d5e3bca97f59e59712b61b11261`, run #702 and preview `dpl_5B8Hp91mr271PYrpcsJQkWku6GtR`.
 
-Cherry can now review a completed local synthetic engagement, choose to start a new one, see exactly what the local reset affects, cancel without changing anything, or explicitly confirm the already-existing local reset behavior.
+Cherry now has one compact phone-first local-demo decision surface that answers where the engagement is, what came before, what is ready, what is next, and provides one Resume action, while reset remains a separate confirmed action.
 
 ## In progress
 
-This roadmap reconciliation is documentation-only and uses `[skip ci]`; it may create a newer repository/Vercel documentation head after exact tested source `4703fe11...`. Test proof remains attributed to exact tested product/test source `4703fe11...` rather than being falsely transferred to a documentation-only child.
+This roadmap reconciliation is documentation-only and uses `[skip ci]`; it may create a newer repository/Vercel documentation head after exact tested source `7ccf9dc2...`. Test proof remains attributed to exact tested product/test source `7ccf9dc2...` rather than being falsely transferred to a documentation-only child.
 
 ## Hard blockers / gates intentionally not crossed
 
@@ -123,15 +124,15 @@ This roadmap reconciliation is documentation-only and uses `[skip ci]`; it may c
 
 ## Risks
 
-- A polished synthetic owner workflow can look operational even though it is not connected to real WorldStage records; all product-facing demo state therefore remains explicitly synthetic/local-only.
+- A polished synthetic owner action card can look operational even though it is not connected to real WorldStage records; all card state remains explicitly local synthetic/demo state.
+- `Prepared`, `Previous stage`, and `Next` are deterministic labels derived from three sanitized booleans; they are not an audit trail, recommendation, client fact, approval, urgency judgment or proof that real-world work occurred.
 - `Start a new synthetic engagement` and its confirmation concern only browser-local demo state; they are not deletion, cancellation, archival, consent withdrawal, or any business/legal action for a real client.
-- The confirmation deliberately delegates reset execution to the existing local reset implementation rather than creating a second reset contract; future changes to that established reset require their own regression proof.
 - Provider-neutral/synthetic tests cannot substitute for live authorization, security, recovery, operational proof or Cherry's physical-device acceptance.
 - Preview READY does not imply live staging or production suitability.
 
 ## Next autonomous action
 
-Move away from reset-loop mechanics and improve owner usability with a compact **synthetic owner action card** that consolidates the existing continuity stage, prepared/next handoff cue and single Resume action into one phone-first decision surface without changing underlying local state. Keep the existing reset confirmation separate, reuse only sanitized fixed-vocabulary flow state, and add no persistence, private-source access, scoring, external task/message creation, provider binding, spending or production authority.
+Add a compact fixed-vocabulary **owner attention cue** inside the synthetic owner action card, derived only from the same sanitized stage state, that answers `Needs Cherry now` versus `Continue prepared flow` without scoring, urgency inference, free text or new persistence. Keep it navigation/read-only, preserve the separate reset confirmation, and add no private-source access, external task/message creation, provider binding, spending or production authority.
 
 ## Explicit non-claims
 
