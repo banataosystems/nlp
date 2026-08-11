@@ -227,8 +227,11 @@ function enhanceCherryStepOrientation() {
     step.setAttribute('aria-setsize', CHERRY_STEP_SET_SIZE);
     step.dataset.cherryEngagementStepOrientation = status;
     if (step.getAttribute('aria-label') !== accessibleLabel) step.setAttribute('aria-label', accessibleLabel);
-    if (status === 'current') step.setAttribute('aria-current', 'step');
-    else step.removeAttribute('aria-current');
+    if (status === 'current') {
+      if (step.getAttribute('aria-current') !== 'step') step.setAttribute('aria-current', 'step');
+    } else if (step.hasAttribute('aria-current')) {
+      step.removeAttribute('aria-current');
+    }
   });
 }
 
