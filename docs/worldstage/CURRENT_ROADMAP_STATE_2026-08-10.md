@@ -121,7 +121,7 @@ This roadmap reconciliation is documentation-only and uses `[skip ci]`; it creat
 5. Physical-device/Cherry acceptance remains separate from automated browser/device tests.
 6. Authentic owner-approved Cherry/program/client content and rights evidence remain separate gates.
 7. Production release remains separately unauthorized and fail-closed.
-8. Pandora Memory health/search is reachable through the ProjectOS workload identity, but WorldStage retrieval still returns no canonical project context and the exposed Memory search surface provides no canonical WorldStage write/promotion operation. GitHub/CI/Vercel remain the durable evidence fallback for this milestone; no WorldStage Pandora canonical synchronization is claimed.
+8. Pandora Memory health/search is reachable and returns the canonical hard-canon `worldstage-cherry` project instruction, but it does not return a current operational-state record matching this milestone's source/run/deployment evidence. The exposed ProjectOS Memory surface provides only health/search and no canonical write/promotion operation, so the newer verified state cannot be promoted there from this run. GitHub/CI/Vercel remain the durable evidence fallback; no synchronization of this new milestone into Pandora is claimed.
 
 ## Risks
 
@@ -144,5 +144,5 @@ Add semantic current-step orientation to the three-stage synthetic continuity in
 - No real client engagement stage, history, deletion, The Room briefing content or Transformation Record outcome is claimed.
 - No owner/security approval is inferred from code/tests.
 - No physical-device owner approval is inferred from automation.
-- No successful WorldStage Pandora canonical synchronization is claimed.
+- No successful WorldStage Pandora synchronization of this new milestone is claimed.
 - No production release of the active line is claimed.
