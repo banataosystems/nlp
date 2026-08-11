@@ -12,89 +12,89 @@
 
 The active autonomous line remains Cherry-facing operating value using sanitized synthetic/local demo state while real provider/data boundaries stay fail-closed.
 
-## Latest completed product milestone — The Room source-connection boundary
+## Latest completed product milestone — accessibility-only stage / owner-attention live region
 
-Cherry's phone-first synthetic owner action card now extends the stage-gated **The Room** read-only surface with one fixed source-connection boundary during sanitized `Cherry review`:
+Cherry's phone-first synthetic owner action card now has one persistent, accessibility-only `role="status"` live region that announces **only sanitized stage + fixed owner-attention changes** while the cockpit remains active.
 
-`External/private sources are not queried by this demo.`
+The fixed announcement vocabulary is:
+- `Discovery` → `Synthetic engagement stage changed to Discovery. Owner attention: Continue prepared flow.`
+- `Cherry review` → `Synthetic engagement stage changed to Cherry review. Owner attention: Needs Cherry now.`
+- `Transformation Record` → `Synthetic engagement stage changed to Transformation Record. Owner attention: Continue prepared flow.`
 
 It:
-- appears only when the sanitized continuity stage is `review` and the existing Resume route is the allowlisted `cockpit` route;
-- sits beside the existing fixed `Sources · synthetic demo only` status and adds no action;
-- is derived from a fixed source constant rather than localStorage, user, provider or private values;
-- explicitly distinguishes the current synthetic demo from any future external/private source connection;
-- ignores injected source-status, source-boundary, room-availability, readiness, private-client, production-release and boundary-looking values;
-- disappears in Discovery and Transformation Record;
-- fails closed for malformed/wrong-version synthetic state;
-- disappears if an unexpected Resume route such as `production` is injected;
-- preserves exactly one button in the owner action card;
-- creates no source lookup, credential request, storage key, backend/audit record, task, message, free text, score, inference, CRM/email/calendar/database/provider write, client communication, staging action, spending or production authority.
+- derives stage only from the existing sanitized continuity strip and route only from the existing allowlisted Resume route;
+- does not announce on initial valid render, avoiding redundant page-load noise;
+- announces only after the sanitized stage/attention key changes during the active cockpit lifecycle;
+- uses `role="status"`, `aria-live="polite"`, `aria-atomic="true"`, and a fixed accessibility label;
+- remains visually hidden without changing phone layout or adding another visible control;
+- ignores injected attention/private-client/production/release-looking fields because none of them participate in the announcement mapping;
+- fails closed to the sanitized Discovery announcement for malformed/wrong-version flow state;
+- removes the live region entirely if the owner card disappears or an unexpected Resume route such as `production` is injected;
+- preserves the existing single Resume action and all existing The Room source/status/readiness/boundary cues;
+- creates no new storage key, write, analytics event, task, message, free text, score, inference, provider call, client communication, credential request, staging action, spending or production authority.
 
 Implementation/test surfaces:
 - `src/cherry-engagement-resume-consequence.js`;
-- `tests/cherry-engagement-room-availability.spec.mjs`;
-- existing mandatory `package.json` Phase 4 test gate.
-
-The prior The Room source status, availability cue, readiness mini-check, fixed non-authority boundary and wired Resume consequence remain intact.
+- `tests/cherry-engagement-live-region.spec.mjs`;
+- mandatory `package.json` Phase 4 test gate.
 
 ## Proof-state separation
 
 ### Documented
 
-**Yes.** This roadmap records the source-connection boundary separately from implementation/test/deployment proof. Historical milestone detail remains recoverable from Git history.
+**Yes.** This roadmap records the accessibility live-region milestone separately from implementation/test/deployment proof. Historical milestone detail remains recoverable from Git history.
 
 ### Implemented
 
-**Yes for exact product/test source `2989d6af28f8c6c4bf2e66c45333be48f6d44969`.**
+**Yes for exact product/test source `11ef480e1e2200cdd4d75faf0b72da10ffa305de`.**
 
-The runtime adds only fixed read-only source-connection copy inside the already-loaded, sanitized The Room enhancer. The synthetic engagement-flow storage contract and authority boundaries are unchanged.
+The runtime extends the already-loaded sanitized owner-card enhancer with one accessibility-only live region and no new persistence or authority surface.
 
 ### Tested
 
-**Yes for exact source `2989d6af28f8c6c4bf2e66c45333be48f6d44969`.** GitHub Actions run `31483987183` / **#738 completed SUCCESS** across the complete mandatory chain.
+**Yes for exact source `11ef480e1e2200cdd4d75faf0b72da10ffa305de`.** GitHub Actions run `31488886469` / **#740 completed SUCCESS** across the complete mandatory chain.
 
-Run #738 passed:
+Run #740 passed:
 - owner/security decision-evidence enforcement;
 - fail-closed secure-intake runtime and exact-head staging preflight;
 - six-width mobile contract;
 - iPhone/WebKit and Pixel/Chromium device-class checks;
 - Phase 2 SQL/staging;
 - Discovery Phase 3;
-- Cherry OS Phase 4 including updated The Room source-status/source-connection-boundary/availability/readiness/boundary coverage plus existing continuity/attention/Resume/completion/reset regressions;
+- Cherry OS Phase 4 including the dedicated accessibility live-region regression plus existing continuity/attention/Resume/The Room/completion/reset regressions;
 - Transformation Record Phase 5;
 - release/security/privacy checks;
 - visual evidence;
 - exact-head staging-readiness regeneration and both evidence uploads.
 
-Focused Phase 4 coverage proves:
-- Discovery renders no The Room source status, source-connection boundary, availability, readiness or boundary;
-- sanitized Cherry review renders exactly one fixed `Sources · synthetic demo only` status, exactly one fixed `External/private sources are not queried by this demo.` boundary, one The Room cue, three fixed readiness items and one fixed non-authority boundary note;
-- injected source-status, source-boundary, room-availability, readiness, private-client, production-release and boundary-looking values cannot become displayed content or authority;
-- Transformation Record renders none of those The Room surfaces;
-- rendering does not mutate the existing synthetic engagement-flow storage value;
-- malformed/wrong-version flow fails closed to Discovery with no The Room surface;
-- an injected unexpected `production` Resume route removes source status, source-connection boundary, availability, readiness and boundary;
-- the owner action card still exposes exactly one button, the existing Resume control;
-- zero POST/PUT/PATCH/DELETE requests occur;
-- the 390px phone surface remains within horizontal bounds.
+Focused live-region coverage proves:
+- one accessibility-only status region exists for a valid sanitized cockpit state;
+- it is `role="status"`, `aria-live="polite"`, `aria-atomic="true"`, and visually hidden to a 1px box;
+- initial valid render is silent rather than manufacturing a change announcement;
+- sanitized transition to Transformation Record announces only the fixed Transformation Record / prepared-flow message;
+- malformed/wrong-version state fails closed to Discovery and announces only the fixed Discovery / prepared-flow message;
+- injected private/production/attention-looking values never become announcement content;
+- an injected unexpected `production` Resume route removes the live region;
+- the 390px phone surface remains within horizontal bounds;
+- zero POST/PUT/PATCH/DELETE requests occur.
 
-Run #738 artifacts:
-- staging-readiness artifact `9098405395`, digest `sha256:d22e7ebed25d49fd91198703109fe6d9893fe84aadb76d8c881f92e476573048`;
-- mobile visual artifact `9098405896`, digest `sha256:8b8504d05df1804172820eb10d86b446026b3123cef5447116a0cd18dfa7101f`.
+Run #740 artifacts:
+- staging-readiness artifact `9100268092`, digest `sha256:4e22533b55c73dba3c6193f54ad0356bc2e448e7f84c79be79ee5b5627328d9f`;
+- mobile visual artifact `9100268452`, digest `sha256:9cde37052f9b87a4905c50941c2f62b5917b131b52e2a5280dbd7d64b6c3f1de`.
 
-The exact #738 staging-readiness ZIP was downloaded and inspected directly. Its internal `source_sha` exactly matches `2989d6af28f8c6c4bf2e66c45333be48f6d44969`; `readiness = BLOCKED`; confidential intake is disabled; anonymous intake denied; file uploads/private AI/private analytics disabled; production release blocked; persistence is unselected; adapter binding is false; no staging or production project IDs are bound; and D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 remain OPEN.
+The exact #740 staging-readiness ZIP was downloaded and inspected directly. Its internal `source_sha` exactly matches `11ef480e1e2200cdd4d75faf0b72da10ffa305de`; `readiness = BLOCKED`; confidential intake is disabled; anonymous intake denied; file uploads/private AI/private analytics disabled; production release blocked; secure-intake persistence is unselected; adapter binding is false; no staging or production project IDs are bound; and D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 remain OPEN.
 
-The #738 visual-PDF preservation step was skipped because there was no qualifying visual evidence change to commit, so the tested source remains the exact product/test head rather than producing a CI-only child commit.
+The #740 visual-PDF preservation step was skipped because there was no qualifying visual evidence change to commit, so `11ef480...` remains the exact product/test source for the successful run.
 
 ### Preview deployed
 
-**Yes for exact tested source `2989d6af28f8c6c4bf2e66c45333be48f6d44969`.** Vercel preview `dpl_8zSFcWGFpiCGtbaCoxs3ieRNWrA4` is READY, Git-sourced from that exact SHA and non-production (`target: null`). Provider metadata binds it to PR #1 and branch `redesign/mobile-first-v2`.
+**Yes for exact tested source `11ef480e1e2200cdd4d75faf0b72da10ffa305de`.** Vercel preview `dpl_3iGcNajGoT3YN3fPMUBm8n7Fmbao` is READY, Git-sourced from that exact SHA, bound to PR #1 / branch `redesign/mobile-first-v2`, and non-production (`target: null`). Its build log proves exact clone `11ef480`, dependency installation, successful Vercel build and deployment completion.
 
-Vercel runtime-error aggregation found no runtime errors for the `cherrypua` project in the checked 24-hour window. Preview READY/runtime health is deployability evidence only; it is not live-staging or production proof.
+Fresh Vercel runtime-error aggregation for the `cherrypua` project found no runtime errors in the checked 24-hour window. Preview READY/runtime health is deployability evidence only; it is not live-staging or production proof. Direct unauthenticated application fetch remains behind Vercel Deployment Protection, so no public application-level preview claim is made from that protected URL.
 
 ### Live staging
 
-**No.** No real WorldStage staging PostgreSQL/Supabase, authentication, signed-user RLS, provider backup/restore or live kill-switch environment is bound or proven. The exact #738 staging-readiness evidence intentionally remains fail-closed.
+**No.** No real WorldStage staging PostgreSQL/Supabase, authentication, signed-user RLS, provider backup/restore or live kill-switch environment is bound or proven. The exact #740 staging-readiness evidence intentionally remains fail-closed.
 
 ### Production verified / released for this line
 
@@ -102,13 +102,13 @@ Vercel runtime-error aggregation found no runtime errors for the `cherrypua` pro
 
 ## Done
 
-The **The Room source-connection boundary** milestone is **documented → implemented → tested → preview-deployed** for exact source `2989d6af28f8c6c4bf2e66c45333be48f6d44969`, run #738 and exact-source preview `dpl_8zSFcWGFpiCGtbaCoxs3ieRNWrA4`.
+The **accessibility-only stage / owner-attention live-region** milestone is **documented → implemented → tested → preview-deployed** for exact source `11ef480e1e2200cdd4d75faf0b72da10ffa305de`, run #740 and exact-source preview `dpl_3iGcNajGoT3YN3fPMUBm8n7Fmbao`.
 
-Cherry can now see, directly inside The Room's synthetic review surface, both that the source context is demo-only and that the demo does not query external/private sources, without the UI manufacturing or implying source connectivity.
+Cherry's screen-reader experience can now receive deterministic stage/attention change feedback without the prototype manufacturing client facts, urgency, authority or external activity.
 
 ## In progress
 
-This roadmap reconciliation is documentation-only and uses `[skip ci]`; it creates a newer repository/Vercel documentation head after the exact tested source. Exact runtime/test proof remains attributed to `2989d6af...`.
+This roadmap reconciliation is documentation-only and uses `[skip ci]`; it creates a newer repository/Vercel documentation head after the exact tested source. Exact runtime/test proof remains attributed to `11ef480...`.
 
 ## Hard blockers / gates intentionally not crossed
 
@@ -124,13 +124,13 @@ This roadmap reconciliation is documentation-only and uses `[skip ci]`; it creat
 ## Risks
 
 - A polished synthetic owner action card can look operational even though it is not connected to real WorldStage records; all card state remains explicitly local synthetic/demo state.
-- `Sources · synthetic demo only` and `External/private sources are not queried by this demo.` are fixed UI truth for the demo, not proof of source verification, source authorization or access-control enforcement for a future production backend.
-- The Room availability/readiness/boundary/source copy describes only a demo briefing UI structure. It is not evidence that a real meeting, attendee list, client history, recommendation, private source or provider capability is connected.
+- The live-region messages are fixed demo navigation/attention truth, not evidence of real urgency, SLA, client status, approval or operational authority.
+- `Sources · synthetic demo only` and `External/private sources are not queried by this demo.` remain fixed UI truth for the demo, not proof of source verification, source authorization or access-control enforcement for a future production backend.
 - Preview READY does not imply live staging or production suitability.
 
 ## Next autonomous action
 
-Add a small accessibility-only live-region announcement for the synthetic owner action card's sanitized stage and attention changes so Cherry receives clear screen-reader feedback when the local demo advances. Derive it only from existing sanitized display state, add no new action or persistence, and keep malformed/unexpected state fail-closed.
+Add semantic current-step orientation to the three-stage synthetic continuity indicator: exactly one sanitized current stage should expose `aria-current="step"` with fixed status wording, while completed/upcoming stages remain non-current. Keep malformed state fail-closed, avoid focus hijacking, add no action/persistence/provider access, and preserve phone layout.
 
 ## Explicit non-claims
 
