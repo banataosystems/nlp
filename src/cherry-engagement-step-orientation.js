@@ -2,8 +2,9 @@
    Derives solely from the sanitized continuity stage emitted by cherry-engagement-continuity.js.
    Exactly one allowlisted step is current. The fixed three-step sequence is exposed as one semantic list
    with deterministic position metadata, a fixed accessibility-only demo-status boundary description,
-   and enforced passive keyboard semantics even if tabindex is injected into the synthetic stage surface.
-   No focus movement, persistence, provider access, analytics, scoring, private data, spending, or release authority. */
+   and enforced passive keyboard/non-interactive semantics even if tabindex, contenteditable, or draggable
+   attributes are injected into the synthetic stage surface. No focus movement, persistence, provider access,
+   analytics, scoring, private data, spending, or release authority. */
 
 const CHERRY_STEP_ORIENTATION = Object.freeze({
   discovery: Object.freeze({
@@ -40,13 +41,18 @@ const CHERRY_STEP_LIST_LABEL = 'Synthetic engagement stages';
 const CHERRY_STEP_SET_SIZE = String(CHERRY_STEP_SEQUENCE.length);
 const CHERRY_STEP_BOUNDARY_ID = 'cherry-engagement-step-boundary-description';
 const CHERRY_STEP_BOUNDARY_TEXT = 'Synthetic demo stages only. Not a verified real-client engagement status.';
+const CHERRY_STEP_PASSIVE_ATTRIBUTES = Object.freeze(['tabindex', 'contenteditable', 'draggable']);
 
 let cherryStepOrientationQueued = false;
 
+function stripCherryStepInteractiveAttributes(node) {
+  CHERRY_STEP_PASSIVE_ATTRIBUTES.forEach((attribute) => node.removeAttribute(attribute));
+}
+
 function enforceCherryStepPassivity(strip) {
-  strip.removeAttribute('tabindex');
+  stripCherryStepInteractiveAttributes(strip);
   strip.querySelectorAll('[data-cherry-engagement-continuity-step], [data-cherry-engagement-step-boundary]').forEach((node) => {
-    node.removeAttribute('tabindex');
+    stripCherryStepInteractiveAttributes(node);
   });
 }
 
@@ -68,7 +74,7 @@ function ensureCherryStepBoundary(strip) {
 
   description.id = CHERRY_STEP_BOUNDARY_ID;
   description.hidden = true;
-  description.removeAttribute('tabindex');
+  stripCherryStepInteractiveAttributes(description);
   description.textContent = CHERRY_STEP_BOUNDARY_TEXT;
   strip.setAttribute('aria-describedby', CHERRY_STEP_BOUNDARY_ID);
 }
@@ -146,7 +152,12 @@ if (cherryStepOrientationApp) {
     childList: true,
     subtree: true,
     attributes: true,
-    attributeFilter: ['data-cherry-engagement-continuity-stage', 'tabindex'],
+    attributeFilter: [
+      'data-cherry-engagement-continuity-stage',
+      'tabindex',
+      'contenteditable',
+      'draggable',
+    ],
   });
 }
 window.addEventListener('hashchange', scheduleCherryStepOrientation);
