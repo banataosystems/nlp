@@ -12,52 +12,46 @@
 
 The highest-value autonomous line remains Cherry-facing operating value using synthetic/local demo state while real provider/data boundaries stay fail-closed.
 
-## Latest completed product milestone — wired, accessible Resume consequence
+## Latest completed product milestone — stage-gated The Room availability cue
 
-Cherry's phone-first synthetic owner action card now states, before the single `Resume →` action is used, exactly what that action can and cannot do.
+Cherry's phone-first synthetic owner action card now surfaces one fixed, read-only **The Room** availability cue only when the sanitized current stage is `Cherry review`.
 
-The Resume consequence:
-- derives only from the existing allowlisted Resume route `discovery`, `cockpit`, or `client`;
-- says Discovery Resume only opens the existing synthetic Discovery step;
-- says Cherry-review Resume only focuses the existing synthetic Cherry review step;
-- says Transformation-Record Resume only opens the existing synthetic Transformation Record step;
-- states in every case that Resume does not submit, send, approve, persist, or release anything;
-- is semantically associated with the Resume button through `aria-describedby` so the consequence is available to assistive technology before activation;
-- removes both the cue and `aria-describedby` if an unexpected route is injected;
-- keeps exactly one Resume button in the owner action card;
-- leaves navigation/focus behavior owned by the already-tested continuity workflow;
-- creates no new persistence, free text, score, analytics event, task, message, private-source access, CRM/email/calendar/database/provider write, staging action, spending or production authority.
+The cue:
+- appears only when the existing sanitized engagement continuity state resolves to `Cherry review` and the existing Resume route is the allowlisted `cockpit` route;
+- states exactly that the demo-only The Room briefing pattern is available from the active judgment card;
+- states that no verified private client facts are connected;
+- reuses the already-existing The Room briefing pattern in the Phase 4 cockpit rather than creating another action;
+- does not appear during Discovery or Transformation Record;
+- fails closed on malformed/wrong-version engagement state;
+- is removed if an unexpected Resume route such as `production` is injected;
+- ignores injected room-availability, private-client and production-looking fields;
+- preserves exactly one Resume button inside the owner action card;
+- creates no storage key, free text, score, analytics event, task, message, private-source lookup, CRM/email/calendar/database/provider write, staging action, spending or production authority.
 
 Implementation/test surfaces:
 - `src/cherry-engagement-resume-consequence.js`;
-- `src/cherry-engagement-resume-consequence.css`;
-- `index.html`;
-- `tests/cherry-engagement-resume-consequence.spec.mjs`;
+- `tests/cherry-engagement-room-availability.spec.mjs`;
 - `package.json` mandatory Phase 4 gate.
 
-## Provenance correction preserved
-
-An earlier feature commit `4dbcd145df200fb983eb24992a0790593ecfddb6` added `src/cherry-engagement-resume-consequence.js`, and GitHub Actions run #718 passed the existing mandatory chain. Recovery in this work cycle found that the new module was not loaded by `index.html` and no dedicated Resume-consequence test was included in `test:phase4`. Therefore run #718 is preserved as historical evidence, but it is **not** used as proof that the new cue was runtime-wired and specifically tested.
-
-The gap was corrected by loading the module and phone-first styles, adding dedicated fail-closed Playwright coverage, adding that coverage to the mandatory Phase 4 gate, and then binding the cue accessibly to the Resume control.
+The prior wired, accessible Resume-consequence milestone remains intact and continues to provide the single Resume control's pre-activation navigation/focus consequence through `aria-describedby`.
 
 ## Proof-state separation
 
 ### Documented
 
-**Yes.** This roadmap records the Resume-consequence milestone and preserves the earlier proof-gap correction rather than retroactively treating run #718 as feature-complete proof.
+**Yes.** This roadmap records the The Room availability milestone separately from the prior Resume-consequence milestone. Earlier exact-source and CI evidence remains preserved in Git/GitHub/Vercel history.
 
 ### Implemented
 
-**Yes for exact product/test source `29df8b28bfe509b971f9cacda17a99a9d8a135dd`.**
+**Yes for exact product/test source `913a0bf48033c2ce94cfc0bbe35069109559b6d4`.**
 
-The implementation is loaded by `index.html`, styled for the phone-first owner card, and bound to the existing allowlisted Resume route. It does not alter the synthetic engagement-flow storage contract or introduce another action path.
+The implementation extends the already-loaded Resume-consequence enhancer and derives The Room visibility only from the rendered sanitized continuity stage plus the allowlisted `cockpit` route. It does not alter the synthetic engagement-flow storage contract or introduce another action path.
 
 ### Tested
 
-**Yes for exact source `29df8b28bfe509b971f9cacda17a99a9d8a135dd`.** GitHub Actions run `31463727781` / **#722 completed SUCCESS** across the complete mandatory chain.
+**Yes for exact source `913a0bf48033c2ce94cfc0bbe35069109559b6d4`.** GitHub Actions run `31466829114` / **#724 completed SUCCESS** across the complete mandatory chain.
 
-Run #722 passed:
+Run #724 passed:
 - owner/security decision-evidence enforcement;
 - fail-closed secure-intake runtime;
 - fail-closed staging preflight;
@@ -65,54 +59,54 @@ Run #722 passed:
 - iPhone/WebKit and Pixel/Chromium device-class checks;
 - Phase 2 SQL/staging;
 - Discovery Phase 3;
-- Cherry OS Phase 4 including the dedicated Resume-consequence coverage plus existing owner-card/completion/reset regressions;
+- Cherry OS Phase 4 including dedicated The Room availability coverage plus existing owner-card/attention/Resume/completion/reset regressions;
 - Transformation Record Phase 5;
 - release/security/privacy checks;
 - visual evidence;
 - exact-head staging-readiness regeneration and both evidence uploads.
 
 Focused Phase 4 coverage proves:
-- Discovery, Cherry review, and Transformation Record each render only their fixed allowlisted consequence text;
-- the cue has a stable ID and the Resume control references it with `aria-describedby`;
+- Discovery renders no The Room availability cue;
+- sanitized Cherry review renders exactly one fixed read-only cue;
+- the cue points only to the already-existing active judgment-card The Room control;
+- Transformation Record renders no The Room availability cue;
 - rendering does not mutate the existing synthetic engagement-flow storage value;
-- injected private/production-looking values do not become cue content or authority;
-- an injected unexpected `production` route removes the cue and the accessibility association rather than manufacturing a consequence;
-- exactly one Resume button remains inside the owner action card;
-- existing continuity coverage still proves Discovery navigation, same-screen Cherry-review focus, and Transformation-Record navigation;
+- injected room/private/production-looking values are not displayed;
+- malformed/wrong-version flow fails closed to Discovery with no cue;
+- an injected unexpected `production` Resume route removes the cue;
+- the owner action card still exposes exactly one button, the existing Resume control;
 - zero POST/PUT/PATCH/DELETE requests occur;
 - the 390px phone surface remains within horizontal bounds.
 
-Run #722 artifacts:
-- staging-readiness artifact `9090764067`, digest `sha256:a82610fe07f48b060d38e6020bfc220e08a2ae68f157e8d72f9eb1bde0912d9e`;
-- mobile visual artifact `9090764329`, digest `sha256:7c82aa7a962aee3415aa90c27b1f7c955a05327ed7b5bfe0bc712530e9253e1f`.
+Run #724 artifacts:
+- staging-readiness artifact `9091890531`, digest `sha256:aa9753f6f6a6f6dfe0fc24023f3f60580226711e79a89bfbc0f7056a497c7fd4`;
+- mobile visual artifact `9091891141`, digest `sha256:0e16a9a6a937a3ba3d4430bc4a646bdcf5715d7d25e7abff262a808ef83ed93c`.
 
-The exact #722 staging-readiness ZIP was downloaded and inspected directly. Its internal `source_sha` exactly matches `29df8b28bfe509b971f9cacda17a99a9d8a135dd`; `readiness = BLOCKED`; confidential intake is disabled; anonymous intake denied; file uploads/private AI/private analytics disabled; production release blocked; persistence is unselected; adapter binding is false; no staging or production project IDs are bound; and D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 remain OPEN.
+The exact #724 staging-readiness ZIP was downloaded and inspected directly. Its internal `source_sha` exactly matches `913a0bf48033c2ce94cfc0bbe35069109559b6d4`; `readiness = BLOCKED`; confidential intake is disabled; anonymous intake denied; file uploads/private AI/private analytics disabled; production release blocked; persistence is unselected; adapter binding is false; no staging or production project IDs are bound; and D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 remain OPEN.
 
 ### Preview deployed
 
-**Yes for exact tested source `29df8b28bfe509b971f9cacda17a99a9d8a135dd`.** Vercel preview `dpl_4hdrPXQE31s1rhhiDZVqy2hhWrST` is READY, Git-sourced from the exact source SHA and non-production (`target: null`).
-
-CI evidence-only child `7be6a50f8565ab3877a5f87f5f50310970fccd12` changes only `docs/worldstage/evidence/WORLDSTAGE_MOBILE_V2_VISUAL_EVIDENCE.pdf`; preview `dpl_4bVGTzNZUsCtCv9cQwkAvtbfdbrb` is READY and non-production. This child does not change product/test source and does not inherit test attribution as if it were the tested SHA.
+**Yes for exact tested source `913a0bf48033c2ce94cfc0bbe35069109559b6d4`.** Vercel preview `dpl_CJvYJwbLLvCm7tTw627f1XcCcLo5` is READY, Git-sourced from the exact source SHA and non-production (`target: null`).
 
 Preview READY is deployability/provenance evidence only. It is not live-staging or production proof.
 
 ### Live staging
 
-**No.** No real WorldStage staging PostgreSQL/Supabase, authentication, signed-user RLS, provider backup/restore or live kill-switch environment is bound or proven. The exact #722 staging-readiness evidence intentionally remains fail-closed.
+**No.** No real WorldStage staging PostgreSQL/Supabase, authentication, signed-user RLS, provider backup/restore or live kill-switch environment is bound or proven. The exact #724 staging-readiness evidence intentionally remains fail-closed.
 
 ### Production verified / released for this line
 
-**No.** Production remains the preserved separate deployment `dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1`, freshly rechecked READY with `target: production` and source `redeploy`. No promotion of the mobile-v2 / Cherry prototype line occurred.
+**No.** Production remains the preserved separate deployment `dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1`, rechecked READY with `target: production` and source `redeploy`. No promotion of the mobile-v2 / Cherry prototype line occurred.
 
 ## Done
 
-The **wired, accessible Resume consequence** is now **documented → implemented → tested → preview-deployed** for exact source `29df8b28bfe509b971f9cacda17a99a9d8a135dd`, run #722 and preview `dpl_4hdrPXQE31s1rhhiDZVqy2hhWrST`.
+The **stage-gated The Room availability cue** is **documented → implemented → tested → preview-deployed** for exact source `913a0bf48033c2ce94cfc0bbe35069109559b6d4`, run #724 and preview `dpl_CJvYJwbLLvCm7tTw627f1XcCcLo5`.
 
-Cherry can now see and, through assistive technology, hear before activation that Resume is navigation/focus only and cannot submit, send, approve, persist or release anything.
+Cherry's owner card can now tell her when the existing demo-only 60-second briefing pattern is available without inventing private context, adding another action, or implying that real client intelligence is connected.
 
 ## In progress
 
-This roadmap reconciliation is documentation-only and uses `[skip ci]`; it may create a newer repository/Vercel documentation head after exact tested source `29df8b28...`. Test proof remains attributed to exact tested product/test source `29df8b28...` rather than being falsely transferred to a documentation-only child.
+This roadmap reconciliation is documentation-only and uses `[skip ci]`; it may create a newer repository/Vercel documentation head after exact tested source `913a0bf...`. Test proof remains attributed to exact tested product/test source `913a0bf...` rather than being falsely transferred to a documentation-only child.
 
 ## Hard blockers / gates intentionally not crossed
 
@@ -128,14 +122,14 @@ This roadmap reconciliation is documentation-only and uses `[skip ci]`; it may c
 ## Risks
 
 - A polished synthetic owner action card can look operational even though it is not connected to real WorldStage records; all card state remains explicitly local synthetic/demo state.
-- Resume consequence text describes only the fixed behavior of the synthetic demo navigation/focus action. It is not a legal disclaimer, approval boundary for real workflows, or proof that a real client record exists.
-- `Needs Cherry now`, its reason, stage continuity, and Resume consequence remain deterministic synthetic context rather than urgency, SLA, recommendation, audit history or client fact.
+- The Room availability cue means only that the existing **demo briefing pattern** is reachable from the active synthetic judgment card. It is not proof that a real meeting, attendee list, client history, commitment, sensitivity, recommendation or private source is connected.
+- `Needs Cherry now`, its reason, stage continuity, Resume consequence and The Room availability remain deterministic synthetic context rather than urgency, SLA, recommendation, audit history or client fact.
 - Provider-neutral/synthetic tests cannot substitute for live authorization, security, recovery, operational proof or Cherry's physical-device acceptance.
 - Preview READY does not imply live staging or production suitability.
 
 ## Next autonomous action
 
-Surface one compact fixed **The Room availability cue** only when the sanitized current stage is `Cherry review`. Reuse the existing demo-only The Room briefing pattern and state only that the briefing pattern is available from the active judgment card. Keep it read-only and derived only from the sanitized stage; add no second action, private data, persistence, analytics, inference, provider binding, spending or production authority.
+Add a compact, read-only **The Room readiness mini-check** during sanitized Cherry review showing only fixed synthetic statuses: `Briefing structure available`, `Verified private sources not connected`, and `Human review required`. Reuse the existing owner card and The Room pattern; add no action, private data, scoring, inference, persistence, analytics, provider binding, spending or production authority.
 
 ## Explicit non-claims
 
@@ -144,7 +138,7 @@ Surface one compact fixed **The Room availability cue** only when the sanitized 
 - No confidential intake is active.
 - No public receipt-status endpoint exists.
 - No real provider backup/restore or live kill-switch proof is claimed.
-- No real client engagement stage, history, deletion or Transformation Record outcome is claimed.
+- No real client engagement stage, history, deletion, The Room briefing content or Transformation Record outcome is claimed.
 - No owner/security approval is inferred from code/tests.
 - No physical-device owner approval is inferred from automation.
 - No Pandora Memory synchronization is claimed while the connector path is unavailable.
