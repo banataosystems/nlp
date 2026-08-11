@@ -1,7 +1,8 @@
 /* WorldStage / Cherry — accessibility-only semantic orientation for the fixed synthetic continuity steps.
    Derives solely from the sanitized continuity stage emitted by cherry-engagement-continuity.js.
-   Exactly one allowlisted step is current. The fixed three-step sequence is exposed as one semantic list.
-   No focus movement, persistence, provider access, analytics, scoring, private data, spending, or release authority. */
+   Exactly one allowlisted step is current. The fixed three-step sequence is exposed as one semantic list
+   with deterministic position metadata. No focus movement, persistence, provider access, analytics,
+   scoring, private data, spending, or release authority. */
 
 const CHERRY_STEP_ORIENTATION = Object.freeze({
   discovery: Object.freeze({
@@ -35,6 +36,7 @@ const CHERRY_STEP_STATUS_LABELS = Object.freeze({
 
 const CHERRY_STEP_SEQUENCE = Object.freeze(['discovery', 'review', 'record']);
 const CHERRY_STEP_LIST_LABEL = 'Synthetic engagement stages';
+const CHERRY_STEP_SET_SIZE = String(CHERRY_STEP_SEQUENCE.length);
 
 let cherryStepOrientationQueued = false;
 
@@ -47,6 +49,8 @@ function clearCherryStepOrientation(strip) {
     step.removeAttribute('role');
     step.removeAttribute('aria-current');
     step.removeAttribute('aria-label');
+    step.removeAttribute('aria-posinset');
+    step.removeAttribute('aria-setsize');
     step.removeAttribute('data-cherry-engagement-step-orientation');
   });
 }
@@ -75,13 +79,15 @@ function enhanceCherryStepOrientation() {
   strip.setAttribute('aria-label', CHERRY_STEP_LIST_LABEL);
   strip.dataset.cherryEngagementStepList = 'synthetic';
 
-  steps.forEach((step) => {
+  steps.forEach((step, index) => {
     const id = step.dataset.cherryEngagementContinuityStep;
     const status = orientation[id];
     const label = CHERRY_STEP_LABELS[id];
     const statusLabel = CHERRY_STEP_STATUS_LABELS[status];
 
     step.setAttribute('role', 'listitem');
+    step.setAttribute('aria-posinset', String(index + 1));
+    step.setAttribute('aria-setsize', CHERRY_STEP_SET_SIZE);
     step.dataset.cherryEngagementStepOrientation = status;
     step.setAttribute('aria-label', `${label}. ${statusLabel}.`);
     if (status === 'current') step.setAttribute('aria-current', 'step');
