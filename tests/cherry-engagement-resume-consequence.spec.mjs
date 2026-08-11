@@ -10,7 +10,7 @@ async function openCockpitWithFlow(page, value) {
   await page.reload();
 }
 
-test('Resume consequence is fixed by allowlisted route and remains read-only before navigation', async ({ page }) => {
+test('Resume consequence is fixed by allowlisted route, announced by the Resume control, and remains read-only before navigation', async ({ page }) => {
   const networkWrites = [];
   page.on('request', (request) => {
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method())) {
@@ -45,7 +45,9 @@ test('Resume consequence is fixed by allowlisted route and remains read-only bef
     await expect(card).toBeVisible();
     await expect(resume).toHaveCount(1);
     await expect(consequence).toHaveText(scenario.text);
+    await expect(consequence).toHaveAttribute('id', 'cherry-engagement-resume-consequence');
     await expect(consequence).toHaveAttribute('aria-label', 'Resume consequence, read only');
+    await expect(resume).toHaveAttribute('aria-describedby', 'cherry-engagement-resume-consequence');
     await expect(card.locator('button')).toHaveCount(1);
 
     const storedBefore = await page.evaluate(() => localStorage.getItem('worldstage.synthetic.engagement.flow.v1'));
@@ -84,6 +86,7 @@ test('Resume consequence fails closed on an unexpected route and cannot become a
   const consequence = card.locator('[data-cherry-engagement-resume-consequence]');
 
   await expect(consequence).toHaveText('Resume only focuses the existing synthetic Cherry review step. It does not submit, send, approve, persist, or release anything.');
+  await expect(resume).toHaveAttribute('aria-describedby', 'cherry-engagement-resume-consequence');
   await expect(card).not.toContainText('Production release approved');
   await expect(card).not.toContainText('releaseAuthority');
   await expect(card).not.toContainText('must not appear');
@@ -94,5 +97,6 @@ test('Resume consequence fails closed on an unexpected route and cannot become a
 
   await expect(card.locator('[data-cherry-engagement-resume-consequence]')).toHaveCount(0);
   await expect(resume).toHaveAttribute('data-cherry-engagement-continuity-resume', 'production');
+  await expect(resume).not.toHaveAttribute('aria-describedby', /.+/);
   expect(networkWrites).toEqual([]);
 });
