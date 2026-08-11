@@ -51,12 +51,14 @@ async function expectPassiveStageSurface(page) {
   for (let index = 0; index < 80; index += 1) {
     await page.keyboard.press('Tab');
     const focusState = await page.evaluate(() => ({
-      inSyntheticStageSurface: Boolean(document.activeElement?.closest?.('[data-cherry-engagement-continuity]')),
+      isPassiveStageSemantic: Boolean(document.activeElement?.matches?.(
+        '[data-cherry-engagement-continuity], [data-cherry-engagement-continuity-step], [data-cherry-engagement-step-boundary]'
+      )),
       isBoundary: Boolean(document.activeElement?.matches?.('[data-cherry-engagement-step-boundary]')),
       isResume: Boolean(document.activeElement?.matches?.('[data-cherry-engagement-continuity-resume]')),
     }));
 
-    expect(focusState.inSyntheticStageSurface).toBe(false);
+    expect(focusState.isPassiveStageSemantic).toBe(false);
     expect(focusState.isBoundary).toBe(false);
     if (focusState.isResume) {
       reachedResume = true;
@@ -152,10 +154,12 @@ test('fail-closed semantic removal cannot create a keyboard trap or displace the
   for (let index = 0; index < 80; index += 1) {
     await page.keyboard.press('Tab');
     const focusState = await page.evaluate(() => ({
-      inSyntheticStageSurface: Boolean(document.activeElement?.closest?.('[data-cherry-engagement-continuity]')),
+      isPassiveStageSemantic: Boolean(document.activeElement?.matches?.(
+        '[data-cherry-engagement-continuity], [data-cherry-engagement-continuity-step], [data-cherry-engagement-step-boundary]'
+      )),
       isResume: Boolean(document.activeElement?.matches?.('[data-cherry-engagement-continuity-resume]')),
     }));
-    expect(focusState.inSyntheticStageSurface).toBe(false);
+    expect(focusState.isPassiveStageSemantic).toBe(false);
     if (focusState.isResume) {
       reachedResume = true;
       break;
