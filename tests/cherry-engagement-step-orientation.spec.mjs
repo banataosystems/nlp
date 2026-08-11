@@ -14,7 +14,7 @@ async function expectOrientation(page, expected) {
   const steps = strip.locator('[data-cherry-engagement-continuity-step]');
   await expect(strip).toBeVisible();
   await expect(steps).toHaveCount(3);
-  await expect(steps.locator('[aria-current="step"]')).toHaveCount(1);
+  await expect(strip.locator('[data-cherry-engagement-continuity-step][aria-current="step"]')).toHaveCount(1);
 
   for (const [id, config] of Object.entries(expected)) {
     const step = strip.locator(`[data-cherry-engagement-continuity-step="${id}"]`);
