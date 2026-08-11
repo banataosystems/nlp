@@ -18,7 +18,7 @@ async function setCompletedFlow(page) {
   await page.reload();
 }
 
-test('completed synthetic engagement is preserved until deliberate restart and delegates only to existing local reset', async ({ page }) => {
+test('completed synthetic engagement is preserved through confirmation and delegates only to existing local reset', async ({ page }) => {
   const networkWrites = [];
   page.on('request', (request) => {
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method())) {
@@ -37,7 +37,8 @@ test('completed synthetic engagement is preserved until deliberate restart and d
     'Completed local-demo state is preserved until Start a new synthetic engagement is deliberately tapped.',
   );
   await expect(strip.locator('[data-cherry-engagement-continuity-resume="client"]')).toHaveText('Resume →');
-  await expect(strip.locator('[data-cherry-engagement-continuity-start-new]')).toHaveText('Start a new synthetic engagement →');
+  const startNew = strip.locator('[data-cherry-engagement-continuity-start-new]');
+  await expect(startNew).toHaveText('Start a new synthetic engagement →');
   await expect(strip).not.toContainText('must not appear');
   await expect(strip).not.toContainText('production');
 
@@ -57,7 +58,19 @@ test('completed synthetic engagement is preserved until deliberate restart and d
   expect(beforeRestart.daily).not.toBeNull();
   expect(beforeRestart.rationale).not.toBeNull();
 
-  await strip.locator('[data-cherry-engagement-continuity-start-new]').click();
+  await startNew.click();
+  const confirmation = strip.locator('[data-cherry-engagement-reset-confirmation]');
+  await expect(confirmation).toBeVisible();
+  await expect(startNew).toBeHidden();
+
+  const duringConfirmation = await page.evaluate(() => ({
+    flow: JSON.parse(localStorage.getItem('worldstage.synthetic.engagement.flow.v1') || 'null'),
+    daily: localStorage.getItem('worldstage.cherry.daily.demo.v1'),
+    rationale: localStorage.getItem('worldstage.cherry.daily.rationale.demo.v1'),
+  }));
+  expect(duringConfirmation).toEqual(beforeRestart);
+
+  await confirmation.locator('[data-cherry-engagement-reset-confirm]').click();
   await expect(page).toHaveURL(/#\/cockpit$/);
 
   strip = page.locator('[data-cherry-engagement-continuity]');
@@ -69,7 +82,7 @@ test('completed synthetic engagement is preserved until deliberate restart and d
     'discovery',
   );
 
-  // The completion boundary must inherit the existing synthetic reset semantics exactly.
+  // The confirmed boundary must inherit the existing synthetic reset semantics exactly.
   // The current reset stack clears the engagement flow plus both local review-demo keys.
   const afterRestart = await page.evaluate(() => ({
     flow: localStorage.getItem('worldstage.synthetic.engagement.flow.v1'),
@@ -88,7 +101,7 @@ test('completed synthetic engagement is preserved until deliberate restart and d
   expect(networkWrites).toEqual([]);
 });
 
-test('completion boundary fails closed when the existing local reset control is unavailable', async ({ page }) => {
+test('completion confirmation fails closed when the existing local reset control is unavailable', async ({ page }) => {
   const networkWrites = [];
   page.on('request', (request) => {
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method())) networkWrites.push(request.url());
@@ -100,8 +113,13 @@ test('completion boundary fails closed when the existing local reset control is 
   const strip = page.locator('[data-cherry-engagement-continuity]');
   const startNew = strip.locator('[data-cherry-engagement-continuity-start-new]');
   await expect(startNew).toBeVisible();
-  await page.locator('[data-synthetic-flow-reset]').evaluate((button) => button.remove());
   await startNew.click();
+
+  const confirmation = strip.locator('[data-cherry-engagement-reset-confirmation]');
+  await expect(confirmation).toBeVisible();
+  await expect(startNew).toBeHidden();
+  await page.locator('[data-synthetic-flow-reset]').evaluate((button) => button.remove());
+  await confirmation.locator('[data-cherry-engagement-reset-confirm]').click();
 
   const preserved = await page.evaluate(() => ({
     flow: JSON.parse(localStorage.getItem('worldstage.synthetic.engagement.flow.v1') || 'null'),
@@ -112,6 +130,10 @@ test('completion boundary fails closed when the existing local reset control is 
   expect(preserved.daily).not.toBeNull();
   expect(preserved.rationale).not.toBeNull();
   await expect(strip).toHaveAttribute('data-cherry-engagement-continuity-complete', 'true');
-  await expect(startNew).toBeVisible();
+  await expect(confirmation.locator('[data-cherry-engagement-reset-confirmation-status]')).toHaveText(
+    'Reset unavailable. Completed local-demo state preserved.',
+  );
+  await expect(confirmation).toBeVisible();
+  await expect(startNew).toBeHidden();
   expect(networkWrites).toEqual([]);
 });
