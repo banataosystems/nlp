@@ -1,12 +1,13 @@
-/* WorldStage / Cherry — accessibility-only semantic orientation for the fixed synthetic continuity steps.
-   Derives solely from the sanitized continuity stage emitted by cherry-engagement-continuity.js.
-   Exactly one allowlisted step is current. The fixed three-step sequence is exposed as one semantic list
-   with deterministic position metadata, a fixed accessibility-only demo-status boundary description,
-   and enforced passive keyboard/non-interactive semantics even if tabindex, contenteditable, draggable,
-   inert, intrinsic interactive stage-marker elements, intrinsic interactive descendants, action-like
-   semantic roles, spoofed accessibility names/action states, direct canonical list/stage ARIA tampering,
-   or canonical step identity/order mutation is injected into the synthetic stage surface. Trusted canonical
-   semantics are deterministically repaired only when the exact three-step identity/order contract is valid.
+/* WorldStage / Cherry — accessibility and visual orientation for the fixed synthetic continuity steps.
+   Derives solely from the sanitized continuity stage emitted by cherry-engagement-continuity.js and the
+   allowlisted local synthetic flow state. Exactly one allowlisted step is current. The fixed three-step
+   sequence is exposed as one semantic list with deterministic position metadata, a fixed accessibility-only
+   demo-status boundary description, deterministic visual status markers, and enforced passive keyboard /
+   non-interactive semantics even if tabindex, contenteditable, draggable, inert, intrinsic interactive
+   stage-marker elements, intrinsic interactive descendants, action-like semantic roles, spoofed accessibility
+   names/action states, direct canonical list/stage ARIA tampering, canonical step identity/order mutation, or
+   direct visual status-marker tampering is injected into the synthetic stage surface. Trusted canonical
+   semantics and visual status are repaired only when the exact sanitized stage + identity/order contract is valid.
    No focus movement, persistence, provider access, analytics, scoring, private data, spending, or release authority. */
 
 const CHERRY_STEP_ORIENTATION = Object.freeze({
@@ -40,6 +41,8 @@ const CHERRY_STEP_STATUS_LABELS = Object.freeze({
 });
 
 const CHERRY_STEP_SEQUENCE = Object.freeze(['discovery', 'review', 'record']);
+const CHERRY_STEP_FLOW_KEY = 'worldstage.synthetic.engagement.flow.v1';
+const CHERRY_STEP_FLOW_VERSION = 1;
 const CHERRY_STEP_TRUSTED_ELEMENT = 'ARTICLE';
 const CHERRY_STEP_INTRINSIC_ACTION_SELECTOR = 'button, input, select, textarea, summary, a, audio, video, iframe';
 const CHERRY_STEP_ACTION_ROLES = new Set([
@@ -97,6 +100,39 @@ const CHERRY_STEP_PASSIVE_ATTRIBUTES = Object.freeze(['tabindex', 'contenteditab
 const CHERRY_STEP_TRACKED_NODE_SELECTOR = '[data-cherry-engagement-continuity-step], [data-cherry-engagement-step-orientation]';
 
 let cherryStepOrientationQueued = false;
+
+function cherryStepSyntheticFlowState() {
+  let stored = null;
+  try {
+    stored = JSON.parse(localStorage.getItem(CHERRY_STEP_FLOW_KEY) || 'null');
+  } catch {
+    stored = null;
+  }
+
+  if (!stored || stored.version !== CHERRY_STEP_FLOW_VERSION) {
+    return { discoveryPrepared: false, ownerReviewed: false, recordPrepared: false };
+  }
+
+  const discoveryPrepared = stored.discoveryPrepared === true;
+  const ownerReviewed = discoveryPrepared && stored.ownerReviewed === true;
+  const recordPrepared = ownerReviewed && stored.recordPrepared === true;
+  return { discoveryPrepared, ownerReviewed, recordPrepared };
+}
+
+function cherryStepExpectedStage(flow) {
+  if (!flow.discoveryPrepared) return 'discovery';
+  if (!flow.ownerReviewed) return 'review';
+  return 'record';
+}
+
+function cherryStepVisualStatus(id, semanticStatus, flow) {
+  if (semanticStatus === 'completed') return 'complete';
+  if (semanticStatus === 'upcoming') return 'upcoming';
+  if (semanticStatus === 'current') {
+    return id === 'record' && flow.recordPrepared ? 'complete-current' : 'current';
+  }
+  return '';
+}
 
 function stripCherryStepInteractiveAttributes(node) {
   CHERRY_STEP_PASSIVE_ATTRIBUTES.forEach((attribute) => node.removeAttribute(attribute));
@@ -202,6 +238,7 @@ function clearCherryStepOrientation(strip) {
     step.removeAttribute('aria-posinset');
     step.removeAttribute('aria-setsize');
     step.removeAttribute('data-cherry-engagement-step-orientation');
+    step.removeAttribute('data-cherry-engagement-continuity-status');
   });
 }
 
@@ -212,8 +249,10 @@ function enhanceCherryStepOrientation() {
 
   enforceCherryStepPassivity(strip);
 
+  const flow = cherryStepSyntheticFlowState();
+  const expectedStage = cherryStepExpectedStage(flow);
   const stage = strip.dataset.cherryEngagementContinuityStage;
-  const orientation = Object.prototype.hasOwnProperty.call(CHERRY_STEP_ORIENTATION, stage)
+  const orientation = stage === expectedStage && Object.prototype.hasOwnProperty.call(CHERRY_STEP_ORIENTATION, stage)
     ? CHERRY_STEP_ORIENTATION[stage]
     : null;
   const steps = Array.from(strip.querySelectorAll('[data-cherry-engagement-continuity-step]'));
@@ -238,6 +277,7 @@ function enhanceCherryStepOrientation() {
   steps.forEach((step, index) => {
     const id = step.dataset.cherryEngagementContinuityStep;
     const status = orientation[id];
+    const visualStatus = cherryStepVisualStatus(id, status, flow);
     const label = CHERRY_STEP_LABELS[id];
     const statusLabel = CHERRY_STEP_STATUS_LABELS[status];
     const accessibleLabel = `${label}. ${statusLabel}.`;
@@ -247,6 +287,9 @@ function enhanceCherryStepOrientation() {
     if (step.getAttribute('aria-posinset') !== String(index + 1)) step.setAttribute('aria-posinset', String(index + 1));
     if (step.getAttribute('aria-setsize') !== CHERRY_STEP_SET_SIZE) step.setAttribute('aria-setsize', CHERRY_STEP_SET_SIZE);
     step.dataset.cherryEngagementStepOrientation = status;
+    if (step.dataset.cherryEngagementContinuityStatus !== visualStatus) {
+      step.dataset.cherryEngagementContinuityStatus = visualStatus;
+    }
     if (step.getAttribute('aria-label') !== accessibleLabel) step.setAttribute('aria-label', accessibleLabel);
     if (status === 'current') {
       if (step.getAttribute('aria-current') !== 'step') step.setAttribute('aria-current', 'step');
@@ -271,6 +314,7 @@ if (cherryStepOrientationApp) {
     attributeFilter: [
       'data-cherry-engagement-continuity-stage',
       'data-cherry-engagement-continuity-step',
+      'data-cherry-engagement-continuity-status',
       'tabindex',
       'contenteditable',
       'draggable',
