@@ -1,8 +1,8 @@
 /* WorldStage / Cherry — fixed pre-resume consequence cue for the synthetic owner action card.
    Derived only from the existing allowlisted Resume route. Navigation/focus semantics stay owned by
    cherry-engagement-continuity.js. Also surfaces a read-only The Room availability cue only for the
-   sanitized Cherry-review stage, with a fixed synthetic readiness mini-check. No persistence, provider
-   writes, analytics, scoring or authority. */
+   sanitized Cherry-review stage, with a fixed synthetic readiness mini-check and boundary note. No
+   persistence, provider writes, analytics, scoring or authority. */
 
 const CHERRY_RESUME_CONSEQUENCE_ID = 'cherry-engagement-resume-consequence';
 const CHERRY_RESUME_CONSEQUENCE = Object.freeze({
@@ -16,6 +16,7 @@ const CHERRY_ROOM_READINESS_ITEMS = Object.freeze([
   'Verified private sources not connected',
   'Human review required',
 ]);
+const CHERRY_ROOM_BOUNDARY_TEXT = 'Synthetic organization only. The Room cannot contact participants, access private systems, make commitments, approve outcomes, publish, or send anything.';
 
 let cherryResumeConsequenceQueued = false;
 
@@ -45,14 +46,15 @@ function syncCherryRoomAvailability(card, route) {
     && existing.parentElement === copy
     && existing.dataset.cherryEngagementRoomAvailability === 'review'
     && existing.querySelector('p')?.textContent === CHERRY_ROOM_AVAILABILITY_TEXT
-    && Array.from(existing.querySelectorAll('[data-cherry-engagement-room-readiness] li')).map((item) => item.textContent).join('|') === CHERRY_ROOM_READINESS_ITEMS.join('|')) return;
+    && Array.from(existing.querySelectorAll('[data-cherry-engagement-room-readiness] li')).map((item) => item.textContent).join('|') === CHERRY_ROOM_READINESS_ITEMS.join('|')
+    && existing.querySelector('[data-cherry-engagement-room-boundary]')?.textContent === CHERRY_ROOM_BOUNDARY_TEXT) return;
 
   existing?.remove();
   const cue = document.createElement('div');
   cue.className = 'cherry-engagement-continuity__handoff cherry-engagement-continuity__room-availability';
   cue.dataset.cherryEngagementRoomAvailability = 'review';
-  cue.setAttribute('aria-label', 'The Room briefing pattern availability and readiness, read only');
-  cue.innerHTML = `<span>THE ROOM · DEMO BRIEFING PATTERN · READ ONLY</span><p>${CHERRY_ROOM_AVAILABILITY_TEXT}</p><ul data-cherry-engagement-room-readiness aria-label="The Room readiness, read only">${readinessMarkup}</ul>`;
+  cue.setAttribute('aria-label', 'The Room briefing pattern availability, readiness, and boundary, read only');
+  cue.innerHTML = `<span>THE ROOM · DEMO BRIEFING PATTERN · READ ONLY</span><p>${CHERRY_ROOM_AVAILABILITY_TEXT}</p><ul data-cherry-engagement-room-readiness aria-label="The Room readiness, read only">${readinessMarkup}</ul><p data-cherry-engagement-room-boundary aria-label="The Room boundary, read only">${CHERRY_ROOM_BOUNDARY_TEXT}</p>`;
 
   const attention = copy.querySelector('[data-cherry-engagement-continuity-attention-cue]');
   if (attention instanceof HTMLElement) attention.insertAdjacentElement('afterend', cue);
