@@ -17,8 +17,16 @@ const CHERRY_CONTINUITY_PREVIOUS = Object.freeze({
   review: 'Cherry review',
 });
 const CHERRY_CONTINUITY_ATTENTION = Object.freeze({
-  needsCherry: Object.freeze({ id: 'needs-cherry', label: 'Needs Cherry now' }),
-  preparedFlow: Object.freeze({ id: 'prepared-flow', label: 'Continue prepared flow' }),
+  needsCherry: Object.freeze({
+    id: 'needs-cherry',
+    label: 'Needs Cherry now',
+    reason: 'Current stage requires Cherry review',
+  }),
+  preparedFlow: Object.freeze({
+    id: 'prepared-flow',
+    label: 'Continue prepared flow',
+    reason: 'Current stage can continue through prepared synthetic flow',
+  }),
 });
 
 let cherryContinuityRefreshQueued = false;
@@ -128,6 +136,7 @@ function cherryContinuityMarkup(flow, current, previous, attention, signature) {
         <div class="cherry-engagement-continuity__attention" data-cherry-engagement-continuity-attention-cue="${attention.id}" aria-label="Fixed synthetic owner attention cue">
           <span>OWNER ATTENTION · READ ONLY</span>
           <strong>${attention.label}</strong>
+          <small data-cherry-engagement-continuity-attention-reason>${attention.reason}</small>
         </div>
         <p>${current.detail}</p>
         <div class="cherry-engagement-continuity__handoff" data-cherry-engagement-continuity-handoff aria-label="Synthetic engagement handoff cue">
