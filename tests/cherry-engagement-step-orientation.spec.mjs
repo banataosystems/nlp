@@ -2,6 +2,9 @@ import { test, expect } from '@playwright/test';
 
 test.use({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
 
+const BOUNDARY_ID = 'cherry-engagement-step-boundary-description';
+const BOUNDARY_TEXT = 'Synthetic demo stages only. Not a verified real-client engagement status.';
+
 async function setFlow(page, value) {
   await page.evaluate((next) => {
     localStorage.setItem('worldstage.synthetic.engagement.flow.v1', JSON.stringify(next));
@@ -12,10 +15,18 @@ async function setFlow(page, value) {
 async function expectOrientation(page, expected) {
   const strip = page.locator('[data-cherry-engagement-continuity]');
   const steps = strip.locator('[data-cherry-engagement-continuity-step]');
+  const boundary = strip.locator('[data-cherry-engagement-step-boundary]');
   await expect(strip).toBeVisible();
   await expect(strip).toHaveAttribute('role', 'list');
   await expect(strip).toHaveAttribute('aria-label', 'Synthetic engagement stages');
+  await expect(strip).toHaveAttribute('aria-describedby', BOUNDARY_ID);
   await expect(strip).toHaveAttribute('data-cherry-engagement-step-list', 'synthetic');
+  await expect(strip).toHaveAccessibleDescription(BOUNDARY_TEXT);
+  await expect(boundary).toHaveCount(1);
+  await expect(boundary).toHaveAttribute('id', BOUNDARY_ID);
+  await expect(boundary).toHaveAttribute('data-cherry-engagement-step-boundary', 'synthetic-demo-only');
+  await expect(boundary).toHaveAttribute('hidden', '');
+  await expect(boundary).toHaveText(BOUNDARY_TEXT);
   await expect(steps).toHaveCount(3);
   await expect(strip.locator('[data-cherry-engagement-continuity-step][role="listitem"]')).toHaveCount(3);
   await expect(strip.locator('[data-cherry-engagement-continuity-step][aria-current="step"]')).toHaveCount(1);
@@ -54,7 +65,7 @@ const RECORD_ORIENTATION = {
   record: { status: 'current', label: 'Transformation Record. Current synthetic step.' },
 };
 
-test('semantic continuity exposes one ordered synthetic stage list with deterministic positions and one aria-current step', async ({ page }) => {
+test('semantic continuity exposes one ordered synthetic stage list with deterministic positions, one aria-current step, and a fixed demo-status boundary description', async ({ page }) => {
   const networkWrites = [];
   page.on('request', (request) => {
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method())) {
@@ -71,6 +82,8 @@ test('semantic continuity exposes one ordered synthetic stage list with determin
     ariaCurrent: 'production',
     ariaPosinset: '99',
     ariaSetsize: '99',
+    ariaDescribedby: 'private-production-status',
+    boundaryDescription: 'Verified client engagement',
     privateClientName: 'must not appear',
   });
   await expectOrientation(page, DISCOVERY_ORIENTATION);
@@ -83,6 +96,8 @@ test('semantic continuity exposes one ordered synthetic stage list with determin
     currentStep: 'production',
     position: 88,
     setSize: 88,
+    describedBy: 'release-authority',
+    clientStatus: 'approved',
     releaseAuthority: 'yes',
   });
   await expectOrientation(page, REVIEW_ORIENTATION);
@@ -93,6 +108,7 @@ test('semantic continuity exposes one ordered synthetic stage list with determin
     ownerReviewed: true,
     recordPrepared: false,
     injectedStatus: 'approved',
+    realClientEngagementStatus: 'verified',
   });
   await expectOrientation(page, RECORD_ORIENTATION);
 
@@ -109,6 +125,7 @@ test('semantic continuity exposes one ordered synthetic stage list with determin
   await expect(strip).not.toContainText('must not appear');
   await expect(strip).not.toContainText('production');
   await expect(strip).not.toContainText('released');
+  await expect(strip).not.toContainText('Verified client engagement');
 
   await page.evaluate(() => {
     const stageList = document.querySelector('[data-cherry-engagement-continuity]');
@@ -120,7 +137,9 @@ test('semantic continuity exposes one ordered synthetic stage list with determin
   });
   await expect(strip).not.toHaveAttribute('role', /.+/);
   await expect(strip).not.toHaveAttribute('aria-label', /.+/);
+  await expect(strip).not.toHaveAttribute('aria-describedby', /.+/);
   await expect(strip).not.toHaveAttribute('data-cherry-engagement-step-list', /.+/);
+  await expect(strip.locator('[data-cherry-engagement-step-boundary]')).toHaveCount(0);
   await expect(strip.locator('[role="listitem"]')).toHaveCount(0);
   await expect(strip.locator('[aria-current="step"]')).toHaveCount(0);
   await expect(strip.locator('[aria-posinset]')).toHaveCount(0);
@@ -146,7 +165,7 @@ test('semantic continuity exposes one ordered synthetic stage list with determin
   expect(sizes.sw).toBeLessThanOrEqual(sizes.cw + 1);
 });
 
-test('malformed flow fails closed to sanitized Discovery list positions and leaving cockpit removes the synthetic step surface', async ({ page }) => {
+test('malformed flow sanitizes to Discovery and leaving cockpit removes the synthetic stage boundary surface', async ({ page }) => {
   const networkWrites = [];
   page.on('request', (request) => {
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method())) networkWrites.push(request.url());
@@ -161,17 +180,22 @@ test('malformed flow fails closed to sanitized Discovery list positions and leav
     currentStep: 'Production release',
     ariaPosinset: '99',
     ariaSetsize: '99',
+    ariaDescribedby: 'verified-client-status',
+    boundaryDescription: 'Real client approved',
     privateClientContext: 'secret',
   });
 
   await expectOrientation(page, DISCOVERY_ORIENTATION);
   const strip = page.locator('[data-cherry-engagement-continuity]');
   await expect(strip).not.toContainText('Production release');
+  await expect(strip).not.toContainText('Real client approved');
   await expect(strip).not.toContainText('secret');
 
   await page.goto('http://127.0.0.1:4173/#/home');
   await expect(page.locator('[data-cherry-engagement-continuity]')).toHaveCount(0);
   await expect(page.locator('[role="list"][data-cherry-engagement-step-list="synthetic"]')).toHaveCount(0);
+  await expect(page.locator('[data-cherry-engagement-step-boundary]')).toHaveCount(0);
+  await expect(page.locator(`[aria-describedby="${BOUNDARY_ID}"]`)).toHaveCount(0);
   await expect(page.locator('[aria-current="step"]')).toHaveCount(0);
   await expect(page.locator('[aria-posinset]')).toHaveCount(0);
   await expect(page.locator('[aria-setsize]')).toHaveCount(0);
