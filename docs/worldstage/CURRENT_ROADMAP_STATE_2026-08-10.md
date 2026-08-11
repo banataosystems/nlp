@@ -12,76 +12,78 @@
 
 The active autonomous line improves Cherry-facing owner usability and defensive accessibility using sanitized synthetic/local-demo state while real provider/data boundaries remain fail-closed.
 
-## Latest completed product milestone — canonical step identity/order fail-closed boundary
+## Latest completed product milestone — canonical visual status-marker self-repair
 
-The fixed synthetic `Discovery → Cherry review → Transformation Record` continuity surface now treats its exact three-step identity and order as part of the trusted semantic contract. Direct mutation, marker removal, duplication, or DOM reordering can no longer leave stale trusted list/current-step accessibility state behind.
+The fixed synthetic `Discovery → Cherry review → Transformation Record` continuity surface no longer trusts direct DOM values in `data-cherry-engagement-continuity-status` for its progress styling. Visual `complete` / `current` / `upcoming` / `complete-current` state is now deterministically derived from the same sanitized local synthetic flow plus the exact canonical stage identity/order contract that governs trusted semantics.
 
 The implementation:
-- observes `data-cherry-engagement-continuity-step` mutations directly;
-- tracks nodes by either the canonical step marker or prior trusted orientation marker so removing the identity marker cannot evade cleanup;
-- requires exactly three canonical `ARTICLE` nodes in exact `discovery → review → record` order before trusted list/stage semantics are emitted;
-- clears trusted list role/label/description/current-step/position/set-size/orientation semantics whenever that exact contract is broken;
-- restores fixed trusted semantics only after the exact canonical sequence is restored;
-- preserves the existing passive-keyboard, intrinsic-action, interactive-descendant, action-role, ARIA-spoofing and canonical-ARIA self-repair boundaries;
+- reads only the existing allowlisted local synthetic engagement-flow record and applies the same monotonic `discoveryPrepared → ownerReviewed → recordPrepared` sanitization used by the continuity renderer;
+- derives the expected root stage from that sanitized flow and refuses to trust even an allowlisted root stage value when it conflicts with the sanitized flow;
+- deterministically maps trusted semantic orientation to visual status: completed → `complete`, current → `current`, upcoming → `upcoming`, and the completed current Transformation Record → `complete-current`;
+- observes direct `data-cherry-engagement-continuity-status` mutation/removal and repairs the canonical values;
+- clears all trusted visual status markers together with semantic orientation when the root stage or exact ordered `discovery → review → record` contract is invalid;
+- restores trusted visual state only after the sanitized stage and exact canonical identity/order contract are both valid again;
+- preserves the existing passive-keyboard, intrinsic-action, descendant-action, role-spoofing, ARIA-spoofing, canonical-ARIA and step identity/order boundaries;
 - preserves Resume as the sole stage-related owner action;
 - adds no visible workflow, persistence, analytics event, provider call, credential request, private-data access, scoring/inference, client communication, spending, staging activation or production authority.
 
 Implementation/test surfaces:
 - `src/cherry-engagement-step-orientation.js`
-- `tests/cherry-engagement-step-identity-order-boundary.spec.mjs`
+- `tests/cherry-engagement-visual-status-self-repair.spec.mjs`
 - mandatory `package.json` Phase 4 test gate
 
 ## Proof-state separation
 
 ### Documented
 
-**Yes.** This record documents the canonical step identity/order boundary and preserves exact implementation, CI, preview, artifact and gate provenance below.
+**Yes.** This record documents the canonical visual status-marker self-repair milestone and preserves exact implementation, CI, preview, artifact and gate provenance below.
 
 ### Implemented
 
-**Yes for exact product/test source `03494bb8d3c7f3714f38bd13a4ed62df0e186807`.**
+**Yes for exact product/test source `b85ed2b969848c6ae8d8cfbe7c22285ea169d58e`.**
 
-Compared with prior roadmap head `7c0961096f03f7198635893daa46df83cbbf06b8`, the milestone is exactly three commits ahead and changes only:
+Compared with prior roadmap head `f4ae9ab2d0b5f9fa833c13154330d2a30ffed6a1`, this runtime/test milestone is one implementation commit ahead and changes only:
 - `src/cherry-engagement-step-orientation.js`;
-- new `tests/cherry-engagement-step-identity-order-boundary.spec.mjs`;
+- new `tests/cherry-engagement-visual-status-self-repair.spec.mjs`;
 - `package.json` Phase 4 inclusion.
 
 No provider, database, credential, production configuration or production data changed.
 
 ### Tested
 
-**Yes for exact source `03494bb8d3c7f3714f38bd13a4ed62df0e186807`.** GitHub Actions push run `31540002754` / **#785 completed SUCCESS** across the complete mandatory chain.
+**Yes for exact source `b85ed2b969848c6ae8d8cfbe7c22285ea169d58e`.** GitHub Actions push run `31544391087` / **#787 completed SUCCESS** across the complete mandatory chain.
 
-Run #785 passed owner/security decision-evidence enforcement; fail-closed secure-intake runtime and readiness generation; six-width mobile; iPhone/WebKit and Pixel/Chromium device-class checks; Phase 2 SQL/staging; Discovery Phase 3; Cherry OS Phase 4 including the new identity/order regression and all existing continuity/accessibility/owner-action regressions; Transformation Record Phase 5; release/security/privacy checks; visual verification; exact-head readiness regeneration; and both evidence uploads.
+Run #787 passed owner/security decision-evidence enforcement; fail-closed secure-intake runtime and readiness generation; six-width mobile; iPhone/WebKit and Pixel/Chromium device-class checks; Phase 2 SQL/staging; Discovery Phase 3; Cherry OS Phase 4 including the new visual-status self-repair regression and all existing continuity/accessibility/owner-action regressions; Transformation Record Phase 5; release/security/privacy checks; visual verification; exact-head readiness regeneration; and both evidence uploads.
 
-Focused identity/order coverage proves:
-- direct replacement of the canonical `review` step identity with an untrusted value fails the semantic surface closed;
-- removing a canonical identity marker also fails closed rather than retaining stale semantics;
-- duplicating a canonical stage fails closed;
-- reordering canonical stages fails closed;
-- restoring the exact ordered `discovery → review → record` sequence restores the fixed trusted semantics;
+Focused visual-status coverage proves:
+- direct mutation of all three status markers is automatically restored to `complete / current / upcoming` in the Cherry-review fixture;
+- direct removal of all three status markers is automatically restored without changing the computed stage styling;
+- changing the root stage to another allowlisted but flow-inconsistent stage fails both trusted semantic and visual progress state closed;
+- invalid canonical stage ordering clears visual progress markers even if spoofed progress values are simultaneously injected;
+- restoring the exact sanitized root stage and canonical order restores the expected visual and semantic state;
+- the completed Transformation Record receives `complete-current` only when sanitized synthetic flow has `recordPrepared=true`;
 - Resume remains enabled, non-inert and keyboard reachable;
 - local synthetic flow storage and route remain unchanged;
 - zero POST/PUT/PATCH/DELETE requests occur;
 - the 390px phone surface remains within horizontal bounds.
 
-Run #785 artifacts:
-- staging-readiness artifact `9120382278`, digest `sha256:27f4f3ca069e5a89475233a7fc0424357726d55ef05a3c455e31c1c5faec3833`;
-- mobile visual artifact `9120383165`, digest `sha256:91b2826f142128d619063d8d3464bdf4e94611830638971988315a484bec22dc`.
+Run #787 artifacts:
+- staging-readiness artifact `9121992574`, digest `sha256:128409942d6dd4f030bb51154b77fbefe7d5d8055355b3aec1031c41cb85549e`;
+- mobile visual artifact `9121992982`, digest `sha256:3ba491c5439e4766170622a407156245eea28f46e3a6b43924cd6b0a37a388ed`.
 
-The exact #785 staging-readiness ZIP was downloaded and inspected directly. Its internal `project_key` is `worldstage-cherry`; `source_sha` is exactly `03494bb8d3c7f3714f38bd13a4ed62df0e186807`; `readiness = BLOCKED`; confidential intake is disabled; anonymous intake is denied; file uploads/private AI/private analytics are disabled; production release is blocked; persistence remains unselected; adapter binding is false; no staging/production project IDs are bound; and D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 remain OPEN. This is intentional fail-closed evidence, not a test failure.
+The exact #787 staging-readiness ZIP was downloaded and inspected directly. Its internal `project_key` is `worldstage-cherry`; `source_sha` is exactly `b85ed2b969848c6ae8d8cfbe7c22285ea169d58e`; `readiness = BLOCKED`; confidential intake is disabled; anonymous intake is denied; file uploads/private AI/private analytics are disabled; production release is blocked; persistence remains unselected; adapter binding is false; no staging/production project IDs are bound; and D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 remain OPEN. This is intentional fail-closed evidence, not a test failure.
 
-CI evidence preservation produced commit `7e180006e3642089bf8a5f6252bb07966e7bf805`; exact comparison against tested source `03494bb8d3c7f3714f38bd13a4ed62df0e186807` proves it is one commit ahead and its only changed file is `docs/worldstage/evidence/WORLDSTAGE_MOBILE_V2_VISUAL_EVIDENCE.pdf`. Runtime/test provenance therefore remains attributed to `03494bb8d3c7f3714f38bd13a4ed62df0e186807`.
+CI evidence preservation produced commit `38849b11e55a32a3c2e4ed85a33de976527f98c1`; exact comparison against tested source `b85ed2b969848c6ae8d8cfbe7c22285ea169d58e` proves it is one commit ahead and its only changed file is `docs/worldstage/evidence/WORLDSTAGE_MOBILE_V2_VISUAL_EVIDENCE.pdf`. Runtime/test provenance therefore remains attributed to `b85ed2b969848c6ae8d8cfbe7c22285ea169d58e`.
 
 ### Preview deployed
 
-**Yes for exact tested source `03494bb8d3c7f3714f38bd13a4ed62df0e186807`.** Vercel deployment `dpl_75UZuRWHtYi18SG6WDJau7NPKaKX` is READY, Git-sourced from exact SHA `03494bb8d3c7f3714f38bd13a4ed62df0e186807`, attached to `redesign/mobile-first-v2` / PR #1, and non-production (`target: null`). Build logs prove Vercel cloned exact commit `03494bb`, completed the build and deployed outputs successfully. Fresh exact-preview error/fatal runtime-log lookup found no matching logs in the checked one-hour window.
+**Yes for exact tested source `b85ed2b969848c6ae8d8cfbe7c22285ea169d58e`.** Vercel deployment `dpl_JDpBzzycPCW9BmrDcHpijLhAz29m` is READY, Git-sourced from exact SHA `b85ed2b969848c6ae8d8cfbe7c22285ea169d58e`, attached to `redesign/mobile-first-v2` / PR #1, and non-production (`target: null`). Build logs prove Vercel cloned exact commit `b85ed2b`, completed the build and deployed outputs successfully. Fresh exact-preview error/fatal runtime-log lookup found no matching logs in the checked one-hour window.
 
-The preview is protected by Vercel authentication; a connector fetch reached the protection redirect rather than an unauthenticated app render. READY/build provenance is therefore deployment evidence, not an independent public-render verification.
+The preview remains protected by Vercel authentication; an authenticated connector fetch reached the SSO protection redirect rather than an independent unauthenticated app render. READY/build provenance is therefore deployment evidence, not public-render or live-staging proof.
 
 ### Live staging
 
-**No.** No real WorldStage staging PostgreSQL/Supabase, authentication, signed-user RLS, provider backup/restore or live kill-switch environment is bound or proven. Run #785 remains intentionally fail-closed for live-staging creation.
+**No.** No real WorldStage staging PostgreSQL/Supabase, authentication, signed-user RLS, provider backup/restore or live kill-switch environment is bound or proven. Run #787 remains intentionally fail-closed for live-staging creation.
 
 ### Production verified / released for this line
 
@@ -89,7 +91,7 @@ The preview is protected by Vercel authentication; a connector fetch reached the
 
 ## Done
 
-The **canonical step identity/order fail-closed boundary** is **documented → implemented → tested → preview-deployed** for exact runtime/test source `03494bb8d3c7f3714f38bd13a4ed62df0e186807`, run #785, readiness artifact `9120382278`, mobile artifact `9120383165`, and exact-source Vercel preview `dpl_75UZuRWHtYi18SG6WDJau7NPKaKX`.
+The **canonical visual status-marker self-repair** milestone is **documented → implemented → tested → preview-deployed** for exact runtime/test source `b85ed2b969848c6ae8d8cfbe7c22285ea169d58e`, run #787, readiness artifact `9121992574`, mobile artifact `9121992982`, and exact-source Vercel preview `dpl_JDpBzzycPCW9BmrDcHpijLhAz29m`.
 
 ## In progress
 
@@ -109,14 +111,14 @@ No provider, database, live-staging, production or destructive operation is in p
 ## Risks
 
 - The continuity indicator remains synthetic/local-demo UI and must not be mistaken for a real client workflow state.
-- The identity/order guard is defensive UI integrity for accidental/local DOM mutation; it is not an authorization or security boundary against arbitrary hostile script execution.
-- Trusted ARIA semantics now fail closed on identity/order corruption, but the separate visual status marker `data-cherry-engagement-continuity-status` still controls current/completed styling. A direct local mutation could therefore visually spoof progress even while trusted ARIA semantics remain correct.
+- The semantic and visual integrity guards are defensive UI hardening for accidental/local DOM mutation; they are not authorization or security boundaries against arbitrary hostile script execution.
+- Root owner-attention and completion metadata remain separate synthetic display surfaces and must continue to derive only from sanitized local-demo state rather than mutable DOM values.
 - Preview READY does not imply live staging or production suitability.
 - Automated browser/device verification does not replace Cherry's physical-device acceptance.
 
 ## Next autonomous action
 
-Harden **canonical visual status-marker self-repair**. Derive each canonical stage's `data-cherry-engagement-continuity-status` only from the sanitized synthetic continuity stage and exact ordered identity contract; observe direct status mutation/removal; fail closed or deterministically restore the fixed `pending` / `current` / `complete` / `complete-current` values; and add mandatory Phase 4 regression proving local DOM mutation cannot visually masquerade as progress. Preserve Resume, local synthetic state, zero provider/network writes and the same no-spend/no-production boundary.
+Harden **owner-attention/completion cue metadata self-repair** on the same synthetic continuity surface. Derive the fixed `needs-cherry` / `prepared-flow` cue and completion indicators only from sanitized synthetic flow, repair or fail closed on direct DOM mutation/removal, and add mandatory Phase 4 regression proving local DOM changes cannot visually imply Cherry urgency or completion that the sanitized flow does not support. Preserve visible copy, Resume, local synthetic state, zero provider/network writes, zero spend and zero production authority.
 
 ## Explicit non-claims
 
