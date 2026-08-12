@@ -3,104 +3,142 @@
 Date: 2026-08-12
 Project key: `worldstage-cherry`
 Repository: `banataosystems/nlp`
-Active implementation line: `redesign/mobile-first-v2`
-PR: #1 (`WorldStage mobile-first recovery v2`)
+Canonical source branch: `main`
+Merged implementation PR: #1 — `WorldStage mobile-first recovery v2`
 
-This checkpoint supersedes the prior operational snapshot while preserving Git history and exact-source evidence. It does not merge, activate live staging, bind a database/provider, authorize spend, make a legal/public commitment, or release production.
+This checkpoint supersedes the earlier pre-merge snapshot. It keeps documented → implemented → tested → deployed → production-verified states separate and does not infer owner/security decisions, physical-device acceptance, live-staging authority, provider authority, spending authority, legal/public commitments, or production-release authority.
 
-## Proof-separated current state
+## Current verified state
 
-### Documented
-This checkpoint records three completed safe milestones: confirmation-open direct-reset/focus integrity with semantic fail-closed convergence repair; focused rapid reset/cancel/reopen transition-convergence proof; and a phone-first physical-device owner acceptance packet tied to the exact validated non-production preview. The owner/security decision ledger remains authoritative for live-staging gates.
+### Documented — YES
 
-### Implemented
-Exact runtime implementation source for the reset/focus/convergence behavior: `92df41b452ea7203a6f5bf6765fb858148fdd2a0`.
+The repository now durably contains the WorldStage/Cherry mobile-first roadmap, phone-first owner/security decision material, physical-device acceptance packet, fail-closed Phase 2 decision ledger, staging preflight, release-governance architecture, rollback/provenance contracts, and automated evidence workflows.
 
-The runtime contains two linked corrections:
+Issue #5 (`WorldStage: make staging preflight and production release gate self-validating`) is closed as technically completed. Issue #4 remains open as the authoritative owner/security decision tracker.
 
-1. `src/cherry-engagement-reset-focus-integrity.js` keeps the pre-existing canonical `Reset demo` control outside normal owner interaction while the local reset confirmation is open. Pointer, keyboard, focus and direct/programmatic bypass attempts remain blocked. The single canonical confirmation path can delegate exactly one reset using a short-lived, one-use owner gesture token validated against the exact confirmation structure, sanitized completed flow and unique canonical local reset target. The token is cleared on unrelated interaction, corruption, session close or use.
-2. `src/cherry-engagement-structural-rebuild-integrity.js` separates structural convergence from semantic trust. It rebuilds only when critical owner-action/handoff structure is duplicated or missing. A directly spoofed root stage remains under the dedicated semantic fail-closed boundary, so an accessibility-boundary child mutation can no longer indirectly restore trusted semantics.
+### Implemented — YES, bounded non-production line
 
-No additional runtime change was required for the rapid-cycle convergence milestone. Test-only proof was added at validation source `bbd073aa0cb14db48439f372aabd99bc59634b2f`:
-- `tests/cherry-engagement-reset-cycle-convergence.spec.mjs`
-- mandatory Phase-4 inclusion in `package.json`
+PR #1 was merged to `main` at merge commit:
 
-No new persistence, provider access, analytics event, credential request, private-data access, scoring/inference, client communication, spending, live-staging activation, legal/regulatory commitment, merge, or production authority was added.
+`80f22ae06b1615d17e33d9118f48ad8719d7822b`
 
-### Tested
-Canonical exact-validation pull-request run: GitHub Actions `31565659324` / #858 — **SUCCESS** on exact source `bbd073aa0cb14db48439f372aabd99bc59634b2f`.
+The merged line includes:
 
-The complete mandatory chain passed: owner/security evidence; fail-closed secure-intake runtime/readiness; mobile; iPhone/WebKit and Pixel/Chromium; Phase 2 SQL/staging; Discovery Phase 3; Cherry OS Phase 4 including the new rapid-cycle convergence regression; Transformation Record Phase 5; release/privacy/security; visual verification; exact-head readiness regeneration; readiness/mobile evidence uploads. Parallel push run `31565656793` / #857 also completed **SUCCESS** on the same exact source and preserved the visual-review PDF.
+- phone-first WorldStage / Cherry UI and synthetic operating flows;
+- confirmation-open reset/focus integrity and repeated reset-cycle convergence protections;
+- fail-closed secure-intake shell and synthetic authorization/RLS/backup/restore contracts;
+- standalone staging preflight that invokes the authoritative decision-evidence validator;
+- content-addressed production evidence assembly and independent verification adapter;
+- same-run freshness, replay, source, run, attempt and deployment consumption checks;
+- machine-readable production governance requiring D1–D24 including explicit D23 production-release authority evidence;
+- workflow ordering that keeps Vercel credential access, project pull, production build and deploy after the machine-readable production gate;
+- `vercel.json` Git deployment isolation with `git.deploymentEnabled.main=false`, preventing a normal Git merge/push to `main` from serving as a production-release path;
+- a regression contract that enforces the `main` Git auto-deploy isolation rule.
 
-The predecessor repair run `31565296658` / #852 had already closed the five Phase-4 failures exposed by run #848 / `31563203163`: capture-listener ordering could block canonical confirmed reset, and structural convergence could indirectly reverse deliberate root-stage semantic fail-closed behavior. The new stress regression confirms those repairs converge across repeated session transitions without requiring another runtime modification.
+No real confidential-intake persistence, provider/database binding, live staging, production promotion, or production data mutation is represented as implemented.
 
-Exact #858 artifacts:
-- staging readiness: `9129404618`, `sha256:91672e861ad2829444f7a8417e70d352c286e1ce7716dc208dfcba8bc4900ffd`
-- mobile visual evidence: `9129405097`, `sha256:05d3fd4c4fdad7b2db18689253bc958e6aa0c2f8d48d9ba095439db4e9bf3db3`
-- Phase-4 diagnostics: `9129400419`, `sha256:e87e198a2e03af8d37f01e5d42c26a2f067586993926c7f1b1fdd389116f576e`
+### Tested — YES for exact implementation source
 
-The #858 readiness ZIP was downloaded and inspected directly. It records:
-- `project_key=worldstage-cherry`
-- exact `source_sha=bbd073aa0cb14db48439f372aabd99bc59634b2f`
-- `readiness=BLOCKED`
-- live staging blocked
-- confidential intake disabled
-- anonymous intake denied
-- file uploads/private AI/private analytics disabled
-- production release blocked
-- persistence unselected
-- adapter binding false
-- no staging or production project IDs bound
-- D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 OPEN
+Exact fully validated source:
 
-Focused rapid-cycle proof establishes that three consecutive Start-new → Cancel cycles preserve completed local synthetic state; every open confirmation keeps the unique canonical `Reset demo` unavailable to sequential focus/assistive action; every Cancel restores Start-new focus and the original reset control; an abandoned confirm gesture does not leak delegation authority; direct programmatic reset remains blocked in a later session; one final canonical Confirm clears only existing local synthetic keys and returns continuity to `discovery`; the reset is not left locked; exactly one continuity strip remains; zero POST/PUT/PATCH/DELETE requests occur; and 390px horizontal bounds remain valid.
+`3f3fa880a509286886c852922b12cbe31209978d`
 
-Push-run evidence preservation produced child `65a1aa90491824f0f95c46a5861e46ee60e209a4`. Exact comparison against validated source `bbd073aa...` proves that child changes only `docs/worldstage/evidence/WORLDSTAGE_MOBILE_V2_VISUAL_EVIDENCE.pdf`; runtime/test provenance remains attributed to exact validated source `bbd073aa...`, with runtime behavior itself unchanged from `92df41b...`.
+GitHub Actions run:
 
-### Preview deployed
-Exact validation-source Vercel preview: `dpl_4dx9WksvwGGk1Lumk3WWpiEdP1xk` — **READY**, `target: null`, exact Git SHA `bbd073aa0cb14db48439f372aabd99bc59634b2f`.
+`31585457746` / #870 — **SUCCESS**
 
-Vercel build logs prove exact clone `bbd073a`, successful build and successful deployment. Error/fatal runtime-log lookup in the checked one-hour preview window returned no matching logs. The preview remains non-production; READY/build provenance is not represented as live staging or production verification.
+The complete mandatory chain passed:
 
-### Live staging
-**No.** The exact readiness artifact remains intentionally `BLOCKED`; no live staging project/database/provider binding was created.
+- owner/security decision-evidence enforcement;
+- fail-closed secure-intake runtime;
+- staging-readiness preflight;
+- atomic production release-control contracts, including the `main` Git auto-deploy bypass regression;
+- six-width mobile contract;
+- iPhone/WebKit and Pixel/Chromium device-class contracts;
+- Phase 2 SQL and staging contracts;
+- Discovery Phase 3;
+- Cherry OS Phase 4;
+- Transformation Record Phase 5;
+- release/privacy/security contract;
+- visual verification;
+- exact-head staging-readiness regeneration and evidence uploads.
 
-### Production verified/released for this implementation line
-**No.** No production promotion or release was performed.
+Exact #870 artifacts:
 
-Preserved production baseline `dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1` was freshly rechecked **READY**, `target: production`, and remains separate and untouched by these milestones.
+- `worldstage-mobile-v2-evidence` — artifact `9136990337`, `sha256:dc2e60e90bdada4624d316810f79518400a340ce43efd6281fbc126c0885f192`
+- `worldstage-phase2-staging-readiness` — artifact `9136989409`, `sha256:6cef98173fac58ada3d6d94a7853947b0aa3cbfbbeebbc9e6baa5fb32c5f012f`
+- `worldstage-phase4-diagnostics` — artifact `9136982642`, `sha256:f5b75eacf8894d3abea3949581df6cd3dc1b7e2ce9742836c06e8dd1d1f696f6`
 
-## Completed milestone — confirmation-open direct-reset/focus integrity
+CI then produced evidence-only child:
 
-The completed-flow confirmation has a deterministic interaction boundary: the underlying `Reset demo` remains unavailable to owner pointer/keyboard/focus/direct-programmatic paths while confirmation is open, while the canonical owner confirmation can still invoke exactly the existing local synthetic reset. Cancel restores the canonical reset without modifying local state. Confirmation corruption preserves completed state rather than bypassing the boundary. Direct root-stage spoofing remains fail closed instead of being indirectly canonicalized by structural convergence.
+`1270c15188cb05b967902fcfad33d9a8afbf5ffe`
 
-## Completed milestone — rapid reset/cancel/reopen transition convergence proof
+Exact comparison against `3f3fa880...` shows that child modifies only `docs/worldstage/evidence/WORLDSTAGE_MOBILE_V2_VISUAL_EVIDENCE.pdf`; runtime/test provenance remains attributed to `3f3fa880...`.
 
-The current runtime already satisfied the stronger repeated-transition contract, so no unnecessary runtime change was made. A mandatory Phase-4 stress regression now proves repeated Cancel/reopen cycles, abandoned confirm gestures, direct-reset bypass attempts and final canonical confirmation converge to one truthful local state without stale completion UI, duplicate confirmation structure, leaked delegation authority, a stuck reset lock, network writes or production effects.
+### Preview deployed — YES
 
-## Completed milestone — physical-device owner acceptance packet prepared
+Exact implementation preview:
 
-`docs/worldstage/CHERRY_PHYSICAL_DEVICE_ACCEPTANCE_PACKET_2026-08-12.md` now provides a phone-only, exact-build acceptance procedure tied to validated source `bbd073aa...` and preview `dpl_4dx9WksvwGGk1Lumk3WWpiEdP1xk`. It records only non-sensitive device/browser/date evidence, prohibits real client/private data, distinguishes PASS/FAIL/BLOCKED, checks Discovery → Cherry review → Transformation Record continuity, Resume, Reset/Cancel/Confirm, repeated reset cycles, mobile fit and production-truth cues, and explicitly states that the packet itself is not owner approval. This advances the physical-device gate as far as autonomous work can without impersonating Cherry or inferring acceptance.
+`dpl_5jVQzpbe8FNM63SLJn4iPyV2MQC9` — **READY**, non-production (`target: null`), exact Git SHA `3f3fa880a509286886c852922b12cbe31209978d`.
+
+The inspected preview error/fatal runtime-log window contained no matching entries.
+
+Evidence-only child preview:
+
+`dpl_BGy9Rzni9SsQ1E5hCdc4Vjp6AZLE` — **READY**, non-production (`target: null`), exact Git SHA `1270c15188cb05b967902fcfad33d9a8afbf5ffe`.
+
+### Live staging — NO
+
+The authoritative decision ledger still records all D1–D24 as OPEN unless complete authorized evidence is recorded. Live-staging creation remains blocked until at minimum:
+
+`D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17, D18`
+
+are RESOLVED with full non-placeholder evidence. No live staging database/auth/provider resource was created.
+
+### Production verified/released for the current line — NO
+
+The source merge did not trigger a Vercel deployment after the merge commit. This is consistent with the merged `main` Git-deployment isolation guard.
+
+Preserved production baseline:
+
+`dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1` — **READY**, `target: production`, separate and unchanged.
+
+The merged production gate remains explicitly non-authorizing: accepted technical evidence can reach only `READY_FOR_EXPLICIT_PRODUCTION_RELEASE`; it sets `grants_production_authority=false`, requires a separate release action, and does not treat the typed production confirmation string as sufficient.
+
+## Completed milestones
+
+1. PR #1 merged safely into `main` after exact-source CI success and preview verification.
+2. Issue #5 release-control hardening is repository-integrated, exact-source tested and closed as completed.
+3. Standalone staging preflight independently fails closed on incomplete or placeholder decision evidence.
+4. Production release path requires content-addressed verified evidence, current-run consumption, full governance, physical-device proof, rollback proof and explicit D23 evidence before Vercel production operations become reachable.
+5. Normal Git changes to `main` are isolated from automatic Vercel deployment, so source merge is not production release.
 
 ## In progress
-No provider, database, destructive-data, billable-staging, or production operation is running. Autonomous work remains confined to reversible synthetic/mobile work, proof quality and owner-ready validation preparation.
+
+Autonomous technical work is now constrained by genuine owner/security and real-environment gates rather than missing repository controls. Safe work may continue on non-production proof quality, documentation consistency, synthetic regressions and recovery evidence without choosing or fabricating owner/security decisions.
 
 ## Blocked / gated
-The following remain outside autonomous authority until their evidence/authorization gates are satisfied:
-- D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17, D18
-- real PostgreSQL/Supabase/auth binding and signed-user RLS proof
-- provider backup/restore and live kill-switch proof
-- live/billable staging
-- authentic owner-approved content/rights where required
-- **physical-device Cherry acceptance remains pending; the packet is prepared but has not been executed/approved by Cherry**
-- legal/regulatory or public commitments
-- separate production authorization
+
+The following remain outside autonomous authority until explicit evidence/authorization exists:
+
+- all unresolved D1–D24 owner/security decisions as applicable;
+- live PostgreSQL/Supabase/auth binding and signed-user RLS verification;
+- provider backup/restore and live kill-switch proof;
+- live/billable staging creation;
+- confidential intake activation;
+- authentic Cherry physical-device acceptance — the prepared packet is not acceptance;
+- content/media/client-rights approvals where applicable;
+- legal/regulatory/public commitments;
+- D23 production-release authority and the separate exact release action.
 
 ## Pandora Memory
-Pandora Memory health/search is operational, but current retrieval still does not contain a WorldStage operational record for this implementation line. The exposed Pandora Memory surface provides search/health but no canonical WorldStage write/promotion operation. Therefore this checkpoint cannot truthfully be marked synchronized into Pandora Memory. GitHub, GitHub Actions artifacts, and Vercel hold the durable evidence fallback until the canonical Memory write path is available.
+
+No Pandora Memory connector or installable Pandora plugin is exposed in the current execution environment. Therefore no WorldStage synchronization into Pandora Memory is claimed. GitHub source/history, GitHub Actions artifacts, Issues/PR evidence and Vercel deployment records remain the durable evidence fallback until an authorized Memory write path is available.
 
 ## Risks / non-claims
-This is synthetic UI integrity, not an authorization/security boundary against arbitrary hostile script execution. The owner-gesture token is deliberately ephemeral and module-local; it does not authorize any provider, database, production, legal or financial action. Automated browser/device verification is not physical-device Cherry acceptance. The prepared owner packet is not acceptance. Preview READY is not live-staging proof or production verification. No real client engagement outcome/status is inferred from synthetic state.
+
+A successful source merge is not a production release. A READY preview is not live staging or production verification. Automated browser/device-class checks are not Cherry’s physical-device acceptance. Synthetic authorization/RLS/backup/restore contracts are not evidence that a real provider environment has been activated or tested. Issue #5 completion resolves technical release-control gaps only; it does not resolve Issue #4 decisions.
 
 ## Next autonomous safe action
-Prepare a **single phone-first owner/security decision packet** from the existing authoritative decision ledger for D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18. Preserve the existing options/evidence, do not choose defaults or infer approval, identify which decisions are prerequisites for live staging versus later production, and make the packet answerable without a desktop or developer tooling. This reduces owner-interruption cost without crossing any decision, spending, legal, credential, data or release gate.
+
+Keep Issue #4 and the canonical decision ledger synchronized without resolving any item by inference. Continue read-only/synthetic verification that all live-staging and production paths remain fail closed while decisions are OPEN, and preserve exact-source recovery/evidence snapshots. The next real implementation boundary requiring owner input is the live-staging decision set and physical-device acceptance; no provider, spending, confidential-data or production action should cross that gate autonomously.
