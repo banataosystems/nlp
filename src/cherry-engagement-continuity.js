@@ -138,7 +138,7 @@ function cherryContinuityMarkup(flow, current, previous, attention, signature) {
           <strong>${attention.label}</strong>
           <small data-cherry-engagement-continuity-attention-reason>${attention.reason}</small>
         </div>
-        <p>${current.detail}</p>
+        <p data-cherry-engagement-continuity-detail>${current.detail}</p>
         <div class="cherry-engagement-continuity__handoff" data-cherry-engagement-continuity-handoff aria-label="Synthetic engagement handoff cue">
           <span>WHAT'S READY / WHAT'S NEXT · READ ONLY</span>
           <p data-cherry-engagement-continuity-previous-label>Previous stage: ${previous.label}.</p>
@@ -220,7 +220,8 @@ function enhanceCherryEngagementContinuity() {
   strip.querySelector('[data-cherry-engagement-continuity-resume]')?.addEventListener('click', (event) => {
     const button = event.currentTarget;
     if (!(button instanceof HTMLButtonElement)) return;
-    cherryContinuityResume(button.dataset.cherryEngagementContinuityResume);
+    const currentAtActivation = cherryContinuityCurrent(cherryContinuityFlowState());
+    cherryContinuityResume(currentAtActivation.route);
   });
 
   strip.querySelector('[data-cherry-engagement-continuity-start-new]')?.addEventListener('click', () => {

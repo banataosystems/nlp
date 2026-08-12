@@ -1,6 +1,6 @@
-/* WorldStage / Cherry — fail-closed integrity for synthetic owner-attention, completion, and handoff provenance cues.
+/* WorldStage / Cherry — fail-closed integrity for synthetic owner-action, attention, completion, and handoff provenance cues.
    Derives only from the sanitized local synthetic engagement-flow state already used by the continuity renderer.
-   Direct DOM mutation can neither create Cherry urgency, claim synthetic completion, nor spoof prior/prepared/next handoff provenance unsupported by that state.
+   Direct DOM mutation can neither redirect Resume, spoof the current owner-action stage, create Cherry urgency, claim synthetic completion, nor spoof prior/prepared/next handoff provenance unsupported by that state.
    Structural cue corruption removes the continuity strip so the existing renderer can restore the canonical surface.
    No persistence, provider access, analytics, scoring, private data, spending, or release authority. */
 
@@ -25,11 +25,17 @@ const CHERRY_CUE_PREVIOUS = Object.freeze({
 });
 const CHERRY_CUE_HANDOFF_ARIA_LABEL = 'Synthetic engagement handoff cue';
 const CHERRY_CUE_ATTENTION_ARIA_LABEL = 'Fixed synthetic owner attention cue';
+const CHERRY_CUE_OWNER_ACTION_ARIA_LABEL = 'Synthetic owner action card';
 const CHERRY_CUE_COMPLETION_TEXT = 'Completed local-demo state is preserved until Start a new synthetic engagement is deliberately tapped.';
 const CHERRY_CUE_TRACKED_ATTRIBUTES = Object.freeze([
   'data-cherry-engagement-continuity-signature',
+  'data-cherry-engagement-continuity-stage',
   'data-cherry-engagement-continuity-previous',
   'data-cherry-engagement-continuity-attention',
+  'data-cherry-engagement-owner-action',
+  'data-cherry-engagement-continuity-current',
+  'data-cherry-engagement-continuity-detail',
+  'data-cherry-engagement-continuity-resume',
   'data-cherry-engagement-continuity-handoff',
   'data-cherry-engagement-continuity-previous-label',
   'data-cherry-engagement-continuity-prepared',
@@ -39,6 +45,7 @@ const CHERRY_CUE_TRACKED_ATTRIBUTES = Object.freeze([
   'data-cherry-engagement-continuity-complete',
   'data-cherry-engagement-continuity-completion',
   'aria-label',
+  'type',
 ]);
 
 let cherryCueIntegrityQueued = false;
@@ -77,6 +84,9 @@ function cherryCueExpectedCurrent(flow) {
   if (!flow.discoveryPrepared) {
     return {
       id: 'discovery',
+      label: 'Discovery',
+      route: 'discovery',
+      detail: 'Resume the fixed synthetic Discovery brief. No client form values are read into this card.',
       prepared: 'Prepared: owner cockpit shell and fixed synthetic engagement flow only.',
       next: 'Next: prepare the fixed synthetic Discovery brief.',
     };
@@ -85,6 +95,9 @@ function cherryCueExpectedCurrent(flow) {
   if (!flow.ownerReviewed) {
     return {
       id: 'review',
+      label: 'Cherry review',
+      route: 'cockpit',
+      detail: 'Resume the existing synthetic Cherry judgment step on this phone view.',
       prepared: 'Prepared: fixed synthetic Discovery brief.',
       next: 'Next: complete the existing local-demo Cherry review.',
     };
@@ -92,6 +105,11 @@ function cherryCueExpectedCurrent(flow) {
 
   return {
     id: 'record',
+    label: 'Transformation Record',
+    route: 'client',
+    detail: flow.recordPrepared
+      ? 'Resume the existing local synthetic Transformation Record review.'
+      : 'Resume preparation of the existing local synthetic Transformation Record.',
     prepared: flow.recordPrepared
       ? 'Prepared: Discovery brief, Cherry review, and local synthetic Transformation Record.'
       : 'Prepared: Discovery brief and Cherry review.',
@@ -130,12 +148,48 @@ function repairCherryCueIntegrity() {
   if (strip.dataset.cherryEngagementContinuitySignature !== signature) {
     strip.dataset.cherryEngagementContinuitySignature = signature;
   }
+  if (strip.dataset.cherryEngagementContinuityStage !== current.id) {
+    strip.dataset.cherryEngagementContinuityStage = current.id;
+  }
   if (strip.dataset.cherryEngagementContinuityPrevious !== previous.id) {
     strip.dataset.cherryEngagementContinuityPrevious = previous.id;
   }
   if (strip.dataset.cherryEngagementContinuityAttention !== attention.id) {
     strip.dataset.cherryEngagementContinuityAttention = attention.id;
   }
+
+  const ownerActions = Array.from(strip.querySelectorAll('[data-cherry-engagement-owner-action]'));
+  if (ownerActions.length !== 1 || !(ownerActions[0] instanceof HTMLElement)) {
+    invalidateCherryCueSurface(strip);
+    return;
+  }
+
+  const ownerAction = ownerActions[0];
+  const currentLabels = Array.from(ownerAction.querySelectorAll('[data-cherry-engagement-continuity-current]'));
+  const details = Array.from(ownerAction.querySelectorAll('[data-cherry-engagement-continuity-detail]'));
+  const resumes = Array.from(ownerAction.querySelectorAll('[data-cherry-engagement-continuity-resume]'));
+  if (
+    currentLabels.length !== 1 || !(currentLabels[0] instanceof HTMLElement)
+    || details.length !== 1 || !(details[0] instanceof HTMLElement)
+    || resumes.length !== 1 || !(resumes[0] instanceof HTMLButtonElement)
+  ) {
+    invalidateCherryCueSurface(strip);
+    return;
+  }
+
+  const resume = resumes[0];
+  if (ownerAction.getAttribute('aria-label') !== CHERRY_CUE_OWNER_ACTION_ARIA_LABEL) {
+    ownerAction.setAttribute('aria-label', CHERRY_CUE_OWNER_ACTION_ARIA_LABEL);
+  }
+  if (currentLabels[0].textContent !== current.label) currentLabels[0].textContent = current.label;
+  if (details[0].textContent !== current.detail) details[0].textContent = current.detail;
+  if (resume.dataset.cherryEngagementContinuityResume !== current.route) {
+    resume.dataset.cherryEngagementContinuityResume = current.route;
+  }
+  if (resume.getAttribute('aria-label') !== `Resume ${current.label}`) {
+    resume.setAttribute('aria-label', `Resume ${current.label}`);
+  }
+  if (resume.getAttribute('type') !== 'button') resume.setAttribute('type', 'button');
 
   const handoffs = Array.from(strip.querySelectorAll('[data-cherry-engagement-continuity-handoff]'));
   if (handoffs.length !== 1 || !(handoffs[0] instanceof HTMLElement)) {
