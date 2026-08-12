@@ -1,0 +1,13 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { validateReviewedPrProvenance } from '../scripts/worldstage-main-pr-provenance-policy.mjs';
+const sha='a'.repeat(40);
+const mergedPr={number:7,merged_at:'2026-08-12T00:00:00Z',base:{ref:'main'}};
+const goodRun={id:99,head_sha:sha,event:'pull_request',conclusion:'success',path:'.github/workflows/mobile-contract.yml'};
+test('direct-to-main source with no associated PR fails closed',()=>{const r=validateReviewedPrProvenance({sourceSha:sha,pullRequests:[],workflowRuns:[goodRun]});assert.equal(r.accepted,false);assert.ok(r.errors.includes('MERGED_PR_PROVENANCE_MISSING'));});
+test('merged PR without exact-source mandatory CI fails closed',()=>{const r=validateReviewedPrProvenance({sourceSha:sha,pullRequests:[mergedPr],workflowRuns:[]});assert.equal(r.accepted,false);assert.ok(r.errors.includes('EXACT_SOURCE_MANDATORY_CI_MISSING'));});
+test('PR to non-main base does not qualify',()=>{const r=validateReviewedPrProvenance({sourceSha:sha,pullRequests:[{...mergedPr,base:{ref:'dev'}}],workflowRuns:[goodRun]});assert.equal(r.accepted,false);assert.ok(r.errors.includes('MERGED_PR_PROVENANCE_MISSING'));});
+test('failed exact-source CI does not qualify',()=>{const r=validateReviewedPrProvenance({sourceSha:sha,pullRequests:[mergedPr],workflowRuns:[{...goodRun,conclusion:'failure'}]});assert.equal(r.accepted,false);assert.ok(r.errors.includes('EXACT_SOURCE_MANDATORY_CI_MISSING'));});
+test('successful CI for a different SHA cannot be replayed',()=>{const r=validateReviewedPrProvenance({sourceSha:sha,pullRequests:[mergedPr],workflowRuns:[{...goodRun,head_sha:'b'.repeat(40)}]});assert.equal(r.accepted,false);assert.ok(r.errors.includes('EXACT_SOURCE_MANDATORY_CI_MISSING'));});
+test('wrong workflow cannot substitute for mandatory CI',()=>{const r=validateReviewedPrProvenance({sourceSha:sha,pullRequests:[mergedPr],workflowRuns:[{...goodRun,path:'.github/workflows/other.yml'}]});assert.equal(r.accepted,false);assert.ok(r.errors.includes('EXACT_SOURCE_MANDATORY_CI_MISSING'));});
+test('merged-to-main provenance plus exact-source mandatory PR CI passes',()=>{const r=validateReviewedPrProvenance({sourceSha:sha,pullRequests:[mergedPr],workflowRuns:[goodRun]});assert.equal(r.accepted,true);assert.deepEqual(r.errors,[]);assert.deepEqual(r.qualifying_pr_numbers,[7]);assert.deepEqual(r.qualifying_ci_run_ids,[99]);});
