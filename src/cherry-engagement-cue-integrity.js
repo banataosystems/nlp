@@ -1,6 +1,6 @@
-/* WorldStage / Cherry — fail-closed integrity for synthetic owner-attention and completion cues.
+/* WorldStage / Cherry — fail-closed integrity for synthetic owner-attention, completion, and handoff provenance cues.
    Derives only from the sanitized local synthetic engagement-flow state already used by the continuity renderer.
-   Direct DOM mutation can neither create Cherry urgency nor claim synthetic completion unsupported by that state.
+   Direct DOM mutation can neither create Cherry urgency, claim synthetic completion, nor spoof prior/prepared/next handoff provenance unsupported by that state.
    Structural cue corruption removes the continuity strip so the existing renderer can restore the canonical surface.
    No persistence, provider access, analytics, scoring, private data, spending, or release authority. */
 
@@ -18,10 +18,22 @@ const CHERRY_CUE_ATTENTION = Object.freeze({
     reason: 'Current stage requires Cherry review',
   }),
 });
+const CHERRY_CUE_PREVIOUS = Object.freeze({
+  none: 'None',
+  discovery: 'Discovery',
+  review: 'Cherry review',
+});
+const CHERRY_CUE_HANDOFF_ARIA_LABEL = 'Synthetic engagement handoff cue';
 const CHERRY_CUE_ATTENTION_ARIA_LABEL = 'Fixed synthetic owner attention cue';
 const CHERRY_CUE_COMPLETION_TEXT = 'Completed local-demo state is preserved until Start a new synthetic engagement is deliberately tapped.';
 const CHERRY_CUE_TRACKED_ATTRIBUTES = Object.freeze([
+  'data-cherry-engagement-continuity-signature',
+  'data-cherry-engagement-continuity-previous',
   'data-cherry-engagement-continuity-attention',
+  'data-cherry-engagement-continuity-handoff',
+  'data-cherry-engagement-continuity-previous-label',
+  'data-cherry-engagement-continuity-prepared',
+  'data-cherry-engagement-continuity-next',
   'data-cherry-engagement-continuity-attention-cue',
   'data-cherry-engagement-continuity-attention-reason',
   'data-cherry-engagement-continuity-complete',
@@ -55,6 +67,51 @@ function cherryCueExpectedAttention(flow) {
     : CHERRY_CUE_ATTENTION.preparedFlow;
 }
 
+function cherryCueExpectedPrevious(flow) {
+  if (!flow.discoveryPrepared) return { id: 'none', label: CHERRY_CUE_PREVIOUS.none };
+  if (!flow.ownerReviewed) return { id: 'discovery', label: CHERRY_CUE_PREVIOUS.discovery };
+  return { id: 'review', label: CHERRY_CUE_PREVIOUS.review };
+}
+
+function cherryCueExpectedCurrent(flow) {
+  if (!flow.discoveryPrepared) {
+    return {
+      id: 'discovery',
+      prepared: 'Prepared: owner cockpit shell and fixed synthetic engagement flow only.',
+      next: 'Next: prepare the fixed synthetic Discovery brief.',
+    };
+  }
+
+  if (!flow.ownerReviewed) {
+    return {
+      id: 'review',
+      prepared: 'Prepared: fixed synthetic Discovery brief.',
+      next: 'Next: complete the existing local-demo Cherry review.',
+    };
+  }
+
+  return {
+    id: 'record',
+    prepared: flow.recordPrepared
+      ? 'Prepared: Discovery brief, Cherry review, and local synthetic Transformation Record.'
+      : 'Prepared: Discovery brief and Cherry review.',
+    next: flow.recordPrepared
+      ? 'Next: review the existing local synthetic Transformation Record.'
+      : 'Next: prepare the local synthetic Transformation Record.',
+  };
+}
+
+function cherryCueExpectedSignature(flow, current, previous, attention) {
+  return [
+    flow.discoveryPrepared ? 'd1' : 'd0',
+    flow.ownerReviewed ? 'o1' : 'o0',
+    flow.recordPrepared ? 'r1' : 'r0',
+    current.id,
+    previous.id,
+    attention.id,
+  ].join(':');
+}
+
 function invalidateCherryCueSurface(strip) {
   if (strip instanceof HTMLElement && strip.isConnected) strip.remove();
 }
@@ -66,10 +123,46 @@ function repairCherryCueIntegrity() {
 
   const flow = cherryCueFlowState();
   const attention = cherryCueExpectedAttention(flow);
+  const previous = cherryCueExpectedPrevious(flow);
+  const current = cherryCueExpectedCurrent(flow);
+  const signature = cherryCueExpectedSignature(flow, current, previous, attention);
 
+  if (strip.dataset.cherryEngagementContinuitySignature !== signature) {
+    strip.dataset.cherryEngagementContinuitySignature = signature;
+  }
+  if (strip.dataset.cherryEngagementContinuityPrevious !== previous.id) {
+    strip.dataset.cherryEngagementContinuityPrevious = previous.id;
+  }
   if (strip.dataset.cherryEngagementContinuityAttention !== attention.id) {
     strip.dataset.cherryEngagementContinuityAttention = attention.id;
   }
+
+  const handoffs = Array.from(strip.querySelectorAll('[data-cherry-engagement-continuity-handoff]'));
+  if (handoffs.length !== 1 || !(handoffs[0] instanceof HTMLElement)) {
+    invalidateCherryCueSurface(strip);
+    return;
+  }
+
+  const handoff = handoffs[0];
+  const previousLabels = Array.from(handoff.querySelectorAll('[data-cherry-engagement-continuity-previous-label]'));
+  const preparedLabels = Array.from(handoff.querySelectorAll('[data-cherry-engagement-continuity-prepared]'));
+  const nextLabels = Array.from(handoff.querySelectorAll('[data-cherry-engagement-continuity-next]'));
+  if (
+    previousLabels.length !== 1 || !(previousLabels[0] instanceof HTMLElement)
+    || preparedLabels.length !== 1 || !(preparedLabels[0] instanceof HTMLElement)
+    || nextLabels.length !== 1 || !(nextLabels[0] instanceof HTMLElement)
+  ) {
+    invalidateCherryCueSurface(strip);
+    return;
+  }
+
+  const expectedPreviousText = `Previous stage: ${previous.label}.`;
+  if (handoff.getAttribute('aria-label') !== CHERRY_CUE_HANDOFF_ARIA_LABEL) {
+    handoff.setAttribute('aria-label', CHERRY_CUE_HANDOFF_ARIA_LABEL);
+  }
+  if (previousLabels[0].textContent !== expectedPreviousText) previousLabels[0].textContent = expectedPreviousText;
+  if (preparedLabels[0].textContent !== current.prepared) preparedLabels[0].textContent = current.prepared;
+  if (nextLabels[0].textContent !== current.next) nextLabels[0].textContent = current.next;
 
   const attentionCues = Array.from(strip.querySelectorAll('[data-cherry-engagement-continuity-attention-cue]'));
   if (attentionCues.length !== 1 || !(attentionCues[0] instanceof HTMLElement)) {
