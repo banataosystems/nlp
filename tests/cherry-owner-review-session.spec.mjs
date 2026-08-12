@@ -75,20 +75,24 @@ test('3-minute owner review advances through each unseen deterministic priority 
   await expect(recap.locator('[data-cherry-owner-review-recap-route="client"]')).toHaveText('Open synthetic Transformation Record →');
 
   const recheck = recap.locator('[data-cherry-owner-review-recap-recheck]');
+  const recheckStatus = recap.locator('[data-cherry-owner-review-recap-recheck-status]');
   await expect(recheck).toHaveText('Recheck changed (3) →');
   await recheck.click();
-  await expect(recap.locator('[data-cherry-owner-review-recap-recheck-status]')).toHaveText('Rechecking 1 of 3 · Item 01. Navigation only; the completed review is unchanged.');
+  await expect(recheckStatus).toHaveText('Rechecking 1 of 3 · Item 01. Navigation only; the completed review is unchanged.');
   await expect(page.locator('[data-cherry-decision-state="01"] [data-cherry-daily-set="parked"]')).toBeFocused();
   await expect(page).toHaveURL(/#\/cockpit$/);
 
   await recheck.click();
-  await expect(recap.locator('[data-cherry-owner-review-recap-recheck-status]')).toContainText('Rechecking 2 of 3 · Item 02.');
+  await expect(recheckStatus).toContainText('Rechecking 2 of 3 · Item 02.');
   await expect(page.locator('[data-cherry-decision-state="02"] [data-cherry-daily-set="prepared"]')).toBeFocused();
 
   await recheck.click();
-  await expect(recap.locator('[data-cherry-owner-review-recap-recheck-status]')).toContainText('Rechecking 3 of 3 · Item 03.');
   await expect(page.locator('[data-cherry-decision-state="03"] [data-cherry-daily-set="prepared"]')).toBeFocused();
-  await expect(recheck).toHaveText('Recheck from first changed →');
+  await expect(recap).toHaveAttribute('data-cherry-owner-review-recheck-complete', 'true');
+  await expect(recheckStatus).toHaveAttribute('data-cherry-owner-review-recheck-complete-status', 'true');
+  await expect(recheckStatus).toContainText('Recheck complete · 3 changed items revisited.');
+  await expect(recheck).toBeHidden();
+  await expect(recap.locator('[data-cherry-owner-review-recap-route="client"]')).toHaveText('Continue to existing synthetic next step →');
 
   const sizes = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth }));
   expect(sizes.sw).toBeLessThanOrEqual(sizes.cw + 1);
@@ -160,11 +164,14 @@ test('3-minute owner review stays fixed-vocabulary, restartable, and non-authori
   await expect(recap.locator('[data-cherry-owner-review-recap-route="discovery"]')).toHaveText('Continue with synthetic Discovery →');
 
   const recheck = recap.locator('[data-cherry-owner-review-recap-recheck]');
+  const recheckStatus = recap.locator('[data-cherry-owner-review-recap-recheck-status]');
   await expect(recheck).toHaveText('Recheck changed (1) →');
   await recheck.click();
-  await expect(recap.locator('[data-cherry-owner-review-recap-recheck-status]')).toContainText('Rechecking 1 of 1 · Item 02.');
   await expect(page.locator('[data-cherry-decision-state="02"] [data-cherry-daily-set="prepared"]')).toBeFocused();
-  await expect(recheck).toHaveText('Recheck from first changed →');
+  await expect(recap).toHaveAttribute('data-cherry-owner-review-recheck-complete', 'true');
+  await expect(recheckStatus).toHaveAttribute('data-cherry-owner-review-recheck-complete-status', 'true');
+  await expect(recheckStatus).toContainText('Recheck complete · 1 changed item revisited.');
+  await expect(recheck).toBeHidden();
   expect(networkWrites).toEqual([]);
 
   await page.locator('[data-cherry-review-session-restart]').click();
