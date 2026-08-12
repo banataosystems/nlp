@@ -26,6 +26,13 @@ async function readLocalDemoState(page) {
   }));
 }
 
+async function expectResetLockedForOwner(reset) {
+  await expect(reset).toBeDisabled();
+  await expect(reset).toHaveAttribute('aria-disabled', 'true');
+  await expect(reset).toHaveAttribute('tabindex', '-1');
+  expect(await reset.evaluate((button) => button instanceof HTMLButtonElement && button.disabled === false)).toBe(true);
+}
+
 function collectNetworkWrites(page) {
   const writes = [];
   page.on('request', (request) => {
@@ -49,9 +56,7 @@ test('confirmation removes Reset demo from owner interaction paths and repairs t
   const cancel = confirmation.locator('[data-cherry-engagement-reset-cancel]');
 
   await expect(confirmation).toBeVisible();
-  await expect(reset).toBeEnabled();
-  await expect(reset).toHaveAttribute('aria-disabled', 'true');
-  await expect(reset).toHaveAttribute('tabindex', '-1');
+  await expectResetLockedForOwner(reset);
   await expect(cancel).toBeFocused();
 
   await reset.evaluate((button) => {
@@ -61,9 +66,7 @@ test('confirmation removes Reset demo from owner interaction paths and repairs t
     button.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
   });
 
-  await expect(reset).toBeEnabled();
-  await expect(reset).toHaveAttribute('aria-disabled', 'true');
-  await expect(reset).toHaveAttribute('tabindex', '-1');
+  await expectResetLockedForOwner(reset);
   expect(await readLocalDemoState(page)).toEqual(before);
 
   await reset.evaluate((button) => {
@@ -72,9 +75,7 @@ test('confirmation removes Reset demo from owner interaction paths and repairs t
     button.focus();
   });
   await expect(cancel).toBeFocused();
-  await expect(reset).toBeEnabled();
-  await expect(reset).toHaveAttribute('aria-disabled', 'true');
-  await expect(reset).toHaveAttribute('tabindex', '-1');
+  await expectResetLockedForOwner(reset);
   expect(await readLocalDemoState(page)).toEqual(before);
 
   await reset.dispatchEvent('pointerdown');
@@ -111,9 +112,7 @@ test('canonical confirmation receives one synchronous reset delegation while eve
   await strip.locator('[data-cherry-engagement-continuity-start-new]').click();
   const confirmation = strip.locator('[data-cherry-engagement-reset-confirmation]');
   const reset = page.locator('[data-synthetic-flow-reset]');
-  await expect(reset).toBeEnabled();
-  await expect(reset).toHaveAttribute('aria-disabled', 'true');
-  await expect(reset).toHaveAttribute('tabindex', '-1');
+  await expectResetLockedForOwner(reset);
 
   const before = await readLocalDemoState(page);
   await page.evaluate(() => {
@@ -125,9 +124,7 @@ test('canonical confirmation receives one synchronous reset delegation while eve
     button.click();
   });
   expect(await readLocalDemoState(page)).toEqual(before);
-  await expect(reset).toBeEnabled();
-  await expect(reset).toHaveAttribute('aria-disabled', 'true');
-  await expect(reset).toHaveAttribute('tabindex', '-1');
+  await expectResetLockedForOwner(reset);
 
   await confirmation.locator('[data-cherry-engagement-reset-confirm]').click();
 
