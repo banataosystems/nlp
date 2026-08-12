@@ -1,0 +1,24 @@
+.cherry-engagement-continuity__actions {
+  display: grid;
+  gap: 7px;
+  justify-items: end;
+}
+
+.cherry-engagement-continuity__resume-consequence {
+  display: block;
+  max-width: 300px;
+  color: rgba(255,255,255,.5);
+  font: 500 10px/1.4 'Inter', sans-serif;
+  text-align: right;
+}
+
+@media (max-width: 760px) {
+  .cherry-engagement-continuity__actions {
+    justify-items: stretch;
+  }
+
+  .cherry-engagement-continuity__resume-consequence {
+    max-width: none;
+    text-align: left;
+  }
+}

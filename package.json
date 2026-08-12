@@ -1,0 +1,31 @@
+{
+  "name": "worldstage-mobile-v2",
+  "private": true,
+  "version": "0.6.0",
+  "scripts": {
+    "serve": "npx http-server . -p 4173 -c-1",
+    "preflight:staging": "node scripts/worldstage-staging-preflight.mjs",
+    "preflight:staging:require-ready": "node scripts/worldstage-staging-preflight.mjs --require-ready",
+    "check:decision-evidence": "node scripts/worldstage-decision-evidence-check.mjs",
+    "test:intake-runtime": "node --test tests/intake-runtime.test.cjs tests/intake-route-shell.test.cjs tests/intake-persistence.test.cjs tests/intake-orchestrator.test.cjs tests/intake-auth-contract.test.cjs tests/receipt-status-contract.test.cjs tests/intake-control.test.cjs tests/rollback-contract.test.cjs tests/staging-handoff-contract.test.cjs tests/synthetic-backup-restore.test.cjs tests/deployment-isolation-contract.test.cjs tests/environment-binding-verification.test.cjs tests/signed-user-live-test-contract.test.cjs tests/live-staging-evidence-aggregator.test.cjs tests/staging-evidence-manifest-contract.test.cjs tests/staging-evidence-checkpoint-contract.test.cjs tests/staging-evidence-checkpoint-capsule-contract.test.cjs tests/synthetic-authorization.test.cjs tests/synthetic-rls-matrix.test.cjs tests/staging-adapter-contract.test.cjs",
+    "test:mobile": "playwright test tests/mobile-contract.spec.mjs",
+    "test:devices": "playwright test tests/device-iphone-webkit.spec.mjs tests/device-pixel-chromium.spec.mjs",
+    "test:phase2sql": "playwright test tests/phase2-sql-draft.spec.mjs",
+    "test:phase2api": "playwright test tests/phase2-api-contract.spec.mjs",
+    "test:phase2staging": "node --test tests/phase2-staging-preflight-evidence-integrity.test.mjs && playwright test tests/phase2-staging-spec.spec.mjs tests/phase2-staging-preflight.spec.mjs tests/phase2-synthetic-fixtures.spec.mjs",
+    "test:phase2decisions": "playwright test tests/phase2-owner-security-decision-gate.spec.mjs tests/phase2-decision-evidence-enforcement.spec.mjs",
+    "test:phase2evidence": "playwright test tests/phase2-decision-evidence-ledger.spec.mjs tests/phase2-decision-evidence-enforcement.spec.mjs",
+    "test:adapters": "playwright test tests/integration-adapter-contract.spec.mjs",
+    "test:release-control": "node --test tests/production-release-control-integration.test.mjs tests/atomic-production-workflow-placement.test.mjs",
+    "test:phase3": "playwright test tests/discovery-phase3.spec.mjs",
+    "test:phase4": "playwright test tests/cockpit-phase4.spec.mjs tests/cherry-owner-summary.spec.mjs tests/cherry-engagement-continuity.spec.mjs tests/cherry-engagement-step-orientation.spec.mjs tests/cherry-engagement-passive-keyboard.spec.mjs tests/cherry-engagement-intrinsic-action-boundary.spec.mjs tests/cherry-engagement-interactive-descendant-boundary.spec.mjs tests/cherry-engagement-action-role-boundary.spec.mjs tests/cherry-engagement-aria-spoofing-boundary.spec.mjs tests/cherry-engagement-canonical-aria-self-repair.spec.mjs tests/cherry-engagement-step-identity-order-boundary.spec.mjs tests/cherry-engagement-visual-status-self-repair.spec.mjs tests/cherry-engagement-owner-cue-self-repair.spec.mjs tests/cherry-engagement-handoff-provenance-self-repair.spec.mjs tests/cherry-engagement-owner-action-resume-integrity.spec.mjs tests/cherry-engagement-start-new-integrity.spec.mjs tests/cherry-engagement-live-region.spec.mjs tests/cherry-engagement-attention-reason.spec.mjs tests/cherry-engagement-resume-consequence.spec.mjs tests/cherry-engagement-room-availability.spec.mjs tests/cherry-engagement-completion-boundary.spec.mjs tests/cherry-engagement-reset-confirmation.spec.mjs tests/cherry-engagement-reset-focus-integrity.spec.mjs tests/cherry-engagement-reset-cycle-convergence.spec.mjs tests/cherry-engagement-reset-narrative-integrity.spec.mjs tests/cherry-decision-rationale.spec.mjs tests/cherry-review-now.spec.mjs tests/cherry-owner-review-session.spec.mjs tests/cherry-owner-review-close.spec.mjs",
+    "test:phase5": "playwright test tests/record-phase5.spec.mjs",
+    "test:release": "playwright test tests/release-contract.spec.mjs tests/phase2-sql-draft.spec.mjs tests/phase2-api-contract.spec.mjs tests/phase2-staging-spec.spec.mjs tests/phase2-staging-preflight.spec.mjs tests/phase2-synthetic-fixtures.spec.mjs tests/phase2-owner-security-decision-gate.spec.mjs tests/phase2-decision-evidence-ledger.spec.mjs tests/phase2-decision-evidence-enforcement.spec.mjs tests/integration-adapter-contract.spec.mjs",
+    "test:visual": "playwright test tests/mobile-visual-evidence.spec.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "http-server": "^14.1.1",
+    "wait-on": "^8.0.1"
+  }
+}

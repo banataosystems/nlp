@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "project_key": "worldstage-cherry",
+  "data_policy": "synthetic_only",
+  "forbid_real_client_or_participant_data": true,
+  "organizations": [
+    { "key": "organization_alpha", "display_name": "Synthetic Organization Alpha" },
+    { "key": "organization_beta", "display_name": "Synthetic Organization Beta" }
+  ],
+  "transformations": [
+    { "key": "transformation_alpha_1", "organization": "organization_alpha" },
+    { "key": "transformation_alpha_2", "organization": "organization_alpha" },
+    { "key": "transformation_beta_1", "organization": "organization_beta" }
+  ],
+  "actors": [
+    { "key": "owner_alpha", "class": "internal_owner", "organization": "organization_alpha", "expected_assurance": "aal2_for_privileged_actions" },
+    { "key": "transformation_lead_alpha", "class": "internal_transformation_lead", "organization": "organization_alpha", "expected_assurance": "aal1_normal_aal2_when_policy_requires" },
+    { "key": "relationship_lead_alpha", "class": "internal_relationship_lead", "organization": "organization_alpha", "expected_assurance": "aal1_normal_aal2_when_policy_requires" },
+    { "key": "operations_alpha", "class": "internal_operations", "organization": "organization_alpha", "expected_assurance": "aal1" },
+    { "key": "evidence_reviewer_alpha", "class": "internal_evidence_reviewer", "organization": "organization_alpha", "expected_assurance": "aal1_normal_aal2_when_policy_requires" },
+    { "key": "finance_alpha", "class": "internal_finance", "organization": "organization_alpha", "expected_assurance": "aal1_normal_aal2_when_policy_requires" },
+    { "key": "security_admin_alpha", "class": "technical_security_admin", "organization": "organization_alpha", "expected_assurance": "aal2_for_privileged_actions" },
+    { "key": "client_sponsor_alpha", "class": "external_client_sponsor", "organization": "organization_alpha", "expected_assurance": "to_validate" },
+    { "key": "participant_alpha_1", "class": "external_participant", "organization": "organization_alpha", "expected_assurance": "to_validate" },
+    { "key": "participant_alpha_2", "class": "external_participant", "organization": "organization_alpha", "expected_assurance": "to_validate" },
+    { "key": "external_facilitator_alpha", "class": "external_facilitator", "organization": "organization_alpha", "expected_assurance": "to_validate" },
+    { "key": "same_org_nonmember_alpha", "class": "same_org_nonmember", "organization": "organization_alpha", "expected_assurance": "aal1" },
+    { "key": "cross_org_user_beta", "class": "cross_org_user", "organization": "organization_beta", "expected_assurance": "aal1" },
+    { "key": "revoked_member_alpha", "class": "revoked_member", "organization": "organization_alpha", "expected_assurance": "aal1" },
+    { "key": "disabled_user_alpha", "class": "disabled_user", "organization": "organization_alpha", "expected_assurance": "none" }
+  ],
+  "required_sensitive_fixtures": [
+    "participant_private_record_alpha_1",
+    "finance_restricted_record_alpha_1",
+    "owner_only_decision_alpha_1",
+    "quarantined_intake_alpha_1"
+  ],
+  "rules": {
+    "real_email_addresses": "forbidden",
+    "real_phone_numbers": "forbidden",
+    "real_client_names": "forbidden",
+    "real_participant_responses": "forbidden",
+    "production_secrets": "forbidden",
+    "production_identifiers": "forbidden",
+    "deterministic_keys_are_not_auth_credentials": true
+  }
+}

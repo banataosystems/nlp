@@ -1,0 +1,305 @@
+/* Phase 4 — Cherry OS review surfaces. Demo-only until authenticated data sources exist. */
+.cockpit-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 520;
+  display: grid;
+  align-items: end;
+  background: rgba(0,0,0,.72);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+.cockpit-drawer {
+  position: relative;
+  width: min(100%, 760px);
+  max-height: min(88dvh, 820px);
+  margin-left: auto;
+  overflow-y: auto;
+  padding: 30px clamp(24px, 5vw, 54px) max(32px, env(safe-area-inset-bottom));
+  border-top: 1px solid rgba(255,255,255,.14);
+  border-left: 1px solid rgba(255,255,255,.08);
+  background: #0a0a0a;
+  color: #f5f3ed;
+  box-shadow: 0 -30px 90px rgba(0,0,0,.55);
+}
+.cockpit-drawer__close {
+  position: sticky;
+  top: 0;
+  float: right;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 50%;
+  background: #141414;
+  color: white;
+  cursor: pointer;
+  z-index: 2;
+}
+.cockpit-drawer__eyebrow {
+  padding-top: 8px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: #d5a44d;
+}
+.cockpit-drawer h2 {
+  max-width: 660px;
+  margin: 18px 0 0;
+  font-family: var(--serif);
+  font-size: clamp(38px, 6vw, 74px);
+  line-height: .98;
+  letter-spacing: -.045em;
+  font-weight: 500;
+}
+.cockpit-drawer__lede {
+  max-width: 620px;
+  margin: 24px 0 0;
+  color: rgba(255,255,255,.54);
+  font-size: 15px;
+  line-height: 1.65;
+}
+.cockpit-proof-list,
+.room-brief-list {
+  margin-top: 38px;
+  border-top: 1px solid rgba(255,255,255,.1);
+}
+.cockpit-proof-item,
+.room-brief-item {
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+}
+.cockpit-proof-item__meta,
+.room-brief-item__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.36);
+}
+.cockpit-proof-item h3,
+.room-brief-item h3 {
+  margin: 10px 0 0;
+  font-family: var(--serif);
+  font-size: 24px;
+  line-height: 1.18;
+  font-weight: 500;
+}
+.cockpit-proof-item p,
+.room-brief-item p {
+  margin: 8px 0 0;
+  color: rgba(255,255,255,.54);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.cockpit-drawer__notice {
+  margin-top: 28px;
+  padding: 16px;
+  border: 1px solid rgba(213,164,77,.28);
+  background: rgba(213,164,77,.06);
+  color: rgba(255,255,255,.62);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.room-brief-header {
+  margin-top: 34px;
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  border-top: 1px solid rgba(255,255,255,.1);
+  border-bottom: 1px solid rgba(255,255,255,.1);
+}
+.room-brief-stat { padding: 18px 16px 18px 0; }
+.room-brief-stat span { display: block; font-family: var(--mono); font-size: 8px; letter-spacing: .14em; color: rgba(255,255,255,.34); }
+.room-brief-stat strong { display: block; margin-top: 7px; font-family: var(--serif); font-size: 20px; font-weight: 500; }
+body.cockpit-modal-open { overflow: hidden; overscroll-behavior: none; }
+
+/* Cherry Daily turns the demo judgment deck into an owner-operable local workflow without touching external systems. */
+.cherry-daily {
+  margin: 0 clamp(20px, 5vw, 72px) clamp(30px, 5vw, 58px);
+  padding: clamp(22px, 4vw, 38px);
+  border: 1px solid rgba(255,255,255,.10);
+  background: linear-gradient(145deg, rgba(255,255,255,.045), rgba(255,255,255,.015));
+}
+.cherry-daily__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+.cherry-daily__top span {
+  display: block;
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .16em;
+  color: #d5a44d;
+}
+.cherry-daily__top h2 {
+  margin: 10px 0 0;
+  max-width: 760px;
+  font-family: var(--serif);
+  font-size: clamp(30px, 5vw, 56px);
+  line-height: 1;
+  letter-spacing: -.035em;
+  font-weight: 500;
+}
+.cherry-daily__top button,
+.cherry-decision-state__actions button {
+  min-height: 44px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.cherry-daily__top button {
+  padding: 0 16px;
+  white-space: nowrap;
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.cherry-daily__lede {
+  max-width: 780px;
+  margin: 18px 0 0;
+  color: rgba(255,255,255,.56);
+  font-size: 13px;
+  line-height: 1.65;
+}
+.cherry-daily__metrics {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  margin-top: 24px;
+  border-top: 1px solid rgba(255,255,255,.10);
+  border-bottom: 1px solid rgba(255,255,255,.10);
+}
+.cherry-daily__metrics article {
+  padding: 18px 16px 18px 0;
+  border-right: 1px solid rgba(255,255,255,.08);
+}
+.cherry-daily__metrics article:last-child { border-right: 0; padding-left: 16px; }
+.cherry-daily__metrics article:nth-child(2) { padding-left: 16px; }
+.cherry-daily__metrics strong {
+  display: block;
+  font-family: var(--serif);
+  font-size: clamp(30px, 5vw, 44px);
+  font-weight: 500;
+}
+.cherry-daily__metrics span {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.45);
+}
+.cherry-daily__notice {
+  margin-top: 14px;
+  min-height: 20px;
+  color: rgba(255,255,255,.44);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.cherry-decision-state {
+  margin: 22px 0 18px;
+  padding: 16px;
+  border: 1px solid rgba(213,164,77,.20);
+  background: rgba(213,164,77,.045);
+}
+.cherry-decision-state__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.cherry-decision-state__meta span {
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .12em;
+  color: rgba(255,255,255,.42);
+}
+.cherry-decision-state__meta strong {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .08em;
+  color: #d5a44d;
+  text-transform: uppercase;
+}
+.cherry-decision-state__actions {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+.cherry-decision-state__actions button {
+  padding: 0 10px;
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .06em;
+}
+.cherry-decision-state__actions button.is-current {
+  border-color: rgba(213,164,77,.65);
+  background: rgba(213,164,77,.12);
+  color: #f4d596;
+}
+
+@media (max-width: 900px) {
+  .cockpit-overlay { align-items: end; }
+  .cockpit-drawer { width: 100%; max-height: 86dvh; border-left: 0; border-radius: 0; padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)); }
+  .cockpit-drawer h2 { font-size: clamp(38px, 11vw, 54px); }
+  .room-brief-header { grid-template-columns: 1fr; }
+  .room-brief-stat { border-bottom: 1px solid rgba(255,255,255,.08); }
+  .room-brief-stat:last-child { border-bottom: 0; }
+
+  .cherry-daily {
+    margin: 0 max(14px, env(safe-area-inset-left)) 30px max(14px, env(safe-area-inset-right));
+    padding: 20px;
+  }
+  .cherry-daily__top { display: block; }
+  .cherry-daily__top button { width: 100%; margin-top: 18px; }
+  .cherry-daily__metrics article { padding: 14px 10px 14px 0; }
+  .cherry-daily__metrics article:nth-child(2),
+  .cherry-daily__metrics article:last-child { padding-left: 10px; }
+  .cherry-decision-state__actions button { min-height: 48px; }
+
+  /* Mobile deck contract: one judgment occupies one viewport-width deck page. */
+  .judgment-card {
+    flex: 0 0 100%;
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+  }
+  .judgment-card__content {
+    width: 100%;
+    max-width: none;
+  }
+  .judgment-card h3 {
+    overflow-wrap: normal;
+    word-break: normal;
+    hyphens: none;
+  }
+  .judgment-card__actions button { min-height: 46px; }
+}
+
+@media (max-width: 520px) {
+  .cherry-daily__metrics { grid-template-columns: 1fr; }
+  .cherry-daily__metrics article,
+  .cherry-daily__metrics article:nth-child(2),
+  .cherry-daily__metrics article:last-child {
+    padding: 12px 0;
+    border-right: 0;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  .cherry-daily__metrics article:last-child { border-bottom: 0; }
+  .cherry-decision-state__actions { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cockpit-overlay, .cockpit-drawer { scroll-behavior: auto !important; }
+}

@@ -1,0 +1,98 @@
+name: WorldStage mobile contract
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [redesign/mobile-first-v2]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: worldstage-mobile-${{ github.event_name }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  mobile-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      - name: Enforce owner/security decision evidence
+        run: npm run check:decision-evidence
+      - name: Verify fail-closed secure intake runtime
+        run: npm run test:intake-runtime
+      - name: Generate fail-closed staging readiness report
+        env:
+          WORLDSTAGE_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          WORLDSTAGE_INTAKE_ENABLED: "false"
+        run: npm run preflight:staging
+      - name: Verify atomic production release-control contracts
+        run: npm run test:release-control
+      - run: npx playwright install --with-deps chromium webkit
+      - run: npx http-server . -p 4173 -c-1 > /tmp/worldstage-http.log 2>&1 &
+      - run: npx wait-on http://127.0.0.1:4173
+      - run: npm run test:mobile
+      - run: npm run test:devices
+      - run: npm run test:phase2sql
+      - run: npm run test:phase2staging
+      - run: npm run test:phase3
+      - name: Run Phase 4 with durable diagnostics
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p artifacts/phase4
+          npm run test:phase4 2>&1 | tee artifacts/phase4/phase4.log
+      - name: Upload Phase 4 diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: worldstage-phase4-diagnostics
+          path: artifacts/phase4/phase4.log
+          if-no-files-found: warn
+          retention-days: 3
+      - run: npm run test:phase5
+      - run: npm run test:release
+      - run: npm run test:visual
+      - name: Regenerate exact-head staging readiness evidence
+        env:
+          WORLDSTAGE_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          WORLDSTAGE_INTAKE_ENABLED: "false"
+          WORLDSTAGE_SECURE_INTAKE_ENABLED: "false"
+          WORLDSTAGE_SECURE_INTAKE_PERSISTENCE: ""
+          WORLDSTAGE_SECURE_INTAKE_ADAPTER_BOUND: "false"
+        run: npm run preflight:staging
+      - name: Upload Phase 2 staging readiness evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: worldstage-phase2-staging-readiness
+          path: artifacts/staging-readiness/*
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload mobile visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: worldstage-mobile-v2-evidence
+          path: artifacts/mobile-v2/*
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preserve visual review PDF on branch
+        if: github.event_name == 'push' && github.ref == 'refs/heads/redesign/mobile-first-v2'
+        run: |
+          mkdir -p docs/worldstage/evidence
+          cp artifacts/mobile-v2/WORLDSTAGE_MOBILE_V2_VISUAL_EVIDENCE.pdf docs/worldstage/evidence/WORLDSTAGE_MOBILE_V2_VISUAL_EVIDENCE.pdf
+          git config user.name "worldstage-ci"
+          git config user.email "actions@users.noreply.github.com"
+          git add docs/worldstage/evidence/WORLDSTAGE_MOBILE_V2_VISUAL_EVIDENCE.pdf
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "docs: preserve mobile v2 visual evidence [skip ci]"
+          git push origin HEAD:redesign/mobile-first-v2

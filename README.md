@@ -8,7 +8,19 @@ Business-adaptive digital experience and operating-system prototype for WorldSta
 
 Vercel project: `cherrypua`  
 Project ID: `prj_ebP53cux8LAB18VFiKlgfP3ew2RH`  
-Verified production deployment: `dpl_DsM6JwHMZbmiuzSwXNswvhqwhF5s`
+Current verified production deployment: `dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1`  
+Production event: redeploy of original deployment `dpl_DsM6JwHMZbmiuzSwXNswvhqwhF5s` on 2026-08-10 03:16:32 Asia/Manila.
+
+The current production deployment is a Vercel **redeploy of the original baseline artifact**. It is not evidence that `redesign/mobile-first-v2` or PR #1 has been released.
+
+## Active implementation line
+
+- Branch: `redesign/mobile-first-v2`
+- PR: #1 — WorldStage mobile-first recovery v2
+- Exact device-tested source: `045f79b4ce6bbe291475c52ec0c1611d7329b5b5`
+- Exact Git-linked preview for that tested source: `dpl_7VU6eskkiBT96ubukHoqckAHysAW`
+- Subsequent branch commits are documentation-only evidence updates unless a newer test record says otherwise.
+- Production promotion: **not performed**
 
 ## Signature surfaces
 
@@ -28,20 +40,30 @@ The product is intentionally built around WorldStage's discovery → design → 
 | Gate | State |
 |---|---|
 | Documented | Verified |
-| Implemented | Verified for the four prototype surfaces |
-| Local/browser tested | Verified |
-| Deployed | Verified |
-| Production endpoint/assets | Verified |
+| Baseline prototype implemented | Verified for the four prototype surfaces |
+| Mobile-v2 implementation | Implemented on draft PR #1 |
+| Six-width mobile contract | Verified |
+| iPhone 14-class / WebKit contract | Verified on exact source `045f79b4...` |
+| Pixel 7-class / Chromium contract | Verified on exact source `045f79b4...` |
+| Physical iPhone/Android approval | Not yet verified |
+| Git → Vercel preview binding | Proven with exact Git SHA metadata |
+| Current production availability | Verified after baseline redeploy |
+| Current production source | Redeployed original baseline artifact |
+| Mobile-v2 deployed to production | No |
 | Full business integrations | Not yet implemented |
-| Automatic Git → Vercel continuous deployment | Not yet verified/established |
-| Pandora Memory synchronization | Blocked by current developer-MCP runtime permission |
+| Pandora Memory synchronization | Blocked/unavailable in current connector state |
 
 ## Evidence
 
 - [`docs/worldstage/WORLDSTAGE_MASTER_BLUEPRINT.md`](docs/worldstage/WORLDSTAGE_MASTER_BLUEPRINT.md) — research and system blueprint.
-- [`docs/worldstage/IMPLEMENTATION_STATUS_2026-08-08.md`](docs/worldstage/IMPLEMENTATION_STATUS_2026-08-08.md) — implementation and QA status.
-- [`docs/worldstage/DEPLOYMENT_MANIFEST_2026-08-08.md`](docs/worldstage/DEPLOYMENT_MANIFEST_2026-08-08.md) — exact source/deployment identifiers and production verification.
+- [`docs/worldstage/IMPLEMENTATION_STATUS_2026-08-08.md`](docs/worldstage/IMPLEMENTATION_STATUS_2026-08-08.md) — implementation and QA status for the original baseline.
+- [`docs/worldstage/DEPLOYMENT_MANIFEST_2026-08-08.md`](docs/worldstage/DEPLOYMENT_MANIFEST_2026-08-08.md) — original exact source/deployment identifiers.
+- [`docs/worldstage/PRODUCTION_REDEPLOY_EVIDENCE_2026-08-10.md`](docs/worldstage/PRODUCTION_REDEPLOY_EVIDENCE_2026-08-10.md) — current production redeploy provenance and verification.
+- [`docs/worldstage/GIT_VERCEL_BINDING_EVIDENCE_2026-08-10.md`](docs/worldstage/GIT_VERCEL_BINDING_EVIDENCE_2026-08-10.md) — exact Git → Vercel preview binding proof.
+- [`docs/worldstage/DEVICE_CLASS_VERIFICATION_2026-08-10.md`](docs/worldstage/DEVICE_CLASS_VERIFICATION_2026-08-10.md) — iPhone/WebKit and Pixel/Chromium automated device-class proof.
+- [`docs/worldstage/PHASE1_EXECUTION_2026-08-10.md`](docs/worldstage/PHASE1_EXECUTION_2026-08-10.md) — reconciled Phase 1 business-truth gate and next dependency order.
+- [`docs/worldstage/CHERRY_OWNER_VALIDATION_PACKET.md`](docs/worldstage/CHERRY_OWNER_VALIDATION_PACKET.md) — owner workflow validation packet.
 
 ## Important boundaries
 
-This deployment is a high-fidelity functional prototype, not the finished WorldStage business operating system. It contains no private client data. Cherry OS intelligence is explicitly demo-only. Discovery currently hands off through a user-controlled email action rather than a secure server-side intake database. CRM, calendar, participant, payment and AI production integrations remain future gated work.
+Current production is still the high-fidelity baseline prototype, not the tested mobile-v2 branch. Automated iPhone/WebKit and Pixel/Chromium contracts do not equal physical-device or owner approval. Cherry OS intelligence remains demo-only. Secure server-side Discovery intake, real authentication/authorization, CRM, calendar, participant, payment and production AI integrations remain gated future work.

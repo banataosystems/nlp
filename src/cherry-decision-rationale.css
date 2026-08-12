@@ -1,0 +1,84 @@
+/* Cherry Daily fixed-vocabulary rationale lens — local synthetic state only. */
+.cherry-rationale-guide {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 18px;
+  padding: 14px 0;
+  border-top: 1px solid rgba(255,255,255,.08);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.cherry-rationale-guide strong {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #d5a44d;
+}
+.cherry-rationale-guide span {
+  max-width: 560px;
+  color: rgba(255,255,255,.5);
+  font-size: 11px;
+  line-height: 1.55;
+}
+.cherry-decision-rationale {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+.cherry-decision-rationale__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.cherry-decision-rationale__meta span,
+.cherry-decision-rationale__meta strong {
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.cherry-decision-rationale__meta span { color: rgba(255,255,255,.4); }
+.cherry-decision-rationale__meta strong { color: #f4d596; }
+.cherry-decision-rationale__actions {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+.cherry-decision-rationale__actions button {
+  min-height: 44px;
+  padding: 0 10px;
+  border: 1px solid rgba(255,255,255,.13);
+  background: transparent;
+  color: inherit;
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .05em;
+  cursor: pointer;
+}
+.cherry-decision-rationale__actions button.is-current {
+  border-color: rgba(213,164,77,.62);
+  background: rgba(213,164,77,.1);
+  color: #f4d596;
+}
+.cherry-decision-rationale small {
+  display: block;
+  margin-top: 9px;
+  color: rgba(255,255,255,.34);
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+@media (max-width: 620px) {
+  .cherry-rationale-guide { display: block; }
+  .cherry-rationale-guide span { display: block; margin-top: 8px; }
+  .cherry-decision-rationale__meta { align-items: flex-start; }
+}
+
+@media (max-width: 520px) {
+  .cherry-decision-rationale__actions { grid-template-columns: 1fr; }
+  .cherry-decision-rationale__actions button { min-height: 48px; text-align: left; padding: 0 14px; }
+}

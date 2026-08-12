@@ -1,0 +1,35 @@
+{
+  "schema_version": "worldstage.rollback.v1",
+  "scope": "secure_intake",
+  "source_sha": "c7107f995bb0e86dd26056fbfe4a155221790965",
+  "preview_deployment_id": "dpl_HbqEN7KerzBFpSrMfNFPK7o4nM2u",
+  "restore_baseline": {
+    "deployment_id": "dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1",
+    "target": "production"
+  },
+  "fail_closed_preconditions": {
+    "intake_control": "disabled",
+    "provider_bindings": "unbound",
+    "confidential_intake": false
+  },
+  "ordered_steps": [
+    "verify_restore_baseline_ready",
+    "keep_secure_intake_disabled",
+    "verify_no_provider_binding",
+    "verify_no_confidential_intake",
+    "restore_only_under_separate_release_authority",
+    "verify_production_health_after_authorized_restore"
+  ],
+  "execution": {
+    "authorized": false,
+    "requires": [
+      "owner_security_decisions",
+      "live_staging_security_proof",
+      "physical_device_validation",
+      "exact_source_release_provenance",
+      "pandora_sync_or_governance_exception",
+      "production_release_authority"
+    ]
+  },
+  "digest": "sha256:f057f5372a47c6d26fc0850247958d190e0ab6f92f0734b101e6d980a73f4662"
+}
