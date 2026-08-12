@@ -2,9 +2,7 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "git": {
-    "deploymentEnabled": {
-      "main": false
-    }
+    "deploymentEnabled": false
   },
   "headers": [
     {
