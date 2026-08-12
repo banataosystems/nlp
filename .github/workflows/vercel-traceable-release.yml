@@ -110,6 +110,15 @@ jobs:
           script: |
             const sourceSha = process.env.SOURCE_SHA;
             const { owner, repo } = context.repo;
+
+            const { data: mainBranch } = await github.rest.repos.getBranch({
+              owner, repo, branch: 'main',
+            });
+            if (mainBranch.protected !== true) {
+              core.setFailed('Production release denied: native GitHub protection is not active on main.');
+              return;
+            }
+
             const { data: prs } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
               owner, repo, commit_sha: sourceSha,
             });
@@ -132,6 +141,7 @@ jobs:
               return;
             }
             core.summary
+              .addRaw('- Native main protection: ACTIVE\n')
               .addRaw(`- Reviewed PR provenance: #${merged.map(pr => pr.number).join(', #')}\n`)
               .addRaw(`- Exact-source mandatory CI: ${exactSuccess.map(run => run.id).join(', ')}\n`);
             await core.summary.write();
