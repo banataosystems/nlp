@@ -1,8 +1,9 @@
 /* WorldStage / Cherry — canonical local-reset transition integrity.
    When the existing local synthetic reset emits its allowlisted reset event, stale completed
-   continuity is invalidated only after sanitized local flow proves the reset occurred. A bounded
-   reconciliation event then asks the existing continuity renderer to rebuild from sanitized flow.
-   No persistence, provider access, analytics, spending, destructive production behavior, or release authority. */
+   continuity is invalidated only after sanitized local flow proves the reset occurred. The stale
+   strip is removed synchronously on that canonical reset event, then bounded reconciliation asks
+   the existing continuity renderer to rebuild from sanitized flow. No persistence, provider access,
+   analytics, spending, destructive production behavior, or release authority. */
 
 const CHERRY_RESET_TRANSITION_FLOW_KEY = 'worldstage.synthetic.engagement.flow.v1';
 const CHERRY_RESET_TRANSITION_FLOW_VERSION = 1;
@@ -78,6 +79,12 @@ function scheduleCherryResetTransitionRepair() {
 
 window.addEventListener(CHERRY_RESET_TRANSITION_EVENT, (event) => {
   const detail = event instanceof CustomEvent ? event.detail : null;
-  if (detail?.reason !== 'reset') return;
+  if (detail?.reason !== 'reset' || !cherryResetTransitionIsCanonicalEmptyFlow()) return;
+
+  // This event is emitted synchronously by the existing canonical local reset after its allowlisted
+  // local keys are cleared. Remove any now-stale completed continuity immediately so no queued
+  // integrity observer can keep presenting the pre-reset record state while rebuild work races.
+  repairCherryResetTransition();
+  requestCherryResetTransitionReconcile();
   scheduleCherryResetTransitionRepair();
 });
