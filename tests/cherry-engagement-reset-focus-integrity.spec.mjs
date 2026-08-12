@@ -34,7 +34,7 @@ function collectNetworkWrites(page) {
   return writes;
 }
 
-test('confirmation locks the canonical Reset demo against pointer, keyboard, programmatic bypass, and focus tampering until Cancel', async ({ page }) => {
+test('confirmation removes Reset demo from owner interaction paths and repairs tampering until Cancel', async ({ page }) => {
   const networkWrites = collectNetworkWrites(page);
   await page.goto('http://127.0.0.1:4173/#/cockpit');
   await setCompletedFlow(page);
@@ -49,31 +49,36 @@ test('confirmation locks the canonical Reset demo against pointer, keyboard, pro
   const cancel = confirmation.locator('[data-cherry-engagement-reset-cancel]');
 
   await expect(confirmation).toBeVisible();
-  await expect(reset).toBeDisabled();
+  await expect(reset).toBeEnabled();
   await expect(reset).toHaveAttribute('aria-disabled', 'true');
   await expect(reset).toHaveAttribute('tabindex', '-1');
   await expect(cancel).toBeFocused();
 
   await reset.evaluate((button) => {
-    button.disabled = false;
+    button.disabled = true;
     button.removeAttribute('aria-disabled');
     button.removeAttribute('tabindex');
     button.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
   });
 
-  await expect(reset).toBeDisabled();
+  await expect(reset).toBeEnabled();
   await expect(reset).toHaveAttribute('aria-disabled', 'true');
   await expect(reset).toHaveAttribute('tabindex', '-1');
   expect(await readLocalDemoState(page)).toEqual(before);
 
   await reset.evaluate((button) => {
-    button.disabled = false;
     button.removeAttribute('aria-disabled');
     button.removeAttribute('tabindex');
     button.focus();
   });
   await expect(cancel).toBeFocused();
-  await expect(reset).toBeDisabled();
+  await expect(reset).toBeEnabled();
+  await expect(reset).toHaveAttribute('aria-disabled', 'true');
+  await expect(reset).toHaveAttribute('tabindex', '-1');
+  expect(await readLocalDemoState(page)).toEqual(before);
+
+  await reset.dispatchEvent('pointerdown');
+  await reset.dispatchEvent('keydown', { key: 'Enter' });
   expect(await readLocalDemoState(page)).toEqual(before);
 
   await cancel.click();
@@ -106,7 +111,9 @@ test('canonical confirmation receives one synchronous reset delegation while eve
   await strip.locator('[data-cherry-engagement-continuity-start-new]').click();
   const confirmation = strip.locator('[data-cherry-engagement-reset-confirmation]');
   const reset = page.locator('[data-synthetic-flow-reset]');
-  await expect(reset).toBeDisabled();
+  await expect(reset).toBeEnabled();
+  await expect(reset).toHaveAttribute('aria-disabled', 'true');
+  await expect(reset).toHaveAttribute('tabindex', '-1');
 
   const before = await readLocalDemoState(page);
   await page.evaluate(() => {
@@ -118,7 +125,9 @@ test('canonical confirmation receives one synchronous reset delegation while eve
     button.click();
   });
   expect(await readLocalDemoState(page)).toEqual(before);
-  await expect(reset).toBeDisabled();
+  await expect(reset).toBeEnabled();
+  await expect(reset).toHaveAttribute('aria-disabled', 'true');
+  await expect(reset).toHaveAttribute('tabindex', '-1');
 
   await confirmation.locator('[data-cherry-engagement-reset-confirm]').click();
 
