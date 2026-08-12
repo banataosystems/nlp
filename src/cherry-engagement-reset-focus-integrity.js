@@ -80,9 +80,9 @@ function cherryResetFocusCanonicalReset({ allowLocked = true } = {}) {
 
 function cherryResetFocusLockElement(node) {
   if (!(node instanceof HTMLElement)) return;
-  if (node instanceof HTMLButtonElement) node.disabled = true;
-  node.setAttribute('aria-disabled', 'true');
-  node.setAttribute('tabindex', '-1');
+  if (node instanceof HTMLButtonElement && !node.disabled) node.disabled = true;
+  if (node.getAttribute('aria-disabled') !== 'true') node.setAttribute('aria-disabled', 'true');
+  if (node.getAttribute('tabindex') !== '-1') node.setAttribute('tabindex', '-1');
 }
 
 function cherryResetFocusLockCanonicalReset() {
@@ -118,9 +118,9 @@ function cherryResetFocusRestoreLockedReset() {
     && !['form', 'formaction', 'formmethod', 'formenctype', 'formtarget', 'onclick', 'role', 'contenteditable', 'draggable']
       .some((attribute) => reset.hasAttribute(attribute));
   if (!structurallyCanonical) return;
-  reset.disabled = false;
-  reset.removeAttribute('aria-disabled');
-  reset.removeAttribute('tabindex');
+  if (reset.disabled) reset.disabled = false;
+  if (reset.hasAttribute('aria-disabled')) reset.removeAttribute('aria-disabled');
+  if (reset.hasAttribute('tabindex')) reset.removeAttribute('tabindex');
 }
 
 function cherryResetFocusFocusCancel(confirmation = cherryResetFocusConfirmation()) {
@@ -159,9 +159,7 @@ function repairCherryResetFocusIntegrity() {
     return;
   }
 
-  if (cherryResetFocusPreLock) {
-    cherryResetFocusPreLock = false;
-  }
+  if (cherryResetFocusPreLock) cherryResetFocusPreLock = false;
   if (cherryResetFocusSessionOpen) {
     cherryResetFocusSessionOpen = false;
     cherryResetFocusDelegationAllowed = false;
@@ -203,9 +201,9 @@ function cherryResetFocusArmCanonicalConfirm(confirmButton) {
   if (!(reset instanceof HTMLButtonElement) || (cherryResetFocusLockedReset && reset !== cherryResetFocusLockedReset)) return;
 
   cherryResetFocusLockedReset = reset;
-  reset.disabled = false;
-  reset.removeAttribute('aria-disabled');
-  reset.removeAttribute('tabindex');
+  if (reset.disabled) reset.disabled = false;
+  if (reset.hasAttribute('aria-disabled')) reset.removeAttribute('aria-disabled');
+  if (reset.hasAttribute('tabindex')) reset.removeAttribute('tabindex');
   cherryResetFocusDelegationAllowed = true;
   queueMicrotask(() => {
     cherryResetFocusDelegationAllowed = false;
