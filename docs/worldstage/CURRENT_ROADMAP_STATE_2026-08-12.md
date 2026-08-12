@@ -4,7 +4,7 @@ Date: 2026-08-12
 Project key: `worldstage-cherry`
 Repository: `banataosystems/nlp`
 Canonical source branch: `main`
-Current verified `main`: `9072d045f167d2b9c342dff22575af160586c00f`
+Latest implementation/governance merge before this checkpoint: `9072d045f167d2b9c342dff22575af160586c00f`
 
 This checkpoint supersedes the earlier post-PR-#1 snapshot. It keeps documented → implemented → tested → deployed → production-verified states separate and does not infer owner/security decisions, physical-device acceptance, live-staging authority, provider authority, spending authority, legal/public commitments, or production-release authority.
 
@@ -25,7 +25,7 @@ Two implementation/governance milestones are merged:
    - exact validated runtime/security source: `3f3fa880a509286886c852922b12cbe31209978d`
 2. PR #7 — `WorldStage: require reviewed PR provenance before production release`
    - exact tested PR head: `7228399e53fabcc2241963734ff168a748fbf51b`
-   - merge/current `main`: `9072d045f167d2b9c342dff22575af160586c00f`
+   - merge: `9072d045f167d2b9c342dff22575af160586c00f`
 
 The merged line includes:
 
