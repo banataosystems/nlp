@@ -211,13 +211,7 @@ function enhanceCherryEngagementContinuity() {
   const previous = cherryContinuityPrevious(flow);
   const attention = cherryContinuityAttention(current);
   const signature = cherryContinuitySignature(flow, current, previous, attention);
-  if (
-    existing?.dataset.cherryEngagementContinuitySignature === signature
-    && existing.dataset.cherryEngagementContinuityStage === current.id
-    && existing.dataset.cherryEngagementContinuityPrevious === previous.id
-    && existing.dataset.cherryEngagementContinuityAttention === attention.id
-    && existing.parentElement === summary
-  ) return;
+  if (existing?.dataset.cherryEngagementContinuitySignature === signature && existing.parentElement === summary) return;
 
   const wrapper = document.createElement('div');
   wrapper.innerHTML = cherryContinuityMarkup(flow, current, previous, attention, signature);
@@ -240,6 +234,24 @@ function enhanceCherryEngagementContinuity() {
   else header.insertAdjacentElement('afterend', strip);
 }
 
+function rebuildCherryEngagementContinuityAfterCanonicalReset(event) {
+  const detail = event instanceof CustomEvent ? event.detail : null;
+  if (detail?.reason !== 'reset') {
+    scheduleCherryEngagementContinuity();
+    return;
+  }
+
+  const flow = cherryContinuityFlowState();
+  if (flow.discoveryPrepared || flow.ownerReviewed || flow.recordPrepared) {
+    scheduleCherryEngagementContinuity();
+    return;
+  }
+
+  cherryContinuityRefreshQueued = false;
+  document.querySelector('[data-cherry-engagement-continuity]')?.remove();
+  enhanceCherryEngagementContinuity();
+}
+
 function scheduleCherryEngagementContinuity() {
   if (cherryContinuityRefreshQueued) return;
   cherryContinuityRefreshQueued = true;
@@ -252,7 +264,7 @@ if (cherryContinuityApp) {
     .observe(cherryContinuityApp, { childList: true, subtree: true });
 }
 window.addEventListener('hashchange', scheduleCherryEngagementContinuity);
-window.addEventListener(CHERRY_CONTINUITY_FLOW_CHANGED_EVENT, scheduleCherryEngagementContinuity);
+window.addEventListener(CHERRY_CONTINUITY_FLOW_CHANGED_EVENT, rebuildCherryEngagementContinuityAfterCanonicalReset);
 window.addEventListener('storage', (event) => {
   if (event.key === CHERRY_CONTINUITY_FLOW_KEY) scheduleCherryEngagementContinuity();
 });
