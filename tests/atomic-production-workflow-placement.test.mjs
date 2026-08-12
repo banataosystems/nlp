@@ -26,3 +26,12 @@ test('production requires reviewed PR provenance before evidence assembly or pro
   assert.ok(block.includes("run.conclusion === 'success'"));
   assert.ok(block.includes("run.path === '.github/workflows/mobile-contract.yml'"));
 });
+test('production fails closed unless native GitHub main protection is active at release time',()=>{
+  const provenance=pos('Verify reviewed PR and exact-source CI provenance');
+  const block=workflow.slice(provenance,pos('Set up Node'));
+  assert.ok(block.includes('github.rest.repos.getBranch'));
+  assert.ok(block.includes("branch: 'main'"));
+  assert.ok(block.includes('mainBranch.protected !== true'));
+  assert.ok(block.includes('native GitHub protection is not active on main'));
+  assert.ok(block.indexOf('github.rest.repos.getBranch') < block.indexOf('listPullRequestsAssociatedWithCommit'));
+});
