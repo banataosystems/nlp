@@ -40,7 +40,7 @@ test('preflight is report-only by default and generates a blocked readiness arti
   expect(run.status).toBe(0);
   expect(fs.existsSync(reportPath)).toBe(true);
   const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
-  expect(report.schema_version).toBe(2);
+  expect(report.schema_version).toBe(3);
   expect(report.readiness).toBe('BLOCKED');
   expect(report.source_sha).toBe('synthetic-ci-sha');
   expect(report.blockers.some(({ code }) => code === 'OWNER_SECURITY_DECISIONS_OPEN')).toBe(true);
