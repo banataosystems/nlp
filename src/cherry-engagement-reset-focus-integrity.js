@@ -204,10 +204,10 @@ function cherryResetFocusArmCanonicalConfirm(confirmButton) {
   const reset = cherryResetFocusCanonicalReset({ allowLocked: true });
   if (!(reset instanceof HTMLButtonElement) || (cherryResetFocusLockedReset && reset !== cherryResetFocusLockedReset)) return;
 
+  // Keep the locked accessibility/focus state stable. aria-disabled does not suppress the DOM
+  // click event, so the existing confirmation module can synchronously call reset.click(); the
+  // capture guard permits exactly that one event without exposing a transient unlocked state.
   cherryResetFocusLockedReset = reset;
-  if (reset.disabled) reset.disabled = false;
-  if (reset.hasAttribute('aria-disabled')) reset.removeAttribute('aria-disabled');
-  if (reset.hasAttribute('tabindex')) reset.removeAttribute('tabindex');
   cherryResetFocusDelegationAllowed = true;
   queueMicrotask(() => {
     cherryResetFocusDelegationAllowed = false;
