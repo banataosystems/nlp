@@ -4,55 +4,56 @@ Date: 2026-08-12
 Project key: `worldstage-cherry`
 Repository: `banataosystems/nlp`
 Canonical source branch: `main`
-Merged implementation PR: #1 — `WorldStage mobile-first recovery v2`
+Current verified `main`: `9072d045f167d2b9c342dff22575af160586c00f`
 
-This checkpoint supersedes the earlier pre-merge snapshot. It keeps documented → implemented → tested → deployed → production-verified states separate and does not infer owner/security decisions, physical-device acceptance, live-staging authority, provider authority, spending authority, legal/public commitments, or production-release authority.
+This checkpoint supersedes the earlier post-PR-#1 snapshot. It keeps documented → implemented → tested → deployed → production-verified states separate and does not infer owner/security decisions, physical-device acceptance, live-staging authority, provider authority, spending authority, legal/public commitments, or production-release authority.
 
 ## Current verified state
 
 ### Documented — YES
 
-The repository now durably contains the WorldStage/Cherry mobile-first roadmap, phone-first owner/security decision material, physical-device acceptance packet, fail-closed Phase 2 decision ledger, staging preflight, release-governance architecture, rollback/provenance contracts, and automated evidence workflows.
+The repository durably contains the WorldStage/Cherry mobile-first roadmap, owner/security decision material, physical-device acceptance packet, fail-closed Phase 2 decision ledger, staging preflight, release-governance architecture, rollback/provenance contracts, automated evidence workflows, and the reviewed-PR provenance defense-in-depth guard.
 
-Issue #5 (`WorldStage: make staging preflight and production release gate self-validating`) is closed as technically completed. Issue #4 remains open as the authoritative owner/security decision tracker.
+Issue #5 is closed as technically completed. Issue #4 remains OPEN as the authoritative owner/security decision tracker. Issue #6 is OPEN because native GitHub `main` protection is still disabled even though its repository-enforceable provenance fallback is merged and verified.
 
 ### Implemented — YES, bounded non-production line
 
-PR #1 was merged to `main` at merge commit:
+Two implementation/governance milestones are merged:
 
-`80f22ae06b1615d17e33d9118f48ad8719d7822b`
+1. PR #1 — `WorldStage mobile-first recovery v2`
+   - merge commit: `80f22ae06b1615d17e33d9118f48ad8719d7822b`
+   - exact validated runtime/security source: `3f3fa880a509286886c852922b12cbe31209978d`
+2. PR #7 — `WorldStage: require reviewed PR provenance before production release`
+   - exact tested PR head: `7228399e53fabcc2241963734ff168a748fbf51b`
+   - merge/current `main`: `9072d045f167d2b9c342dff22575af160586c00f`
 
 The merged line includes:
 
 - phone-first WorldStage / Cherry UI and synthetic operating flows;
 - confirmation-open reset/focus integrity and repeated reset-cycle convergence protections;
 - fail-closed secure-intake shell and synthetic authorization/RLS/backup/restore contracts;
-- standalone staging preflight that invokes the authoritative decision-evidence validator;
+- standalone staging preflight invoking the authoritative decision-evidence validator;
 - content-addressed production evidence assembly and independent verification adapter;
-- same-run freshness, replay, source, run, attempt and deployment consumption checks;
+- freshness, replay, exact-source, run, attempt and deployment consumption checks;
 - machine-readable production governance requiring D1–D24 including explicit D23 production-release authority evidence;
-- workflow ordering that keeps Vercel credential access, project pull, production build and deploy after the machine-readable production gate;
-- `vercel.json` Git deployment isolation with `git.deploymentEnabled.main=false`, preventing a normal Git merge/push to `main` from serving as a production-release path;
-- a regression contract that enforces the `main` Git auto-deploy isolation rule.
+- workflow ordering that keeps Vercel credential access, project pull, production build and deploy after production governance gates;
+- reviewed-PR provenance enforcement requiring an actually merged PR targeting `main` plus successful exact-SHA `pull_request` CI from `.github/workflows/mobile-contract.yml` before production evidence assembly or Vercel credential access;
+- fail-closed rejection of direct-to-main, wrong-base, wrong-workflow, failed-CI and different-SHA replay candidates;
+- `vercel.json` with `git.deploymentEnabled=false` globally, disabling implicit Git-linked preview and production deployments for every branch;
+- regression contracts for release ordering, Git deployment isolation and provenance enforcement.
 
 No real confidential-intake persistence, provider/database binding, live staging, production promotion, or production data mutation is represented as implemented.
 
-### Tested — YES for exact implementation source
+### Tested — YES for exact implementation/governance sources
 
-Exact fully validated source:
+Runtime/security source `3f3fa880a509286886c852922b12cbe31209978d` passed GitHub Actions `31585457746` / #870.
 
-`3f3fa880a509286886c852922b12cbe31209978d`
-
-GitHub Actions run:
-
-`31585457746` / #870 — **SUCCESS**
-
-The complete mandatory chain passed:
+Latest provenance-governance source `7228399e53fabcc2241963734ff168a748fbf51b` passed GitHub Actions `31587763334` / #871 with the complete mandatory chain, including:
 
 - owner/security decision-evidence enforcement;
 - fail-closed secure-intake runtime;
 - staging-readiness preflight;
-- atomic production release-control contracts, including the `main` Git auto-deploy bypass regression;
+- atomic production release-control and reviewed-PR provenance contracts;
 - six-width mobile contract;
 - iPhone/WebKit and Pixel/Chromium device-class contracts;
 - Phase 2 SQL and staging contracts;
@@ -63,82 +64,77 @@ The complete mandatory chain passed:
 - visual verification;
 - exact-head staging-readiness regeneration and evidence uploads.
 
-Exact #870 artifacts:
+Exact #871 artifacts:
 
-- `worldstage-mobile-v2-evidence` — artifact `9136990337`, `sha256:dc2e60e90bdada4624d316810f79518400a340ce43efd6281fbc126c0885f192`
-- `worldstage-phase2-staging-readiness` — artifact `9136989409`, `sha256:6cef98173fac58ada3d6d94a7853947b0aa3cbfbbeebbc9e6baa5fb32c5f012f`
-- `worldstage-phase4-diagnostics` — artifact `9136982642`, `sha256:f5b75eacf8894d3abea3949581df6cd3dc1b7e2ce9742836c06e8dd1d1f696f6`
+- `worldstage-mobile-v2-evidence` — artifact `9137934174`, `sha256:9696629c71a60b00398acb31017f6ea1b0f8d12b32ea58e169169472d5b1ca99`
+- `worldstage-phase2-staging-readiness` — artifact `9137933384`, `sha256:d151b318deb1984678fd5af50a69371cc5072508802bc00f16fcb212ec9f1e71`
+- `worldstage-phase4-diagnostics` — artifact `9137927082`, `sha256:67f96a4cda5b19367c99047b30dfe5df97bff2c4db0c2a56cbf5df2c9095c9d7`
 
-CI then produced evidence-only child:
+The earlier exact #870 evidence remains valid for runtime source `3f3fa880...`; the #871 run additionally proves the merged provenance-control changes without claiming new production behavior.
 
-`1270c15188cb05b967902fcfad33d9a8afbf5ffe`
-
-Exact comparison against `3f3fa880...` shows that child modifies only `docs/worldstage/evidence/WORLDSTAGE_MOBILE_V2_VISUAL_EVIDENCE.pdf`; runtime/test provenance remains attributed to `3f3fa880...`.
-
-### Preview deployed — YES
+### Preview deployed — YES for the bounded implementation line
 
 Exact implementation preview:
 
-`dpl_5jVQzpbe8FNM63SLJn4iPyV2MQC9` — **READY**, non-production (`target: null`), exact Git SHA `3f3fa880a509286886c852922b12cbe31209978d`.
-
-The inspected preview error/fatal runtime-log window contained no matching entries.
+`dpl_5jVQzpbe8FNM63SLJn4iPyV2MQC9` — READY, non-production (`target: null`), exact Git SHA `3f3fa880a509286886c852922b12cbe31209978d`.
 
 Evidence-only child preview:
 
-`dpl_BGy9Rzni9SsQ1E5hCdc4Vjp6AZLE` — **READY**, non-production (`target: null`), exact Git SHA `1270c15188cb05b967902fcfad33d9a8afbf5ffe`.
+`dpl_BGy9Rzni9SsQ1E5hCdc4Vjp6AZLE` — READY, non-production (`target: null`), exact Git SHA `1270c15188cb05b967902fcfad33d9a8afbf5ffe`.
+
+No Vercel deployment was created from the global Git-isolation bootstrap, PR #7 branch activity, or PR #7 merge. Fresh verification after `9072d045...` returned zero deployments created since that merge timestamp.
 
 ### Live staging — NO
 
-The authoritative decision ledger still records all D1–D24 as OPEN unless complete authorized evidence is recorded. Live-staging creation remains blocked until at minimum:
+Issue #4 and the authoritative decision ledger still leave the minimum live-staging decisions unresolved:
 
 `D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17, D18`
 
-are RESOLVED with full non-placeholder evidence. No live staging database/auth/provider resource was created.
+No live staging database/auth/provider resource was created. Confidential intake remains disabled. Real signed-user RLS/provider backup/restore/kill-switch evidence has not been produced because the required owner/security authority is absent.
 
 ### Production verified/released for the current line — NO
 
-The source merge did not trigger a Vercel deployment after the merge commit. This is consistent with the merged `main` Git-deployment isolation guard.
-
 Preserved production baseline:
 
-`dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1` — **READY**, `target: production`, separate and unchanged.
+`dpl_FqWgsBsTWiLzMN2MsdogPEaY5mC1` — READY, target `production`, separate and unchanged.
 
-The merged production gate remains explicitly non-authorizing: accepted technical evidence can reach only `READY_FOR_EXPLICIT_PRODUCTION_RELEASE`; it sets `grants_production_authority=false`, requires a separate release action, and does not treat the typed production confirmation string as sufficient.
+The production gate remains explicitly non-authorizing. Technical evidence may only reach a release-readiness state; D23 and a separate exact production-release action are still required. No production release of the current implementation line has occurred.
 
 ## Completed milestones
 
-1. PR #1 merged safely into `main` after exact-source CI success and preview verification.
-2. Issue #5 release-control hardening is repository-integrated, exact-source tested and closed as completed.
-3. Standalone staging preflight independently fails closed on incomplete or placeholder decision evidence.
+1. PR #1 merged after exact-source CI and preview verification.
+2. Issue #5 technical staging/release-control hardening completed.
+3. Standalone staging preflight fails closed on missing, incomplete, placeholder or contradictory owner/security evidence.
 4. Production release path requires content-addressed verified evidence, current-run consumption, full governance, physical-device proof, rollback proof and explicit D23 evidence before Vercel production operations become reachable.
-5. Normal Git changes to `main` are isolated from automatic Vercel deployment, so source merge is not production release.
+5. Global `git.deploymentEnabled=false` isolates all Git branch activity from automatic Vercel deployment.
+6. PR #7 merged the reviewed-PR/exact-source-CI provenance fallback after exact-head run #871 passed the full mandatory chain.
+7. Issue #6 was corrected back to OPEN after fresh GitHub evidence confirmed `main` remains `protected=false`; its native protection completion criterion is not yet satisfied.
 
 ## In progress
 
-Autonomous technical work is now constrained by genuine owner/security and real-environment gates rather than missing repository controls. Safe work may continue on non-production proof quality, documentation consistency, synthetic regressions and recovery evidence without choosing or fabricating owner/security decisions.
+Safe autonomous work is limited to non-production proof quality, documentation/evidence consistency, synthetic regressions, recovery evidence and fail-closed verification while external decisions remain unresolved.
 
 ## Blocked / gated
 
-The following remain outside autonomous authority until explicit evidence/authorization exists:
-
-- all unresolved D1–D24 owner/security decisions as applicable;
+- Issue #4: all unresolved owner/security decisions as applicable, with D1/D2/D3/D5/D6/D7/D8/D9/D10/D15/D16/D17/D18 blocking live staging;
+- Issue #6: native GitHub `main` branch protection/ruleset is not enabled; the connected GitHub control surface exposes no mutation for that setting;
 - live PostgreSQL/Supabase/auth binding and signed-user RLS verification;
 - provider backup/restore and live kill-switch proof;
 - live/billable staging creation;
 - confidential intake activation;
-- authentic Cherry physical-device acceptance — the prepared packet is not acceptance;
+- authentic Cherry physical-device acceptance;
 - content/media/client-rights approvals where applicable;
 - legal/regulatory/public commitments;
 - D23 production-release authority and the separate exact release action.
 
 ## Pandora Memory
 
-No Pandora Memory connector or installable Pandora plugin is exposed in the current execution environment. Therefore no WorldStage synchronization into Pandora Memory is claimed. GitHub source/history, GitHub Actions artifacts, Issues/PR evidence and Vercel deployment records remain the durable evidence fallback until an authorized Memory write path is available.
+No Pandora Memory connector or installable Pandora plugin is exposed in the current execution environment. Therefore no WorldStage synchronization into Pandora Memory is claimed. GitHub source/history, GitHub Actions artifacts, Issues/PR evidence and Vercel deployment records remain the durable verified fallback until an authorized Memory write path is available.
 
 ## Risks / non-claims
 
-A successful source merge is not a production release. A READY preview is not live staging or production verification. Automated browser/device-class checks are not Cherry’s physical-device acceptance. Synthetic authorization/RLS/backup/restore contracts are not evidence that a real provider environment has been activated or tested. Issue #5 completion resolves technical release-control gaps only; it does not resolve Issue #4 decisions.
+A merged source line is not a production release. A READY preview is not live staging or production verification. Automated browser/device-class checks are not Cherry’s physical-device acceptance. Synthetic authorization/RLS/backup/restore contracts are not proof of a live provider environment. The reviewed-PR provenance guard materially reduces release-candidate drift but does not prevent a direct push from landing on unprotected `main`; native branch protection remains required.
 
 ## Next autonomous safe action
 
-Keep Issue #4 and the canonical decision ledger synchronized without resolving any item by inference. Continue read-only/synthetic verification that all live-staging and production paths remain fail closed while decisions are OPEN, and preserve exact-source recovery/evidence snapshots. The next real implementation boundary requiring owner input is the live-staging decision set and physical-device acceptance; no provider, spending, confidential-data or production action should cross that gate autonomously.
+Keep Issues #4 and #6, the decision ledger, release provenance contracts and this roadmap synchronized to exact verified evidence. Continue synthetic/read-only verification that live-staging and production paths fail closed while decisions remain OPEN. Do not create provider resources, use confidential data, incur spend, make legal/public commitments, or perform production release without the required explicit evidence/authority.
