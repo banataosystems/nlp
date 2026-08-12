@@ -5,6 +5,7 @@
 
 const CHERRY_CONTINUITY_FLOW_KEY = 'worldstage.synthetic.engagement.flow.v1';
 const CHERRY_CONTINUITY_FLOW_VERSION = 1;
+const CHERRY_CONTINUITY_FLOW_CHANGED_EVENT = 'worldstage:synthetic-flow-state-changed';
 const CHERRY_CONTINUITY_ROUTES = new Set(['discovery', 'cockpit', 'client']);
 const CHERRY_CONTINUITY_STAGES = Object.freeze([
   { id: 'discovery', label: 'Discovery', route: 'discovery' },
@@ -245,6 +246,7 @@ if (cherryContinuityApp) {
     .observe(cherryContinuityApp, { childList: true, subtree: true });
 }
 window.addEventListener('hashchange', scheduleCherryEngagementContinuity);
+window.addEventListener(CHERRY_CONTINUITY_FLOW_CHANGED_EVENT, scheduleCherryEngagementContinuity);
 window.addEventListener('storage', (event) => {
   if (event.key === CHERRY_CONTINUITY_FLOW_KEY) scheduleCherryEngagementContinuity();
 });

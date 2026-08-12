@@ -5,6 +5,7 @@
 const SYNTHETIC_FLOW_KEY = 'worldstage.synthetic.engagement.flow.v1';
 const SYNTHETIC_FLOW_VERSION = 1;
 const CHERRY_DAILY_DEMO_KEY = 'worldstage.cherry.daily.demo.v1';
+const SYNTHETIC_FLOW_CHANGED_EVENT = 'worldstage:synthetic-flow-state-changed';
 
 const SYNTHETIC_ENGAGEMENT = Object.freeze({
   id: 'WS-SYN-001',
@@ -72,6 +73,12 @@ function resetSyntheticFlowState() {
   } catch {
     return false;
   }
+}
+
+function notifySyntheticFlowStateChanged(reason) {
+  window.dispatchEvent(new CustomEvent(SYNTHETIC_FLOW_CHANGED_EVENT, {
+    detail: { reason },
+  }));
 }
 
 function routeFromSyntheticFlowHash() {
@@ -216,6 +223,7 @@ function bindSyntheticFlowPanel(panel, route) {
 
   panel.querySelector('[data-synthetic-flow-reset]')?.addEventListener('click', () => {
     const cleared = resetSyntheticFlowState();
+    notifySyntheticFlowStateChanged('reset');
     refreshSyntheticFlow(cleared
       ? 'Synthetic engagement and Cherry Daily demo states were reset locally. No external system changed.'
       : 'The in-memory demo reset, but browser storage could not be cleared. No external system changed.');
