@@ -40,7 +40,20 @@ jobs:
       - run: npm run test:phase2sql
       - run: npm run test:phase2staging
       - run: npm run test:phase3
-      - run: npm run test:phase4
+      - name: Run Phase 4 with durable diagnostics
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p artifacts/phase4
+          npm run test:phase4 2>&1 | tee artifacts/phase4/phase4.log
+      - name: Upload Phase 4 diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: worldstage-phase4-diagnostics
+          path: artifacts/phase4/phase4.log
+          if-no-files-found: warn
+          retention-days: 3
       - run: npm run test:phase5
       - run: npm run test:release
       - run: npm run test:visual
