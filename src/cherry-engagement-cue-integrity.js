@@ -1,11 +1,13 @@
 /* WorldStage / Cherry — fail-closed integrity for synthetic owner-action, attention, completion, and handoff provenance cues.
    Derives only from the sanitized local synthetic engagement-flow state already used by the continuity renderer.
-   Direct DOM mutation can neither redirect Resume, spoof the current owner-action stage, create Cherry urgency, claim synthetic completion, nor spoof prior/prepared/next handoff provenance unsupported by that state.
+   Direct DOM mutation can neither redirect Resume to another allowlisted stage, spoof the current owner-action stage, create Cherry urgency, claim synthetic completion, nor spoof prior/prepared/next handoff provenance unsupported by that state.
+   Unexpected/non-allowlisted Resume routes are deliberately left fail-closed for the dedicated read-only consequence/live-region/Room guards; the Resume click handler independently derives its destination from sanitized flow at activation time.
    Structural cue corruption removes the continuity strip so the existing renderer can restore the canonical surface.
    No persistence, provider access, analytics, scoring, private data, spending, or release authority. */
 
 const CHERRY_CUE_FLOW_KEY = 'worldstage.synthetic.engagement.flow.v1';
 const CHERRY_CUE_FLOW_VERSION = 1;
+const CHERRY_CUE_RESUME_ROUTES = new Set(['discovery', 'cockpit', 'client']);
 const CHERRY_CUE_ATTENTION = Object.freeze({
   preparedFlow: Object.freeze({
     id: 'prepared-flow',
@@ -148,9 +150,9 @@ function repairCherryCueIntegrity() {
   if (strip.dataset.cherryEngagementContinuitySignature !== signature) {
     strip.dataset.cherryEngagementContinuitySignature = signature;
   }
-  if (strip.dataset.cherryEngagementContinuityStage !== current.id) {
-    strip.dataset.cherryEngagementContinuityStage = current.id;
-  }
+  // The root current-stage marker is owned by the existing stage/visual integrity guards.
+  // Do not eagerly repair it here: a flow-inconsistent mutation must remain observable long
+  // enough for those guards to clear trusted list/current/visual semantics fail-closed.
   if (strip.dataset.cherryEngagementContinuityPrevious !== previous.id) {
     strip.dataset.cherryEngagementContinuityPrevious = previous.id;
   }
@@ -183,7 +185,17 @@ function repairCherryCueIntegrity() {
   }
   if (currentLabels[0].textContent !== current.label) currentLabels[0].textContent = current.label;
   if (details[0].textContent !== current.detail) details[0].textContent = current.detail;
-  if (resume.dataset.cherryEngagementContinuityResume !== current.route) {
+
+  const resumeRoute = resume.dataset.cherryEngagementContinuityResume;
+  if (!resumeRoute) {
+    invalidateCherryCueSurface(strip);
+    return;
+  }
+  // A wrong but allowlisted destination is ordinary spoofing and is repaired. A non-allowlisted
+  // route is intentionally left untouched so the existing consequence/live-region/Room guards
+  // can observe it and fail closed. Activation remains safe because the click listener does not
+  // trust this dataset; it re-derives the route from sanitized flow immediately before navigation.
+  if (CHERRY_CUE_RESUME_ROUTES.has(resumeRoute) && resumeRoute !== current.route) {
     resume.dataset.cherryEngagementContinuityResume = current.route;
   }
   if (resume.getAttribute('aria-label') !== `Resume ${current.label}`) {
