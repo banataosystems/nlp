@@ -11,7 +11,7 @@ This checkpoint supersedes the prior operational snapshot while preserving Git h
 ## Proof-separated current state
 
 ### Documented
-This checkpoint records two completed safe milestones: confirmation-open direct-reset/focus integrity with semantic fail-closed convergence repair, and focused rapid reset/cancel/reopen transition-convergence proof. The owner/security decision ledger remains authoritative for live-staging gates.
+This checkpoint records three completed safe milestones: confirmation-open direct-reset/focus integrity with semantic fail-closed convergence repair; focused rapid reset/cancel/reopen transition-convergence proof; and a phone-first physical-device owner acceptance packet tied to the exact validated non-production preview. The owner/security decision ledger remains authoritative for live-staging gates.
 
 ### Implemented
 Exact runtime implementation source for the reset/focus/convergence behavior: `92df41b452ea7203a6f5bf6765fb858148fdd2a0`.
@@ -53,15 +53,7 @@ The #858 readiness ZIP was downloaded and inspected directly. It records:
 - no staging or production project IDs bound
 - D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18 OPEN
 
-Focused rapid-cycle proof now establishes that:
-- three consecutive canonical Start-new → Cancel cycles preserve completed local synthetic state;
-- every open confirmation keeps the unique canonical `Reset demo` unavailable to sequential focus/assistive action while preserving the native local reset listener for the canonical delegation path;
-- every Cancel removes the confirmation, restores owner focus to Start new, restores the original reset control, and leaves local state unchanged;
-- an abandoned confirm pointer gesture cannot leak delegation authority into a later session;
-- a direct programmatic reset attempt in the later session remains blocked and completed state remains intact;
-- one final canonical Confirm clears only the three existing local synthetic keys and returns continuity to `discovery` without stale completion/start-new/confirmation cues;
-- the reset control is not left locked after the session closes;
-- exactly one continuity strip remains; zero POST/PUT/PATCH/DELETE requests occur; and 390px horizontal bounds remain valid.
+Focused rapid-cycle proof establishes that three consecutive Start-new → Cancel cycles preserve completed local synthetic state; every open confirmation keeps the unique canonical `Reset demo` unavailable to sequential focus/assistive action; every Cancel restores Start-new focus and the original reset control; an abandoned confirm gesture does not leak delegation authority; direct programmatic reset remains blocked in a later session; one final canonical Confirm clears only existing local synthetic keys and returns continuity to `discovery`; the reset is not left locked; exactly one continuity strip remains; zero POST/PUT/PATCH/DELETE requests occur; and 390px horizontal bounds remain valid.
 
 Push-run evidence preservation produced child `65a1aa90491824f0f95c46a5861e46ee60e209a4`. Exact comparison against validated source `bbd073aa...` proves that child changes only `docs/worldstage/evidence/WORLDSTAGE_MOBILE_V2_VISUAL_EVIDENCE.pdf`; runtime/test provenance remains attributed to exact validated source `bbd073aa...`, with runtime behavior itself unchanged from `92df41b...`.
 
@@ -86,6 +78,10 @@ The completed-flow confirmation has a deterministic interaction boundary: the un
 
 The current runtime already satisfied the stronger repeated-transition contract, so no unnecessary runtime change was made. A mandatory Phase-4 stress regression now proves repeated Cancel/reopen cycles, abandoned confirm gestures, direct-reset bypass attempts and final canonical confirmation converge to one truthful local state without stale completion UI, duplicate confirmation structure, leaked delegation authority, a stuck reset lock, network writes or production effects.
 
+## Completed milestone — physical-device owner acceptance packet prepared
+
+`docs/worldstage/CHERRY_PHYSICAL_DEVICE_ACCEPTANCE_PACKET_2026-08-12.md` now provides a phone-only, exact-build acceptance procedure tied to validated source `bbd073aa...` and preview `dpl_4dx9WksvwGGk1Lumk3WWpiEdP1xk`. It records only non-sensitive device/browser/date evidence, prohibits real client/private data, distinguishes PASS/FAIL/BLOCKED, checks Discovery → Cherry review → Transformation Record continuity, Resume, Reset/Cancel/Confirm, repeated reset cycles, mobile fit and production-truth cues, and explicitly states that the packet itself is not owner approval. This advances the physical-device gate as far as autonomous work can without impersonating Cherry or inferring acceptance.
+
 ## In progress
 No provider, database, destructive-data, billable-staging, or production operation is running. Autonomous work remains confined to reversible synthetic/mobile work, proof quality and owner-ready validation preparation.
 
@@ -96,7 +92,7 @@ The following remain outside autonomous authority until their evidence/authoriza
 - provider backup/restore and live kill-switch proof
 - live/billable staging
 - authentic owner-approved content/rights where required
-- physical-device Cherry acceptance
+- **physical-device Cherry acceptance remains pending; the packet is prepared but has not been executed/approved by Cherry**
 - legal/regulatory or public commitments
 - separate production authorization
 
@@ -104,7 +100,7 @@ The following remain outside autonomous authority until their evidence/authoriza
 Pandora Memory health/search is operational, but current retrieval still does not contain a WorldStage operational record for this implementation line. The exposed Pandora Memory surface provides search/health but no canonical WorldStage write/promotion operation. Therefore this checkpoint cannot truthfully be marked synchronized into Pandora Memory. GitHub, GitHub Actions artifacts, and Vercel hold the durable evidence fallback until the canonical Memory write path is available.
 
 ## Risks / non-claims
-This is synthetic UI integrity, not an authorization/security boundary against arbitrary hostile script execution. The owner-gesture token is deliberately ephemeral and module-local; it does not authorize any provider, database, production, legal or financial action. Automated browser/device verification is not physical-device Cherry acceptance. Preview READY is not live-staging proof or production verification. No real client engagement outcome/status is inferred from synthetic state.
+This is synthetic UI integrity, not an authorization/security boundary against arbitrary hostile script execution. The owner-gesture token is deliberately ephemeral and module-local; it does not authorize any provider, database, production, legal or financial action. Automated browser/device verification is not physical-device Cherry acceptance. The prepared owner packet is not acceptance. Preview READY is not live-staging proof or production verification. No real client engagement outcome/status is inferred from synthetic state.
 
 ## Next autonomous safe action
-Prepare a **physical-device owner acceptance packet** tied to the exact non-production verified preview and current synthetic workflow. It should be short enough to complete entirely on a phone, specify observable pass/fail criteria for Discovery → Cherry review → Transformation Record, Reset/Cancel/Resume and mobile layout, record device/browser/date/evidence references without capturing private client data, and explicitly avoid treating the packet itself as Cherry approval. This advances the physical-device gate as far as possible without impersonating or pre-authorizing the owner.
+Prepare a **single phone-first owner/security decision packet** from the existing authoritative decision ledger for D1, D2, D3, D5, D6, D7, D8, D9, D10, D15, D16, D17 and D18. Preserve the existing options/evidence, do not choose defaults or infer approval, identify which decisions are prerequisites for live staging versus later production, and make the packet answerable without a desktop or developer tooling. This reduces owner-interruption cost without crossing any decision, spending, legal, credential, data or release gate.
