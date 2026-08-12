@@ -1,8 +1,9 @@
 /* WorldStage / Cherry — confirmation-open direct-reset and focus integrity.
    While the ephemeral local-demo confirmation is open, the pre-existing canonical `Reset demo`
-   control is temporarily unavailable to pointer/keyboard activation. The canonical confirmed path
-   receives a one-event synchronous delegation allowance; direct or tampered reset activation fails closed.
-   No persistence, provider access, analytics, spending, destructive production action, or release authority is added. */
+   control is removed from sequential keyboard focus and marked unavailable to assistive technology.
+   Capture guards block pointer/keyboard/programmatic bypass while preserving the existing synchronous
+   local reset listener for the one canonical confirmation path. No provider access, analytics,
+   spending, destructive production action, persistence expansion, or release authority is added. */
 
 const CHERRY_RESET_FOCUS_FLOW_KEY = 'worldstage.synthetic.engagement.flow.v1';
 const CHERRY_RESET_FOCUS_FLOW_VERSION = 1;
@@ -73,14 +74,17 @@ function cherryResetFocusCanonicalReset({ allowLocked = true } = {}) {
   }
 
   const baseline = !reset.disabled && !reset.hasAttribute('aria-disabled') && !reset.hasAttribute('tabindex');
-  const locked = reset.disabled && reset.getAttribute('aria-disabled') === 'true' && reset.getAttribute('tabindex') === '-1';
+  const locked = !reset.disabled && reset.getAttribute('aria-disabled') === 'true' && reset.getAttribute('tabindex') === '-1';
   if (!baseline && !(allowLocked && locked)) return null;
   return reset;
 }
 
 function cherryResetFocusLockElement(node) {
   if (!(node instanceof HTMLElement)) return;
-  if (node instanceof HTMLButtonElement && !node.disabled) node.disabled = true;
+  // Keep the native button enabled so the pre-existing canonical reset listener can receive the
+  // one explicitly delegated programmatic click. Unavailability is enforced by capture guards,
+  // aria-disabled, and removal from sequential focus rather than by native disabled semantics.
+  if (node instanceof HTMLButtonElement && node.disabled) node.disabled = false;
   if (node.getAttribute('aria-disabled') !== 'true') node.setAttribute('aria-disabled', 'true');
   if (node.getAttribute('tabindex') !== '-1') node.setAttribute('tabindex', '-1');
 }
@@ -211,6 +215,26 @@ function cherryResetFocusArmCanonicalConfirm(confirmButton) {
   });
 }
 
+function cherryResetFocusBlockDirectInteraction(event) {
+  if (!cherryResetFocusSessionOpen) return false;
+  const target = event.target instanceof Element ? event.target : null;
+  if (!target || !cherryResetFocusIsLockedTarget(target)) return false;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  cherryResetFocusLockCanonicalReset();
+  queueMicrotask(() => cherryResetFocusFocusCancel());
+  return true;
+}
+
+document.addEventListener('pointerdown', (event) => {
+  cherryResetFocusBlockDirectInteraction(event);
+}, true);
+
+document.addEventListener('keydown', (event) => {
+  if (event.key !== 'Enter' && event.key !== ' ') return;
+  cherryResetFocusBlockDirectInteraction(event);
+}, true);
+
 document.addEventListener('click', (event) => {
   const target = event.target instanceof Element ? event.target : null;
   if (!target) return;
@@ -236,10 +260,7 @@ document.addEventListener('click', (event) => {
       cherryResetFocusDelegationAllowed = false;
       return;
     }
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    cherryResetFocusLockCanonicalReset();
-    queueMicrotask(() => cherryResetFocusFocusCancel());
+    cherryResetFocusBlockDirectInteraction(event);
   }
 }, true);
 
