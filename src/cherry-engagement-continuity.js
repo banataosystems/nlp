@@ -211,7 +211,13 @@ function enhanceCherryEngagementContinuity() {
   const previous = cherryContinuityPrevious(flow);
   const attention = cherryContinuityAttention(current);
   const signature = cherryContinuitySignature(flow, current, previous, attention);
-  if (existing?.dataset.cherryEngagementContinuitySignature === signature && existing.parentElement === summary) return;
+  if (
+    existing?.dataset.cherryEngagementContinuitySignature === signature
+    && existing.dataset.cherryEngagementContinuityStage === current.id
+    && existing.dataset.cherryEngagementContinuityPrevious === previous.id
+    && existing.dataset.cherryEngagementContinuityAttention === attention.id
+    && existing.parentElement === summary
+  ) return;
 
   const wrapper = document.createElement('div');
   wrapper.innerHTML = cherryContinuityMarkup(flow, current, previous, attention, signature);
