@@ -2,8 +2,10 @@
    While the ephemeral local-demo confirmation is open, the pre-existing canonical `Reset demo`
    control is removed from sequential keyboard focus and marked unavailable to assistive technology.
    Capture guards block pointer/keyboard/programmatic bypass while preserving the existing synchronous
-   local reset listener for the one canonical confirmation path. No provider access, analytics,
-   spending, destructive production action, persistence expansion, or release authority is added. */
+   local reset listener for the one canonical confirmation path. A short-lived, one-use owner gesture
+   token bridges module-listener ordering without opening the underlying reset to direct interaction.
+   No provider access, analytics, spending, destructive production action, persistence expansion,
+   or release authority is added. */
 
 const CHERRY_RESET_FOCUS_FLOW_KEY = 'worldstage.synthetic.engagement.flow.v1';
 const CHERRY_RESET_FOCUS_FLOW_VERSION = 1;
@@ -12,12 +14,15 @@ const CHERRY_RESET_FOCUS_CONFIRMATION_SELECTOR = '[data-cherry-engagement-reset-
 const CHERRY_RESET_FOCUS_CANCEL_SELECTOR = '[data-cherry-engagement-reset-cancel]';
 const CHERRY_RESET_FOCUS_CONFIRM_SELECTOR = '[data-cherry-engagement-reset-confirm]';
 const CHERRY_RESET_FOCUS_RESET_SELECTOR = '[data-synthetic-flow-reset], .synthetic-flow__reset';
+const CHERRY_RESET_FOCUS_OWNER_GESTURE_WINDOW_MS = 1000;
 
 let cherryResetFocusSessionOpen = false;
 let cherryResetFocusPreLock = false;
 let cherryResetFocusDelegationAllowed = false;
 let cherryResetFocusLockedReset = null;
 let cherryResetFocusRepairQueued = false;
+let cherryResetFocusOwnerConfirm = null;
+let cherryResetFocusOwnerConfirmExpiresAt = 0;
 
 function cherryResetFocusSafeJson(key) {
   try {
@@ -140,12 +145,45 @@ function cherryResetFocusIsLockedTarget(target) {
   return target.closest(CHERRY_RESET_FOCUS_RESET_SELECTOR) instanceof Element;
 }
 
+function cherryResetFocusClearOwnerConfirmGesture() {
+  cherryResetFocusOwnerConfirm = null;
+  cherryResetFocusOwnerConfirmExpiresAt = 0;
+}
+
+function cherryResetFocusArmOwnerConfirmGesture(confirmButton) {
+  if (!(confirmButton instanceof HTMLButtonElement) || !cherryResetFocusSessionOpen || !cherryResetFocusCompleted()) return false;
+  const confirmation = confirmButton.closest(CHERRY_RESET_FOCUS_CONFIRMATION_SELECTOR);
+  const strip = confirmation instanceof HTMLElement ? confirmation.closest('[data-cherry-engagement-continuity]') : null;
+  if (!(confirmation instanceof HTMLElement) || !(strip instanceof HTMLElement) || strip !== cherryResetFocusStrip()) return false;
+  if (cherryResetFocusConfirmation(strip) !== confirmation) return false;
+  const parts = cherryResetFocusConfirmationParts(confirmation);
+  if (!parts || parts.confirm !== confirmButton) return false;
+  cherryResetFocusOwnerConfirm = confirmButton;
+  cherryResetFocusOwnerConfirmExpiresAt = performance.now() + CHERRY_RESET_FOCUS_OWNER_GESTURE_WINDOW_MS;
+  return true;
+}
+
+function cherryResetFocusConsumeOwnerConfirmGesture() {
+  const confirmButton = cherryResetFocusOwnerConfirm;
+  const expiresAt = cherryResetFocusOwnerConfirmExpiresAt;
+  cherryResetFocusClearOwnerConfirmGesture();
+  if (!(confirmButton instanceof HTMLButtonElement) || performance.now() > expiresAt) return false;
+  if (!confirmButton.isConnected || !cherryResetFocusSessionOpen || !cherryResetFocusCompleted()) return false;
+  const confirmation = confirmButton.closest(CHERRY_RESET_FOCUS_CONFIRMATION_SELECTOR);
+  const strip = confirmation instanceof HTMLElement ? confirmation.closest('[data-cherry-engagement-continuity]') : null;
+  if (!(confirmation instanceof HTMLElement) || !(strip instanceof HTMLElement) || strip !== cherryResetFocusStrip()) return false;
+  if (cherryResetFocusConfirmation(strip) !== confirmation) return false;
+  const parts = cherryResetFocusConfirmationParts(confirmation);
+  return Boolean(parts && parts.confirm === confirmButton);
+}
+
 function repairCherryResetFocusIntegrity() {
   cherryResetFocusRepairQueued = false;
   const strip = cherryResetFocusStrip();
   const confirmation = cherryResetFocusConfirmation(strip);
 
   if (confirmation === false) {
+    cherryResetFocusClearOwnerConfirmGesture();
     cherryResetFocusSessionOpen = true;
     cherryResetFocusPreLock = false;
     cherryResetFocusLockCanonicalReset();
@@ -156,13 +194,17 @@ function repairCherryResetFocusIntegrity() {
     cherryResetFocusSessionOpen = true;
     cherryResetFocusPreLock = false;
     cherryResetFocusLockCanonicalReset();
-    if (!cherryResetFocusConfirmationParts(confirmation)) return;
+    if (!cherryResetFocusConfirmationParts(confirmation)) {
+      cherryResetFocusClearOwnerConfirmGesture();
+      return;
+    }
     if (cherryResetFocusIsLockedTarget(document.activeElement)) {
       queueMicrotask(() => cherryResetFocusFocusCancel(confirmation));
     }
     return;
   }
 
+  cherryResetFocusClearOwnerConfirmGesture();
   if (cherryResetFocusPreLock) cherryResetFocusPreLock = false;
   if (cherryResetFocusSessionOpen) {
     cherryResetFocusSessionOpen = false;
@@ -221,17 +263,32 @@ function cherryResetFocusBlockDirectInteraction(event) {
   if (!target || !cherryResetFocusIsLockedTarget(target)) return false;
   event.preventDefault();
   event.stopImmediatePropagation();
+  cherryResetFocusClearOwnerConfirmGesture();
   cherryResetFocusLockCanonicalReset();
   queueMicrotask(() => cherryResetFocusFocusCancel());
   return true;
 }
 
 document.addEventListener('pointerdown', (event) => {
+  const target = event.target instanceof Element ? event.target : null;
+  const confirm = target?.closest(CHERRY_RESET_FOCUS_CONFIRM_SELECTOR);
+  if (confirm instanceof HTMLButtonElement) {
+    cherryResetFocusArmOwnerConfirmGesture(confirm);
+    return;
+  }
+  cherryResetFocusClearOwnerConfirmGesture();
   cherryResetFocusBlockDirectInteraction(event);
 }, true);
 
 document.addEventListener('keydown', (event) => {
   if (event.key !== 'Enter' && event.key !== ' ') return;
+  const target = event.target instanceof Element ? event.target : null;
+  const confirm = target?.closest(CHERRY_RESET_FOCUS_CONFIRM_SELECTOR);
+  if (confirm instanceof HTMLButtonElement) {
+    cherryResetFocusArmOwnerConfirmGesture(confirm);
+    return;
+  }
+  cherryResetFocusClearOwnerConfirmGesture();
   cherryResetFocusBlockDirectInteraction(event);
 }, true);
 
@@ -253,11 +310,14 @@ document.addEventListener('click', (event) => {
 
   if (cherryResetFocusSessionOpen && cherryResetFocusIsLockedTarget(target)) {
     const exactReset = cherryResetFocusCanonicalReset({ allowLocked: true });
-    const delegated = cherryResetFocusDelegationAllowed
+    const ownerGestureDelegated = exactReset instanceof HTMLButtonElement
+      && cherryResetFocusConsumeOwnerConfirmGesture();
+    const delegated = (cherryResetFocusDelegationAllowed || ownerGestureDelegated)
       && exactReset instanceof HTMLButtonElement
       && (target === exactReset || exactReset.contains(target));
     if (delegated) {
       cherryResetFocusDelegationAllowed = false;
+      cherryResetFocusClearOwnerConfirmGesture();
       return;
     }
     cherryResetFocusBlockDirectInteraction(event);
@@ -268,6 +328,7 @@ document.addEventListener('focusin', (event) => {
   if (!cherryResetFocusSessionOpen) return;
   const target = event.target instanceof Element ? event.target : null;
   if (!target || !cherryResetFocusIsLockedTarget(target)) return;
+  cherryResetFocusClearOwnerConfirmGesture();
   cherryResetFocusLockCanonicalReset();
   queueMicrotask(() => cherryResetFocusFocusCancel());
 }, true);
