@@ -19,14 +19,29 @@ on:
         description: For production only, type DEPLOY_CHERRY_PRODUCTION exactly. Leave blank for preview.
         required: false
         type: string
+      prior_evidence_run_id:
+        description: Prior same-repository successful run containing production-evidence inputs. Required only for production.
+        required: false
+        type: string
+      prior_evidence_artifact_name:
+        description: Exact production-evidence artifact name from the prior run. Required only for production.
+        required: false
+        type: string
+      verified_preview_deployment_id:
+        description: Exact candidate preview/staging deployment verified by upstream evidence. Required only for production.
+        required: false
+        type: string
 
 permissions:
   contents: read
+  actions: read
 
 env:
   VERCEL_ORG_ID: team_IcdJUnzLi5wUN1GD8ALHyjF7
   VERCEL_PROJECT_ID: prj_ebP53cux8LAB18VFiKlgfP3ew2RH
   VERCEL_CLI_VERSION: 58.1.0
+  WORLDSTAGE_RELEASE_CONTROL_DIR: artifacts/release-control
+  WORLDSTAGE_EVIDENCE_DIR: artifacts/release-control/upstream
 
 jobs:
   release:
@@ -38,11 +53,24 @@ jobs:
         env:
           TARGET: ${{ inputs.target }}
           CONFIRM_PRODUCTION: ${{ inputs.confirm_production }}
+          PRIOR_EVIDENCE_RUN_ID: ${{ inputs.prior_evidence_run_id }}
+          PRIOR_EVIDENCE_ARTIFACT_NAME: ${{ inputs.prior_evidence_artifact_name }}
+          VERIFIED_PREVIEW_DEPLOYMENT_ID: ${{ inputs.verified_preview_deployment_id }}
         run: |
           set -euo pipefail
-          if [[ "$TARGET" == "production" && "$CONFIRM_PRODUCTION" != "DEPLOY_CHERRY_PRODUCTION" ]]; then
-            echo "Production release denied: exact confirmation string was not supplied." >&2
-            exit 1
+          if [[ "$TARGET" == "production" ]]; then
+            if [[ "$CONFIRM_PRODUCTION" != "DEPLOY_CHERRY_PRODUCTION" ]]; then
+              echo "Production release denied: exact confirmation string was not supplied." >&2
+              exit 1
+            fi
+            if [[ ! "$PRIOR_EVIDENCE_RUN_ID" =~ ^[0-9]+$ ]]; then
+              echo "Production release denied: numeric prior evidence run ID is required." >&2
+              exit 1
+            fi
+            if [[ -z "$PRIOR_EVIDENCE_ARTIFACT_NAME" || -z "$VERIFIED_PREVIEW_DEPLOYMENT_ID" ]]; then
+              echo "Production release denied: prior evidence artifact and verified preview deployment are required." >&2
+              exit 1
+            fi
           fi
           if [[ "$TARGET" != "preview" && "$TARGET" != "production" ]]; then
             echo "Unsupported deployment target: $TARGET" >&2
@@ -76,6 +104,47 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+
+      - name: Download prior production evidence inputs
+        if: inputs.target == 'production'
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.prior_evidence_run_id }}
+          name: ${{ inputs.prior_evidence_artifact_name }}
+          path: artifacts/release-control/upstream
+
+      - name: Assemble production evidence artifact
+        if: inputs.target == 'production'
+        env:
+          WORLDSTAGE_SOURCE_SHA: ${{ steps.source.outputs.sha }}
+          WORLDSTAGE_PRIOR_EVIDENCE_RUN_ID: ${{ inputs.prior_evidence_run_id }}
+          WORLDSTAGE_PRIOR_EVIDENCE_ARTIFACT_NAME: ${{ inputs.prior_evidence_artifact_name }}
+          WORLDSTAGE_VERIFIED_PREVIEW_DEPLOYMENT_ID: ${{ inputs.verified_preview_deployment_id }}
+        run: node scripts/worldstage-production-evidence-artifact.mjs
+
+      - name: Verify production evidence bundle with adapter
+        if: inputs.target == 'production'
+        run: node scripts/worldstage-production-evidence-verification-adapter.mjs --require-verified
+
+      - name: Consume verified production evidence for release gate
+        if: inputs.target == 'production'
+        env:
+          WORLDSTAGE_SOURCE_SHA: ${{ steps.source.outputs.sha }}
+          WORLDSTAGE_PRIOR_EVIDENCE_RUN_ID: ${{ inputs.prior_evidence_run_id }}
+          WORLDSTAGE_PRIOR_EVIDENCE_ARTIFACT_NAME: ${{ inputs.prior_evidence_artifact_name }}
+          WORLDSTAGE_VERIFIED_PREVIEW_DEPLOYMENT_ID: ${{ inputs.verified_preview_deployment_id }}
+          WORLDSTAGE_ADAPTER_MAX_AGE_SECONDS: "600"
+        run: node scripts/worldstage-production-gate-consumption.mjs --require-consumed
+
+      - name: Run machine-readable production release gate
+        if: inputs.target == 'production'
+        env:
+          WORLDSTAGE_SOURCE_SHA: ${{ steps.source.outputs.sha }}
+          WORLDSTAGE_PRIOR_EVIDENCE_RUN_ID: ${{ inputs.prior_evidence_run_id }}
+          WORLDSTAGE_PRIOR_EVIDENCE_ARTIFACT_NAME: ${{ inputs.prior_evidence_artifact_name }}
+          WORLDSTAGE_VERIFIED_PREVIEW_DEPLOYMENT_ID: ${{ inputs.verified_preview_deployment_id }}
+        run: node scripts/worldstage-production-release-gate.mjs --require-ready --consumed-evidence artifacts/release-control/consumed-adapter-evidence.json
 
       - name: Install project dependencies
         run: npm install --no-audit --no-fund
@@ -214,7 +283,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p artifacts/release
-          cat > artifacts/release/release-provenance.txt <<EOF
+          cat > artifacts/release/release-provenance.txt <<EOR
           project=worldstage-cherry
           repository=banataosystems/nlp
           source_sha=$SOURCE_SHA
@@ -227,7 +296,7 @@ jobs:
           vercel_cli_actual=$VERCEL_CLI_ACTUAL
           workflow_run_id=$GITHUB_RUN_ID
           workflow_run_attempt=$GITHUB_RUN_ATTEMPT
-          EOF
+          EOR
           cat artifacts/release/release-provenance.txt >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload release provenance

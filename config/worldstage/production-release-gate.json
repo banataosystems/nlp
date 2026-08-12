@@ -1,0 +1,17 @@
+{
+  "schema": "worldstage.production-release-gate-policy.v2",
+  "project_key": "worldstage-cherry",
+  "repository": "banataosystems/nlp",
+  "required_decisions": ["D1","D2","D3","D4","D5","D6","D7","D8","D9","D10","D11","D12","D13","D14","D15","D16","D17","D18","D19","D20","D21","D22","D23","D24"],
+  "explicit_production_authority_decision": "D23",
+  "accepted_evidence_schema": "worldstage.production-gate-consumed-evidence.v1",
+  "forbidden_direct_input_schemas": [
+    "worldstage.production-evidence-artifact.v1",
+    "worldstage.production-evidence-verification-result.v1",
+    "worldstage.production-gate-evidence-input.v1",
+    "worldstage.production-evidence-verification-envelope.v1"
+  ],
+  "required_upstream_verification_sections": ["prior_run","live_staging","physical_device","rollback","governance"],
+  "fail_closed": true,
+  "production_action_outside_gate": true
+}

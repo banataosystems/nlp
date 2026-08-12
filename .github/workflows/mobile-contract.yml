@@ -32,6 +32,8 @@ jobs:
           WORLDSTAGE_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           WORLDSTAGE_INTAKE_ENABLED: "false"
         run: npm run preflight:staging
+      - name: Verify atomic production release-control contracts
+        run: npm run test:release-control
       - run: npx playwright install --with-deps chromium webkit
       - run: npx http-server . -p 4173 -c-1 > /tmp/worldstage-http.log 2>&1 &
       - run: npx wait-on http://127.0.0.1:4173
